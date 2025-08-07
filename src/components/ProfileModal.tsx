@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useState } from 'react'
+import Image from 'next/image'
 import { supabase } from '@/lib/supabaseClient'
 
 interface Props {
@@ -16,11 +17,11 @@ interface Profile {
 }
 
 const fieldLabels: Record<keyof Profile, string> = {
-  name: 'Name',
-  surname: 'Surname',
+  name: 'Nombre',
+  surname: 'Apellido',
   dni: 'DNI',
-  phone: 'Phone',
-  image: 'Image'
+  phone: 'Teléfono',
+  image: 'Imagen'
 }
 export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [profile, setProfile] = useState<Profile>({
@@ -34,26 +35,29 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [fieldEditing, setFieldEditing] = useState<keyof Profile | null>(null)
   const [tempValue, setTempValue] = useState('')
 
-  useEffect(() => {
-    const load = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      const { data } = await supabase
-        .from('users')
-        .select('name,surname,dni,phone,image')
-        .eq('id', user.id)
-        .single()
-      if (data) {
-        setProfile({
-          name: data.name ?? '',
-          surname: data.surname ?? '',
-          dni: data.dni ?? '',
-          phone: data.phone ?? '',
-          image: data.image ?? ''
-        })
-      }
+  const loadProfile = async () => {
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+    if (!user) return
+    const { data } = await supabase
+      .from('users')
+      .select('name,surname,dni,phone,image')
+      .eq('id', user.id)
+      .single()
+    if (data) {
+      setProfile({
+        name: data.name ?? '',
+        surname: data.surname ?? '',
+        dni: data.dni ?? '',
+        phone: data.phone ?? '',
+        image: data.image ?? ''
+      })
     }
-    load()
+    }
+
+  useEffect(() => {
+    loadProfile()
   }, [])
 
   const startEdit = (field: keyof Profile) => {
@@ -62,7 +66,10 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
   }
 
   const saveField = async (field: keyof Profile) => {
-    const { data: { user } } = await supabase.auth.getUser()
+    const {
+      data: { user }
+    } = await supabase.auth.getUser()
+
     if (!user) return
     const value = tempValue
     const { error } = await supabase
@@ -70,8 +77,8 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       .update({ [field]: value })
       .eq('id', user.id)
     if (!error) {
-      const updated = { ...profile, [field]: value }
-      setProfile(updated)
+      await loadProfile()
+
       if (field === 'name') onUpdated(value)
       setFieldEditing(null)
     } else {
@@ -89,15 +96,17 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
           const displayValue =
             field === 'image'
               ? value ? (
-                <img
+                <Image
                   src={value}
                   alt="Imagen de perfil"
+                  width={40}
+                  height={40}
                   className="h-10 w-10 rounded-full object-cover"
                 />
               ) : (
                 <span>No hay imagen</span>
               )
-              : <span>{value}</span>
+              : <span>{value || 'Sin Valor'}</span>
           return (
             <div key={key} className="text-sm">
              
@@ -142,7 +151,11 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
         <div className="flex justify-end space-x-2 pt-2">
           {editing ? (
             <button
-              onClick={() => { setEditing(false); setFieldEditing(null) }}
+              onClick={() => {
+                setEditing(false)
+                setFieldEditing(null)
+                loadProfile()
+              }}
               className="px-2 py-1 text-sm"
             >
               Terminar
