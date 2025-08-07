@@ -21,11 +21,13 @@ export function NavBar() {
       const {
         data: { user }
       } = await supabase.auth.getUser();
-      if (!user) return;
+      const userId = user?.id
+    if (!userId) return;
+    const appUserId = (user.app_metadata as { user_id?: string })?.user_id;
       const { data } = await supabase
         .from("users")
         .select("name")
-        .eq("id", user.id)
+        .eq(appUserId ? "id" : "email", appUserId ?? user.email)
         .single();
       if (data?.name) setProfileName(data.name);
     };
