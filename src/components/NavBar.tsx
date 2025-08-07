@@ -3,6 +3,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
+import ProfileDropdown from "./ProfileDropdown";
+import ProfileModal from "./ProfileModal";
 
 export function NavBar() {
   const pathname = usePathname();
@@ -11,6 +13,8 @@ export function NavBar() {
       pathname.startsWith(href) ? "bg-blue-600 text-white" : "text-gray-200 hover:bg-gray-700"
     }`;
   const [profileName, setProfileName] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -26,7 +30,7 @@ export function NavBar() {
       if (data?.name) setProfileName(data.name);
     };
     loadUser();
-  }, []);
+  }, []); 
   return (
     <nav className="bg-gray-900 border-b border-gray-700">
       <div className="container mx-auto flex items-center justify-between h-12 px-4">
@@ -36,7 +40,23 @@ export function NavBar() {
           <Link href="/cursos" className={linkClass("/cursos")}>Cursos</Link>
           <Link href="/reservas" className={linkClass("/reservas")}>Reservas</Link>
         </div>
-        <Link href="/profile" className="text-sm">{profileName ?? "yo"} ▾</Link>
+        <div className="relative">
+          <button onClick={() => setMenuOpen(!menuOpen)} className="text-sm">
+            {profileName || ""} ▾
+          </button>
+          {menuOpen && (
+            <ProfileDropdown
+              onClose={() => setMenuOpen(false)}
+              onViewProfile={() => setProfileOpen(true)}
+            />
+          )}
+        </div>
+        {profileOpen && (
+          <ProfileModal
+            onClose={() => setProfileOpen(false)}
+            onUpdated={setProfileName}
+          />
+        )}
       </div>
     </nav>
   );
