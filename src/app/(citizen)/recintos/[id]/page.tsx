@@ -1,13 +1,27 @@
-import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
+import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
 export default async function RecintoDetail({ params }: { params: { id: string } }) {
-  const supabase = createServerComponentClient({
-    cookies
-  });
+  const cookieStore = await cookies();
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set({ name, value, ...options })
+          );
+        }
+      }
+    }
+  );
   const { data: recinto } = await supabase.from("recintos").select("*").eq("id", params.id).single();
   if (!recinto) return notFound();
 
