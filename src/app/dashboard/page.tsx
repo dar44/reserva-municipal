@@ -5,23 +5,26 @@ import { createServerClient } from '@supabase/ssr';
 export const dynamic = 'force-dynamic';
 
 export default async function CitizenDashboard() {
+  const cookieStore = cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: await cookies() }
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll();
+        },
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set({ name, value, ...options })
+          );
+        }
+      }
+    }
   );
 
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) redirect('/login');
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect('/login');
 
-  return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Recintos Disponibles</h1>
-      {/* Reutilizamos el componente de lista directamente */}
-      {/* import ListRecintosClient cuando lo extraigas, por ahora duplicamos inline */}
-      {/* Contenido simplificado: redirigimos al listado real */}
-      <p>Redirigiendo…</p>
-      {redirect('/recintos')}
-    </div>
-  );
+ redirect('/recintos');
 }

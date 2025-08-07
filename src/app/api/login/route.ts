@@ -11,14 +11,13 @@ export async function POST(req: Request) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        async get(name: string) {
-          return (await cookieStore).get(name)?.value
+        getAll() {
+          return cookieStore.getAll();
         },
-        async set(name: string, value: string, options) {
-          (await cookieStore).set({ name, value, ...options })
-        },
-        async remove(name: string, options) {
-          (await cookieStore).set({ name, value: '', ...options })
+        setAll(cookiesToSet) {
+          cookiesToSet.forEach(({ name, value, options }) =>
+            cookieStore.set({ name, value, ...options })
+          )
         }
       }
     }

@@ -7,14 +7,14 @@ export default async function ReservasPage() {
   const supabase = createServerComponentClient({
     cookies
   });
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) {
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) {
     return <p className="mt-20 text-center">🔒 Inicia sesión primero</p>;
   }
   const { data: reservas } = await supabase
     .from('reservas')
     .select('id,start_at,end_at,status,recintos(name)')
-    .eq('user_id', session.user.app_metadata.user_id)
+    .eq('user_id', user.app_metadata.user_id)
     .order('start_at', { ascending: false });
 
   return (
