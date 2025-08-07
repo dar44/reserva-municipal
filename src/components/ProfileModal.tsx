@@ -15,6 +15,13 @@ interface Profile {
   image: string
 }
 
+const fieldLabels: Record<keyof Profile, string> = {
+  name: 'Name',
+  surname: 'Surname',
+  dni: 'DNI',
+  phone: 'Phone',
+  image: 'Image'
+}
 export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [profile, setProfile] = useState<Profile>({
     name: '',
@@ -78,11 +85,25 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
         <h2 className="text-lg font-semibold">Perfil</h2>
         {Object.entries(profile).map(([key, value]) => {
           const field = key as keyof Profile
+          const label = fieldLabels[field]
+          const displayValue =
+            field === 'image'
+              ? value ? (
+                <img
+                  src={value}
+                  alt="Imagen de perfil"
+                  className="h-10 w-10 rounded-full object-cover"
+                />
+              ) : (
+                <span>No hay imagen</span>
+              )
+              : <span>{value}</span>
           return (
             <div key={key} className="text-sm">
-              <label className="block capitalize">{key}</label>
+             
               {editing && fieldEditing === field ? (
-                <div className="flex space-x-2 mt-1">
+                <div className="flex items-center space-x-2 mt-1">
+                  <span className="w-20 capitalize">{label}</span>
                   <input
                     className="border p-1 flex-1 rounded"
                     value={tempValue}
@@ -102,8 +123,9 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
                   </button>
                 </div>
               ) : (
-                <div className="flex justify-between items-center mt-1">
-                  <span>{value}</span>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="capitalize w-20">{label}</span>
+                  <div className="flex-1 text-right mr-2">{displayValue}</div>
                   {editing && (
                     <button
                       onClick={() => startEdit(field)}
