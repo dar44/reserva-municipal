@@ -36,7 +36,7 @@ export default function AdminNavBar () {
       <div className="container mx-auto flex items-center justify-between h-12 px-4">
         <Link href="/admin/panel" className="text-lg font-semibold">ServiMunicipal</Link>
         <div className="space-x-2">
-          <Link href="/admin/panel" className={linkClass('/admin')}>Dashboard</Link>
+          <Link href="/admin/panel" className={linkClass('/admin')}>Panel</Link>
         </div>
         <div className="relative">
           <button onClick={() => setMenuOpen(!menuOpen)} className="text-sm">
