@@ -10,29 +10,24 @@ export default function LoginPage () {
 
   async function handleSubmit (e: React.FormEvent) {
     e.preventDefault()
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+   const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password
     })
     
-    if (res.ok) {
-      const {
-        data: { user }
-      } = await supabase.auth.getUser()
-      if (user) {
-        const appUserId = (user.app_metadata as { user_id?: string })?.user_id
-        const { data } = await supabase
-          .from('users')
-          .select('role')
-          .eq(appUserId ? 'id' : 'email', appUserId ?? user.email!)
-          .single()
-        router.push(data?.role === 'admin' ? '/dashboard' : '/recintos')
-      } else {
-        router.push('/recintos')
-      }
-    } else {
+     if (error) {
       alert('Credenciales incorrectas')
+      return
+    }
+
+    const role = data.user?.user_metadata?.role ?? data.session?.user?.role
+    if (role === 'admin') {
+      router.push('/dashboard')
+    } else if (role) {
+      router.push('/recintos')
+    } else {
+      console.error('No se pudo determinar el rol del usuario')
+      alert('No se pudo determinar el rol del usuario')
     }
   }
 
