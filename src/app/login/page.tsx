@@ -15,14 +15,17 @@ export default function LoginPage () {
       password
     })
     
-     if (error) {
+    if (error) {
       alert('Credenciales incorrectas')
       return
     }
 
-    const role = data.user?.user_metadata?.role ?? data.session?.user?.role
+    const role = data.user?.app_metadata?.role as string | undefined
+    
     if (role === 'admin') {
       router.push('/dashboard')
+    } else if (role === 'worker') {
+      router.push('/worker')
     } else if (role) {
       router.push('/recintos')
     } else {
