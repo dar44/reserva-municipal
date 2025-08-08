@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
 
 export default function LoginPage () {
   const router = useRouter()
@@ -14,8 +15,25 @@ export default function LoginPage () {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password })
     })
-    if (res.ok) router.push('/dashboard')
-    else alert('Credenciales incorrectas')
+    
+    if (res.ok) {
+      const {
+        data: { user }
+      } = await supabase.auth.getUser()
+      if (user) {
+        const appUserId = (user.app_metadata as { user_id?: string })?.user_id
+        const { data } = await supabase
+          .from('users')
+          .select('role')
+          .eq(appUserId ? 'id' : 'email', appUserId ?? user.email!)
+          .single()
+        router.push(data?.role === 'admin' ? '/dashboard' : '/recintos')
+      } else {
+        router.push('/recintos')
+      }
+    } else {
+      alert('Credenciales incorrectas')
+    }
   }
 
   return (

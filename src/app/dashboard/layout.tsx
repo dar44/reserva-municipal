@@ -15,7 +15,7 @@ export default async function DashboardLayout ({ children }: { children: ReactNo
   const { data } = await supabase
     .from('users')
     .select('role')
-    .eq('id', appUserId)
+    .eq(appUserId ? 'id' : 'email', appUserId ?? user.email!)
     .single()
   if (data?.role !== 'admin') redirect('/recintos')
 
