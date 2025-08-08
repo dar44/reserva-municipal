@@ -23,7 +23,6 @@ create table if not exists users (
   dni varchar(255) not null unique,
   email varchar(255) not null unique,
   email_verified_at timestamptz,
-  password varchar(255) not null,
   phone varchar(50) not null,
   role user_role default 'citizen',
   image varchar(255),
