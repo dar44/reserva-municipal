@@ -42,7 +42,7 @@ export async function middleware(req: NextRequest) {
   if (path.startsWith('/dashboard') && role === 'anon') {
     return redirectResponse('/login')
   }
-  return NextResponse.next()
+  return res//NextResponse.next()
 }
 
 export const config = { matcher: ['/((?!_next|api|favicon.ico).*)'] }

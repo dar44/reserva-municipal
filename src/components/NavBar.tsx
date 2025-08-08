@@ -23,11 +23,11 @@ export function NavBar() {
       } = await supabase.auth.getUser();
       const userId = user?.id
     if (!userId) return;
-    const appUserId = (user.app_metadata as { user_id?: string })?.user_id;
+    const appUserId =  Number((user?.app_metadata as { user_id?: number })?.user_id);
       const { data } = await supabase
         .from("users")
         .select("name")
-        .eq(appUserId ? "id" : "email", appUserId ?? user.email)
+        .eq(appUserId ? "id" : "email", appUserId || user.email)
         .single();
       if (data?.name) setProfileName(data.name);
     };

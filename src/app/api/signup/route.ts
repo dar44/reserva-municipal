@@ -25,9 +25,13 @@ export async function POST (req: Request) {
   if (dbErr) return NextResponse.json(dbErr, { status: 400 })
 
   /* 3) Añade claim user_id al JWT ------------------------ */
-  await supabaseAdmin.auth.admin.updateUserById(auth.user.id, {
-    app_metadata: { role: 'citizen', user_id: row.id }
-  })
+  const { error: claimErr } = await supabaseAdmin.auth.admin.updateUserById(
+    auth.user.id,
+    {
+      app_metadata: { role: 'citizen', user_id: row.id }
+    }
+  )
+  if (claimErr) return NextResponse.json(claimErr, { status: 400 })
 
   return NextResponse.json({ message: 'signup_ok' })
 }
