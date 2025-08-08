@@ -34,12 +34,9 @@ export async function middleware(req: NextRequest) {
   }
 
   if (path.startsWith('/admin') && role !== 'admin') {
-    return redirectResponse('/dashboard')
+    return redirectResponse('/login')
   }
-  if (path.startsWith('/worker') && !['admin','worker'].includes(role)) {
-    return redirectResponse('/dashboard')
-  }
-  if (path.startsWith('/dashboard') && role === 'anon') {
+  if (path.startsWith('/worker') && !['admin', 'worker'].includes(role)) {
     return redirectResponse('/login')
   }
   return res//NextResponse.next()

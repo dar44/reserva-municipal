@@ -23,9 +23,9 @@ export default function LoginPage () {
     const role = data.user?.app_metadata?.role as string | undefined
     
     if (role === 'admin') {
-      router.push('/dashboard')
+      router.push('/admin/panel')
     } else if (role === 'worker') {
-      router.push('/worker')
+      router.push('/worker/panel')
     } else if (role) {
       router.push('/recintos')
     } else {

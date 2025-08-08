@@ -14,7 +14,7 @@ export default async function AdminCursosPage () {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Cursos</h1>
-        <Link href="/dashboard/cursos/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Curso</Link>
+        <Link href="/admin/cursos/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Curso</Link>
       </div>
       <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
         <thead className="bg-gray-700">

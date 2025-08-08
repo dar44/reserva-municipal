@@ -24,7 +24,7 @@ export default async function AdminUsuariosPage () {
     <div>
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-2xl font-bold">Usuarios</h1>
-        <Link href="/dashboard/usuarios/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Usuario</Link>
+        <Link href="/admin/usuarios/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Usuario</Link>
       </div>
       <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
         <thead className="bg-gray-700">

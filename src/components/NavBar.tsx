@@ -36,7 +36,7 @@ export function NavBar() {
   return (
     <nav className="bg-gray-900 border-b border-gray-700">
       <div className="container mx-auto flex items-center justify-between h-12 px-4">
-        <Link href="/dashboard" className="text-lg font-semibold">ServiMunicipal</Link>
+        <Link href="/recintos" className="text-lg font-semibold">ServiMunicipal</Link>
         <div className="space-x-2">
           <Link href="/recintos" className={linkClass("/recintos")}>Recintos</Link>
           <Link href="/cursos" className={linkClass("/cursos")}>Cursos</Link>
