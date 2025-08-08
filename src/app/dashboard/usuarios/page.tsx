@@ -1,0 +1,63 @@
+import Link from 'next/link'
+import { createSupabaseServer } from '@/lib/supabaseServer'
+
+export const dynamic = 'force-dynamic'
+
+type Usuario = {
+  id: string
+  image: string | null
+  name: string
+  email: string
+  phone: string
+  dni: string
+  role: string
+}
+
+export default async function AdminUsuariosPage () {
+  const supabase = await createSupabaseServer()
+  const { data: usuarios } = await supabase
+    .from('users')
+    .select('id,image,name,email,phone,dni,role')
+    .order('name')
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="text-2xl font-bold">Usuarios</h1>
+        <Link href="/dashboard/usuarios/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Usuario</Link>
+      </div>
+      <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
+        <thead className="bg-gray-700">
+          <tr>
+            <th className="px-4 py-2 text-left">Imagen</th>
+            <th className="px-4 py-2 text-left">Nombre</th>
+            <th className="px-4 py-2 text-left">Email</th>
+            <th className="px-4 py-2 text-left">Teléfono</th>
+            <th className="px-4 py-2 text-left">DNI</th>
+            <th className="px-4 py-2 text-left">Rol</th>
+            <th className="px-4 py-2 text-left">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {usuarios?.map(u => (
+            <tr key={u.id} className="border-t border-gray-700">
+              <td className="px-4 py-2">
+                {u.image ? <img src={u.image} alt={u.name} className="w-10 h-10 object-cover" /> : '—'}
+              </td>
+              <td className="px-4 py-2">{u.name}</td>
+              <td className="px-4 py-2">{u.email}</td>
+              <td className="px-4 py-2">{u.phone}</td>
+              <td className="px-4 py-2">{u.dni}</td>
+              <td className="px-4 py-2">{u.role}</td>
+              <td className="px-4 py-2 space-x-2">
+                <button className="text-blue-400">Ver</button>
+                <button className="text-yellow-400">Modificar</button>
+                <button className="text-red-400">Eliminar</button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
