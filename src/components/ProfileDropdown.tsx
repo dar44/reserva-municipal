@@ -1,15 +1,17 @@
+// components/ProfileDropdown.tsx
 'use client'
-import { supabase } from '@/lib/supabaseClient'
 
 interface Props {
   onClose: () => void
   onViewProfile: () => void
 }
 
-export default function ProfileDropdown ({ onClose, onViewProfile }: Props) {
+export default function ProfileDropdown({ onClose, onViewProfile }: Props) {
   const handleLogout = async () => {
-    await supabase.auth.signOut()
-    window.location.href = '/login'
+    const res = await fetch('/api/logout', { method: 'POST' })
+    const body = await res.json().catch(() => ({}))
+    // redirige según lo que diga el servidor (fallback a /login)
+    window.location.href = body?.redirectTo || '/login'
   }
 
   return (

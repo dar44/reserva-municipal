@@ -1,24 +1,12 @@
+//app/admin/layout.tsx
 import { ReactNode } from 'react'
-import { redirect } from 'next/navigation'
-import { createSupabaseServer } from '@/lib/supabaseServer'
 import AdminNavBar from '@/components/AdminNavBar'
+import { requireRole } from '../../lib/auth/requireRole'
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardLayout ({ children }: { children: ReactNode }) {
-  const supabase = await createSupabaseServer()
-  const {
-    data: { user }
-  } = await supabase.auth.getUser()
-  if (!user) redirect('/login')
-  const userUid = user.id 
-  const { data } = await supabase
-    .from('users')
-    .select('role')
-    .eq('uid', userUid)
-    .single()
-  if (data?.role !== 'admin') redirect('/recintos')
-
+export default async function AdminLayout({ children }: { children: ReactNode }) {
+  await requireRole({ allowed: ['admin'] })
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
       <AdminNavBar />
