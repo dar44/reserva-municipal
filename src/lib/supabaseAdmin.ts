@@ -1,3 +1,4 @@
+//src/lib/supabaseAdmin.ts
 //se usará en el backend  (Route Handlers / Server Actions)
 //  para crear usuarios y tocar datos sin restricciones
 import { createClient } from '@supabase/supabase-js'

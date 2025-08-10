@@ -7,66 +7,64 @@ export const dynamic = 'force-dynamic'
 
 export async function POST(req: Request) {
   const { email, password } = await req.json()
-  const cookieStore = await cookies()
+
+  // guardamos las cookies que supabase quiera setear
+  const cookieJar = await cookies()
+  const pendingCookies: { name: string; value: string; options?: any }[] = []
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
-        get(name: string) { return cookieStore.get(name)?.value },
+        get(name: string) {
+          return cookieJar.get(name)?.value
+        },
         set(name: string, value: string, options: any) {
-          cookieStore.set({ name, value, ...options })
+          // no escribas aún; las aplicamos al final sobre la respuesta JSON
+          pendingCookies.push({ name, value, options })
         },
         remove(name: string, options: any) {
-          cookieStore.set({ name, value: '', ...options, maxAge: 0 })
+          pendingCookies.push({ name, value: '', options: { ...options, maxAge: 0 } })
         },
-      }
+      },
     }
   )
 
-  // Login
-  const { data: authData, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  })
-
-  if (error) {
-    return NextResponse.json({ message: error.message }, { status: 401 })
+  // 1) Login
+  const { data: authData, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error || !authData.user) {
+    const res = NextResponse.json({ message: error?.message || 'Credenciales inválidas' }, { status: 401 })
+    // aplica cookies pendientes (si las hubiera)
+    pendingCookies.forEach(c => res.cookies.set(c.name, c.value, c.options))
+    return res
   }
 
-  // Obtener rol desde la tabla users
+  // 2) Rol desde DB (con tu política select_users_self_any_role)
   let role: string = 'citizen'
-  const userUid = authData.user?.id
+  const { data: userRow, error: roleErr } = await supabase
+    .from('users')
+    .select('uid, email, role')
+    .eq('uid', authData.user.id)
+    .maybeSingle()
 
-  if (userUid) {
-    const { data: userData, error: roleError } = await supabase
-      .from('users')
-      .select('uid, email, role')
-      .eq('uid', userUid)
-      .maybeSingle()
-      
-      console.log('LOGIN DEBUG users row:', userData, 'error:', roleError)
+  if (!roleErr && userRow?.role) role = userRow.role
+  console.log('LOGIN DEBUG users row:', userRow, 'error:', roleErr)
+  console.log('Rol obtenido desde BD (login):', role)
 
-      if (roleError) {
-      console.error('Error obteniendo rol:', roleError)
-    }
+  // 3) Respuesta + cookies (sesión de supabase + sm_role)
+  const res = NextResponse.json({ message: 'login_ok', role }, { status: 200 })
 
-    if (!roleError &&userData?.role) {
-      role = userData.role
-    }
-  }
+  // cookies de supabase (access/refresh), aplicadas a la respuesta
+  pendingCookies.forEach(c => res.cookies.set(c.name, c.value, c.options))
 
-  console.log('Rol obtenido desde BD:', role)
-
-  cookieStore.set({
-    name: 'sm_role',
-    value: role,
+  // cookie httpOnly con el rol como fallback para el middleware
+  res.cookies.set('sm_role', role, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
     maxAge: 60 * 60 * 12, // 12h
   })
-  
-  return NextResponse.json({ message: 'login_ok', role })
+
+  return res
 }

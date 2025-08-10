@@ -24,78 +24,52 @@ export async function middleware(req: NextRequest) {
       },
     }
   )
+const go = (to: string) => NextResponse.redirect(new URL(to, req.url))
 
-  // Helper redirect SIN copiar cookies manualmente
-  const go = (to: string) => NextResponse.redirect(new URL(to, req.url))
-
-  // 1) Rutas públicas (no incluimos /login aquí para poder reenviar si ya estás logueado)
-  if (path.startsWith('/signup') || path === '/' || path.startsWith('/public')) {
+  // Públicas básicas (NO /login para poder reenviar a panel si ya hay sesión)
+  if (path === '/' || path.startsWith('/public') || path.startsWith('/signup')) {
     return res
   }
 
-  // 2) Sesión actual
-  const { data: { user }, error: getUserErr } = await supabase.auth.getUser()
-  if (getUserErr) console.log('MW getUserErr:', getUserErr)
+  // Sesión
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // 3) Si NO hay sesión y entras a zonas protegidas → /login
+  // 🔒 Bloquea zonas protegidas si no hay sesión
+  const isAdminArea  = path.startsWith('/admin')  || path.startsWith('/api/admin')
+  const isWorkerArea = path.startsWith('/worker') || path.startsWith('/api/worker')
+
   if (!user) {
-    const cookieRole = req.cookies.get('sm_role')?.value
-    if (path.startsWith('/admin')) {
-      if (cookieRole === 'admin') return res
-      console.log('MW: no user → redirect /login | path:', path)
-      return go('/login')
-    }
-    if (path.startsWith('/worker')) {
-      if (cookieRole === 'admin' || cookieRole === 'worker') return res
-      console.log('MW: no user → redirect /login | path:', path)
-      return go('/login')
-    }
+    if (isAdminArea || isWorkerArea) return go('/login')
+    // /recintos, /cursos, etc. públicas/mixtas → deja pasar
     return res
   }
 
-  // 4) Con sesión → leer rol desde DB (RLS: select_users_self_any_role)
-  let role: string | null = null
-  let selectErr: any = null
-  if (user.id) {
-    const { data, error } = await supabase
-      .from('users')
-      .select('role')
-      .eq('uid', user.id)
-      .maybeSingle()
-    role = data?.role || null
-    selectErr = error || null
-  }
+  // 🔎 Rol SIEMPRE desde BD (fuente única)
+  let role: 'admin' | 'worker' | 'citizen' | null = null
+  const { data, error } = await supabase
+    .from('users')
+    .select('role')
+    .eq('uid', user.id)
+    .maybeSingle()
+  role = (data?.role as any) ?? null
 
-  // 5) Fallback por cookie httpOnly si no tenemos rol por DB
-  const cookieRole = req.cookies.get('sm_role')?.value || null
-  if (!role && cookieRole) {
-    console.log('MW: usando cookie sm_role como fallback:', cookieRole)
-    role = cookieRole
-  }
+  // 🚧 Guardas por rol
+  if (isAdminArea && role !== 'admin') return go('/login')
+  if (isWorkerArea && !(role === 'admin' || role === 'worker')) return go('/login')
 
-  console.log('MW path:', path, '| user.id:', user?.id, '| role:', role, '| selectErr:', selectErr)
-
-  // 6) Guardas de acceso
-  if (path.startsWith('/admin') && role !== 'admin') {
-    console.log('MW: acceso denegado /admin para rol:', role)
-    return go('/login')
-  }
-  if (path.startsWith('/worker') && !(role === 'admin' || role === 'worker')) {
-    console.log('MW: acceso denegado /worker para rol:', role)
-    return go('/login')
-  }
-
-  // 7) Si ya estás logueado y caes en /login → te mando a tu panel
+  // ✅ Si el usuario ya está logueado y entra a /login → llévalo a su panel
   if (path.startsWith('/login')) {
-    if (role === 'admin') return go('/admin/panel')
+    if (role === 'admin')  return go('/admin/panel')
     if (role === 'worker') return go('/worker/panel')
-    return go('/recintos') // citizen/otros
+    return go('/recintos') // citizen
   }
 
-  // 8) Devolver la respuesta base (con cookies que haya seteado supabase)
   return res
 }
 
+// Protege páginas y (opcional) APIs por namespaces /api/admin y /api/worker
 export const config = {
-  matcher: ['/((?!_next|static|favicon.ico|fonts|images|api).*)'],
+  matcher: [
+    '/((?!_next|static|favicon.ico|fonts|images).*)',
+  ],
 }
