@@ -39,7 +39,14 @@ export async function middleware(req: NextRequest) {
 
   // 3) Si NO hay sesión y entras a zonas protegidas → /login
   if (!user) {
-    if (path.startsWith('/admin') || path.startsWith('/worker')) {
+    const cookieRole = req.cookies.get('sm_role')?.value
+    if (path.startsWith('/admin')) {
+      if (cookieRole === 'admin') return res
+      console.log('MW: no user → redirect /login | path:', path)
+      return go('/login')
+    }
+    if (path.startsWith('/worker')) {
+      if (cookieRole === 'admin' || cookieRole === 'worker') return res
       console.log('MW: no user → redirect /login | path:', path)
       return go('/login')
     }
