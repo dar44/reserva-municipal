@@ -19,12 +19,12 @@ export default function AdminNavBar () {
       const {
         data: { user }
       } = await supabase.auth.getUser()
-      const userId =  Number((user?.app_metadata as { user_id?: number })?.user_id)
-      if (!userId) return
+      const userUid = user?.id
+      if (!userUid) return
       const { data } = await supabase
         .from('users')
         .select('name')
-        .eq('id', userId)
+        .eq('uid', userUid)
         .single()
       if (data?.name) setProfileName(data.name)
     }

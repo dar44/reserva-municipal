@@ -21,13 +21,12 @@ export default function WorkerNavBar() {
       const {
         data: { user }
       } = await supabase.auth.getUser();
-      const userId = user?.id;
-      if (!userId) return;
-      const appUserId = Number((user.app_metadata as { user_id?: number })?.user_id);
+      const userUid = user?.id;
+      if (!userUid) return;
       const { data } = await supabase
         .from("users")
         .select("name")
-        .eq(appUserId ? "id" : "email", appUserId || user.email)
+        .eq("uid", userUid)
         .single();
       if (data?.name) setProfileName(data.name);
     };

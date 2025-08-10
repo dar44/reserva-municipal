@@ -1,7 +1,7 @@
 -- Supabase schema generated from Laravel migrations (v2 – 2025-08-06)
 -- Las JWT claims necesarias:
 --   role    → 'admin' | 'worker' | 'citizen'
---   user_id → id numérico de la tabla users
+--   uid → uid numérico de la tabla users
 ----------------------------------------------------------------------
 -- 1. Extensiones
 create extension if not exists "pgcrypto";
@@ -17,7 +17,7 @@ end$$;
 
 -- 3. Tablas dominio principal ----------------------------------------------
 create table if not exists users (
-  id bigserial primary key,
+  uid uuid primary key references auth.users(id) on delete cascade,
   name varchar(255) not null,
   surname varchar(255) not null,
   dni varchar(255) not null unique,
@@ -61,7 +61,7 @@ create table if not exists cursos (
 
 create table if not exists reservas (
   id bigserial primary key,
-  user_id bigint references users(id) on delete cascade,
+  user_uid uuid references users(uid) on delete cascade,
   recinto_id bigint references recintos(id) on delete cascade,
   price numeric(10,2) not null,
   start_at timestamptz not null,
@@ -75,11 +75,11 @@ create table if not exists reservas (
 
 create table if not exists inscripciones (
   id bigserial primary key,
-  user_id bigint references users(id) on delete cascade,
+  user_uid uuid references users(uid) on delete cascade,
   curso_id bigint references cursos(id) on delete cascade,
   status status_activa default 'activa',
   paid boolean default false,
-  cancelled_by bigint references users(id) on delete set null,
+  cancelled_by uuid references users(uid) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -93,7 +93,7 @@ create table if not exists password_reset_tokens (
 
 create table if not exists sessions (
   id varchar(255) primary key,
-  user_id bigint references users(id),
+  user_uid uuid references users(uid),
   ip_address varchar(45),
   user_agent text,
   payload text not null,
@@ -155,18 +155,18 @@ alter table inscripciones enable row level security;
 create policy select_users_self_or_staff
   on users for select
   using (
-    id = current_setting('jwt.claims.user_id', true)::bigint
+    uid = current_setting('jwt.claims.uid', true)::uuid
     or current_setting('jwt.claims.role', true) in ('admin','worker')
   );
 
 create policy update_users_self_or_staff
   on users for update
   using (
-    id = current_setting('jwt.claims.user_id', true)::bigint
+    uid = current_setting('jwt.claims.uid', true)::uuid
     or current_setting('jwt.claims.role', true) in ('admin','worker')
   )
   with check (
-    id = current_setting('jwt.claims.user_id', true)::bigint
+    uid = current_setting('jwt.claims.uid', true)::uuid
     or current_setting('jwt.claims.role', true) in ('admin','worker')
   );
 
@@ -184,13 +184,13 @@ create policy select_reservas
   on reservas for select
   using (
     current_setting('jwt.claims.role', true) in ('admin','worker')
-    or user_id = current_setting('jwt.claims.user_id', true)::bigint
+    or user_uid = current_setting('jwt.claims.uid', true)::uuid
   );
 
 create policy insert_reservas
   on reservas for insert
   with check (
-    user_id = current_setting('jwt.claims.user_id', true)::bigint
+    user_uid = current_setting('jwt.claims.uid', true)::uuid
     or current_setting('jwt.claims.role', true) in ('admin','worker')
   );
 
@@ -198,7 +198,7 @@ create policy update_reservas
   on reservas for update
   using (
     current_setting('jwt.claims.role', true) in ('admin','worker')
-    or user_id = current_setting('jwt.claims.user_id', true)::bigint
+    or user_uid = current_setting('jwt.claims.uid', true)::uuid
   );
 
 -- 5.4 INSCRIPCIONES
@@ -206,18 +206,18 @@ create policy select_inscripciones
   on inscripciones for select
   using (
     current_setting('jwt.claims.role', true) in ('admin','worker')
-    or user_id = current_setting('jwt.claims.user_id', true)::bigint
+    or user_uid = current_setting('jwt.claims.uid', true)::uuid
   );
 
 create policy insert_inscripciones
   on inscripciones for insert
   with check (
-    user_id = current_setting('jwt.claims.user_id', true)::bigint
+    user_uid = current_setting('jwt.claims.uid', true)::uuid
     or current_setting('jwt.claims.role', true) in ('admin','worker')
   );
 
 -- 6. Índices útiles ----------------------------------------------------------
-create index if not exists idx_reservas_user       on reservas(user_id);
+create index if not exists idx_reservas_user       on reservas(user_uid);
 create index if not exists idx_reservas_recinto    on reservas(recinto_id);
-create index if not exists idx_inscripciones_user  on inscripciones(user_id);
+create index if not exists idx_inscripciones_user  on inscripciones(user_uid);
 create index if not exists idx_inscripciones_curso on inscripciones(curso_id);

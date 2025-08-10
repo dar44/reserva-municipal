@@ -26,12 +26,12 @@ export default async function ReservasPage() {
     return <p className="mt-20 text-center">🔒 Inicia sesión primero</p>;
   }
 
-  const appUserId = Number((user.app_metadata as { user_id?: number })?.user_id)
+  const userUid = user.id
 
   const { data: reservas } = await supabase
     .from('reservas')
     .select('id,start_at,end_at,status,recintos(name)')
-    .eq('user_id',appUserId)
+    .eq('user_id',userUid)
     .order('start_at', { ascending: false });
 
   return (

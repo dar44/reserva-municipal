@@ -39,13 +39,12 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
     const {
       data: { user }
     } = await supabase.auth.getUser()
-    const userId = user?.id
-    if (!userId) return
-    const appUserId = Number((user.app_metadata as { user_id?: number })?.user_id)
+    const userUid = user?.id
+    if (!userUid) return
     const { data } = await supabase
       .from('users')
       .select('name,surname,dni,phone,image')
-      .eq(appUserId ? "id" : "email", appUserId || user.email)
+      .eq("uid", userUid)
       .single()
     if (data) {
       setProfile({
@@ -72,14 +71,13 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       data: { user }
     } = await supabase.auth.getUser()
 
-    const userId = user?.id
-    if (!userId) return
-    const appUserId = Number((user.app_metadata as { user_id?: number })?.user_id)
+    const userUid = user?.id
+    if (!userUid) return
     const value = tempValue
     const { error } = await supabase
       .from('users')
       .update({ [field]: value })
-      .eq(appUserId ? "id" : "email", appUserId || user.email)
+      .eq('uid', userUid)
     if (!error) {
       await loadProfile()
 

@@ -15,20 +15,25 @@ export async function POST (req: Request) {
   if (authErr) return NextResponse.json(authErr, { status: 400 })
 
   /* 2) Inserta fila en public.users ---------------------- */
-  const { data: row, error: dbErr } = await supabaseAdmin
+  const { error: dbErr } = await supabaseAdmin
     .from('users')
     .insert({
-      name, surname, dni, email, phone, role: 'citizen'
+      uid: auth.user.id,
+      name,
+      surname,
+      dni,
+      email,
+      phone,
+      role: 'citizen'
     })
-    .select('id')
-    .single()
+
   if (dbErr) return NextResponse.json(dbErr, { status: 400 })
 
-  /* 3) Añade claim user_id al JWT ------------------------ */
+  /* 3) Añade claim uid al JWT ------------------------ */
   const { error: claimErr } = await supabaseAdmin.auth.admin.updateUserById(
     auth.user.id,
     {
-      app_metadata: { role: 'citizen', user_id: row.id }
+      app_metadata: { role: 'citizen', uid: auth.user.id }
     }
   )
   if (claimErr) return NextResponse.json(claimErr, { status: 400 })
