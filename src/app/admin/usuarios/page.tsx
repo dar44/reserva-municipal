@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 
 export const dynamic = 'force-dynamic'
@@ -15,11 +16,11 @@ type Usuario = {
 
 export default async function AdminUsuariosPage () {
   const supabase = await createSupabaseServer()
-  const { data: usuarios } = await supabase
+  const { data } = await supabase
     .from('users')
     .select('id,image,name,email,phone,dni,role')
     .order('name')
-
+  const usuarios: Usuario[] = data ?? []
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -42,7 +43,17 @@ export default async function AdminUsuariosPage () {
           {usuarios?.map(u => (
             <tr key={u.id} className="border-t border-gray-700">
               <td className="px-4 py-2">
-                {u.image ? <img src={u.image} alt={u.name} className="w-10 h-10 object-cover" /> : '—'}
+                {u.image ? (
+                  <Image
+                    src={u.image}
+                    alt={u.name}
+                    width={40}
+                    height={40}
+                    className="w-10 h-10 object-cover"
+                  />
+                ) : (
+                  '—'
+                )}
               </td>
               <td className="px-4 py-2">{u.name}</td>
               <td className="px-4 py-2">{u.email}</td>
