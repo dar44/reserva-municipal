@@ -5,10 +5,14 @@ export const dynamic = 'force-dynamic'
 
 export default async function AdminCursosPage () {
   const supabase = await createSupabaseServer()
-  const { data: cursos } = await supabase
+  const { data: cursos, error } = await supabase
     .from('cursos')
     .select('id,image,name,description,begining_date,state')
     .order('name')
+
+  if (error) {
+    console.error('LIST cursos error:', error)
+  }
 
   return (
     <div>
@@ -16,36 +20,40 @@ export default async function AdminCursosPage () {
         <h1 className="text-2xl font-bold">Cursos</h1>
         <Link href="/admin/cursos/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Curso</Link>
       </div>
-      <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">Imagen</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Descripción</th>
-            <th className="px-4 py-2 text-left">Fecha Inicio</th>
-            <th className="px-4 py-2 text-left">Estado</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cursos?.map(c => (
-            <tr key={c.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">
-                {c.image ? <img src={c.image} alt={c.name} className="w-10 h-10 object-cover" /> : '—'}
-              </td>
-              <td className="px-4 py-2">{c.name}</td>
-              <td className="px-4 py-2">{c.description}</td>
-              <td className="px-4 py-2">{c.begining_date ? new Date(c.begining_date).toLocaleDateString() : ''}</td>
-              <td className="px-4 py-2">{c.state}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button className="text-blue-400">Ver</button>
-                <button className="text-yellow-400">Modificar</button>
-                <button className="text-red-400">Eliminar</button>
-              </td>
+
+      {!cursos?.length && <p className="text-sm opacity-80">No hay cursos.</p>}
+
+      {!!cursos?.length && (
+        <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
+          <thead className="bg-gray-700">
+            <tr>
+              <th className="px-4 py-2 text-left">Imagen</th>
+              <th className="px-4 py-2 text-left">Nombre</th>
+              <th className="px-4 py-2 text-left">Descripción</th>
+              <th className="px-4 py-2 text-left">Fecha Inicio</th>
+              <th className="px-4 py-2 text-left">Estado</th>
+              <th className="px-4 py-2 text-left">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {cursos.map(c => (
+              <tr key={c.id} className="border-t border-gray-700">
+                <td className="px-4 py-2">
+                  {c.image ? <img src={c.image} alt={c.name} className="w-10 h-10 object-cover" /> : '—'}
+                </td>
+                <td className="px-4 py-2">{c.name}</td>
+                <td className="px-4 py-2">{c.description}</td>
+                <td className="px-4 py-2">{c.begining_date ? new Date(c.begining_date).toLocaleDateString() : ''}</td>
+                <td className="px-4 py-2">{c.state}</td>
+                <td className="px-4 py-2 space-x-2">
+                  <Link className="text-blue-400" href={`/admin/cursos/${c.id}`}>Ver</Link>
+                  <Link className="text-yellow-400" href={`/admin/cursos/${c.id}/editar`}>Modificar</Link>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
     </div>
   )
 }

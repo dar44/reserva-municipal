@@ -31,10 +31,8 @@ export default async function AdminRecintosPage () {
               <td className="px-4 py-2">{r.name}</td>
               <td className="px-4 py-2">{r.ubication}</td>
               <td className="px-4 py-2">{r.state}</td>
-              <td className="px-4 py-2 space-x-2">
-                <button className="text-blue-400">Ver</button>
-                <button className="text-yellow-400">Modificar</button>
-                <button className="text-red-400">Eliminar</button>
+              <td className="px-4 py-2">
+                <Link href={`/admin/recintos/${r.id}`} className="text-blue-400">Ver</Link>
               </td>
             </tr>
           ))}
