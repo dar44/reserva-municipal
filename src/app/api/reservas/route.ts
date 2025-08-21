@@ -8,7 +8,16 @@ export async function POST (req: Request) {
     const { email, date, time, recinto_id, newUser, name, surname, dni, phone } = await req.json()
 
     let uid
-    if (newUser) {
+    // Comprobar si el usuario ya existe por email para evitar errores de clave duplicada
+    const { data: existing } = await supabaseAdmin
+      .from('users')
+      .select('uid')
+      .eq('email', email)
+      .maybeSingle()
+
+    if (existing) {
+      uid = existing.uid
+    } else if (newUser) {
       const password = Math.random().toString(36).slice(-8)
       const { data: auth, error: authErr } = await supabaseAdmin.auth.admin.createUser({
         email,
@@ -25,18 +34,12 @@ export async function POST (req: Request) {
         .from('users')
         .insert({ uid, name, surname, dni, email, phone, role: 'citizen' })
       if (insErr) {
+        // limpiar el usuario auth creado para evitar inconsistencias
+        await supabaseAdmin.auth.admin.deleteUser(uid)
         return NextResponse.json({ error: insErr.message }, { status: 400 })
       }
     } else {
-      const { data: user, error: userErr } = await supabaseAdmin
-        .from('users')
-        .select('uid')
-        .eq('email', email)
-        .single()
-      if (userErr || !user) {
-        return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
-      }
-      uid = user.uid
+      return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
     }
 
     const startAt = new Date(`${date}T${time}:00`)

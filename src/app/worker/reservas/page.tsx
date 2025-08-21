@@ -1,9 +1,9 @@
-import { createSupabaseServer } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 
 export const dynamic = "force-dynamic";
 
 export default async function WorkerReservasPage() {
-  const supabase = await createSupabaseServer();
+  const supabase = supabaseAdmin;
   const { data: reservas } = await supabase
     .from("reservas")
     .select("id,start_at,end_at,users(name),recintos(name)")
@@ -28,8 +28,8 @@ export default async function WorkerReservasPage() {
           {reservas?.map(r => (
             <tr key={r.id} className="border-t border-gray-700">
               <td className="px-4 py-2">{r.id}</td>
-              <td className="px-4 py-2">{Array.isArray(r.users) ? r.users.map((u: { name: string }, i: number) => <span key={i}>{u.name}{i < r.users.length - 1 ? ', ' : ''}</span>) : null}</td>
-              <td className="px-4 py-2">{Array.isArray(r.recintos) ? r.recintos.map((rec: { name: string }, i: number) => <span key={i}>{rec.name}{i < r.recintos.length - 1 ? ', ' : ''}</span>) : null}</td>
+              <td className="px-4 py-2">{r.users?.[0]?.name ?? ''}</td>
+              <td className="px-4 py-2">{r.recintos?.[0]?.name ?? ''}</td>
               <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
               <td className="px-4 py-2">
                 <button className="bg-red-600 px-2 py-1 rounded text-xs">Eliminar</button>
