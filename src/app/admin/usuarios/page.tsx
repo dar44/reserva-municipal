@@ -1,8 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { revalidatePath } from 'next/cache'
+
 import { createSupabaseServer } from '@/lib/supabaseServer'
-import { supabaseAdmin } from '@/lib/supabaseAdmin'
+
 
 export const dynamic = 'force-dynamic'
 
@@ -32,12 +32,6 @@ export default async function AdminUsuariosPage () {
     role: u.role
   }))
 
-  async function deleteUsuario (formData: FormData) {
-    'use server'
-    const id = String(formData.get('id'))
-    await supabaseAdmin.auth.admin.deleteUser(id)
-    revalidatePath('/admin/usuarios')
-  }
 
   return (
     <div>
@@ -81,10 +75,7 @@ export default async function AdminUsuariosPage () {
               <td className="px-4 py-2 space-x-2">
                 <Link href={`/admin/usuarios/${u.id}`} className="text-blue-400">Ver</Link>
                 <Link href={`/admin/usuarios/${u.id}/editar`} className="text-yellow-400">Modificar</Link>
-                <form action={deleteUsuario} className="inline">
-                  <input type="hidden" name="id" value={u.id} />
-                  <button className="text-red-400" type="submit">Eliminar</button>
-                </form>
+                <Link href={`/admin/usuarios/${u.id}/eliminar`} className="text-red-400">Eliminar</Link>
               </td>
             </tr>
           ))}
