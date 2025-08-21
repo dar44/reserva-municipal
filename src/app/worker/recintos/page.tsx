@@ -1,5 +1,5 @@
-import Link from "next/link";
 import { createSupabaseServer } from "@/lib/supabaseServer";
+import RecintoActions from "./RecintoActions";
 
 export const dynamic = "force-dynamic";
 
@@ -43,9 +43,8 @@ export default async function WorkerRecintosPage() {
                   </div>
                 </div>
               </td>
-              <td className="px-4 py-2 space-x-2">
-                <Link href={`/worker/recintos/${r.id}/reservar`} className="bg-green-600 px-2 py-1 rounded text-xs">Reservar</Link>
-                <button className="bg-red-600 px-2 py-1 rounded text-xs">Eliminar</button>
+              <td className="px-4 py-2">
+                <RecintoActions id={r.id} state={r.state} />
               </td>
             </tr>
           ))}
