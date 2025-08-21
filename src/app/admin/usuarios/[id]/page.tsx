@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
+
 import { createSupabaseServer } from '@/lib/supabaseServer'
-import { supabaseAdmin } from '@/lib/supabaseAdmin'
+
 
 export const dynamic = 'force-dynamic'
 
@@ -21,12 +21,6 @@ export default async function UsuarioDetailPage ({ params }: Props) {
 
   if (!usuario) redirect('/admin/usuarios')
 
-  async function deleteUsuario () {
-    'use server'
-    await supabaseAdmin.auth.admin.deleteUser(id)
-    revalidatePath('/admin/usuarios')
-    redirect('/admin/usuarios')
-  }
 
   return (
     <div className="space-y-4">
@@ -49,9 +43,7 @@ export default async function UsuarioDetailPage ({ params }: Props) {
 
       <div className="space-x-2">
         <Link href={`/admin/usuarios/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <form action={deleteUsuario} className="inline">
-          <button className="text-red-400" type="submit">Eliminar</button>
-        </form>
+        <Link href={`/admin/usuarios/${id}/eliminar`} className="text-red-400">Eliminar</Link>
       </div>
     </div>
   )
