@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
+import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,9 +20,25 @@ export default async function AdminUsuariosPage () {
   const supabase = await createSupabaseServer()
   const { data } = await supabase
     .from('users')
-    .select('id,image,name,email,phone,dni,role')
+    .select('uid,image,name,email,phone,dni,role')
     .order('name')
-  const usuarios: Usuario[] = data ?? []
+  const usuarios: Usuario[] = (data ?? []).map(u => ({
+    id: u.uid,
+    image: u.image,
+    name: u.name,
+    email: u.email,
+    phone: u.phone,
+    dni: u.dni,
+    role: u.role
+  }))
+
+  async function deleteUsuario (formData: FormData) {
+    'use server'
+    const id = String(formData.get('id'))
+    await supabaseAdmin.auth.admin.deleteUser(id)
+    revalidatePath('/admin/usuarios')
+  }
+
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
@@ -61,9 +79,12 @@ export default async function AdminUsuariosPage () {
               <td className="px-4 py-2">{u.dni}</td>
               <td className="px-4 py-2">{u.role}</td>
               <td className="px-4 py-2 space-x-2">
-                <button className="text-blue-400">Ver</button>
-                <button className="text-yellow-400">Modificar</button>
-                <button className="text-red-400">Eliminar</button>
+                <Link href={`/admin/usuarios/${u.id}`} className="text-blue-400">Ver</Link>
+                <Link href={`/admin/usuarios/${u.id}/editar`} className="text-yellow-400">Modificar</Link>
+                <form action={deleteUsuario} className="inline">
+                  <input type="hidden" name="id" value={u.id} />
+                  <button className="text-red-400" type="submit">Eliminar</button>
+                </form>
               </td>
             </tr>
           ))}
