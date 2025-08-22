@@ -9,10 +9,10 @@ interface SearchParams {
   to?: string
 }
 
-export default async function AdminReservasPage ({ searchParams }: { searchParams: SearchParams }) {
+export default async function AdminReservasPage ({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const supabase = await createSupabaseServer()
 
-  const { user, recinto, from, to } = searchParams
+  const { user, recinto, from, to } = await searchParams
 
   let query = supabase
     .from('reservas')

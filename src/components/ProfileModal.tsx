@@ -73,10 +73,19 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
     const userUid = user?.id
     if (!userUid) return
-    const value = tempValue
+    const value = tempValue.trim()
+
+    // Update auth metadata for the current user so both auth and users table stay in sync
+    const { error: authError } = await supabase.auth.updateUser({
+      data: { [field]: value }
+    })
+    if (authError) {
+      alert('No se pudo actualizar')
+      return
+    }
     const { error } = await supabase
       .from('users')
-      .update({ [field]: value })
+      .update({ [field]: value, updated_at: new Date().toISOString() })
       .eq('uid', userUid)
     if (!error) {
       await loadProfile()
