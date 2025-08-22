@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { notFound, redirect } from 'next/navigation'
+import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 
 export const dynamic = 'force-dynamic'
@@ -23,16 +23,7 @@ export default async function CursoDetallePage({
   if (error) console.error('FETCH curso error:', error)
   if (!curso) return notFound()
 
-  const eliminarCurso = async () => {
-    'use server'
-    const supabase = await createSupabaseServer()
-    const { error } = await supabase.from('cursos').delete().eq('id', id)
-    if (error) {
-      console.error('DELETE cursos error:', error)
-      throw new Error(error.message)
-    }
-    redirect('/admin/cursos')
-  }
+
 
   return (
     <div className="max-w-xl mx-auto space-y-4">
@@ -56,9 +47,7 @@ export default async function CursoDetallePage({
 
       <div className="space-x-3">
         <Link href={`/admin/cursos/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <form action={eliminarCurso} className="inline">
-          <button className="text-red-400" type="submit">Eliminar</button>
-        </form>
+         <Link href={`/admin/cursos/${id}/eliminar`} className="text-red-400">Eliminar</Link>
       </div>
     </div>
   )

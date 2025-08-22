@@ -48,6 +48,7 @@ export default async function AdminCursosPage () {
                 <td className="px-4 py-2 space-x-2">
                   <Link className="text-blue-400" href={`/admin/cursos/${c.id}`}>Ver</Link>
                   <Link className="text-yellow-400" href={`/admin/cursos/${c.id}/editar`}>Modificar</Link>
+                  <Link className="text-red-400" href={`/admin/cursos/${c.id}/eliminar`}>Eliminar</Link>
                 </td>
               </tr>
             ))}

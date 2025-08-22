@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
-import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 
 export const dynamic = 'force-dynamic'
@@ -21,14 +20,6 @@ export default async function RecintoDetailPage({ params }: Props) {
 
   if (!recinto) redirect('/admin/recintos')
 
-  async function deleteRecinto() {
-    'use server'
-    const supabase = await createSupabaseServer()
-    await supabase.from('recintos').delete().eq('id', id)
-    revalidatePath('/admin/recintos')
-    redirect('/admin/recintos')
-  }
-
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
@@ -47,9 +38,7 @@ export default async function RecintoDetailPage({ params }: Props) {
 
       <div className="space-x-2">
         <Link href={`/admin/recintos/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <form action={deleteRecinto} className="inline">
-          <button className="text-red-400" type="submit">Eliminar</button>
-        </form>
+        <Link href={`/admin/recintos/${id}/eliminar`} className="text-red-400">Eliminar</Link>
       </div>
     </div>
   )
