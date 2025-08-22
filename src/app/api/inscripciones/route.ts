@@ -7,12 +7,16 @@ export async function POST (req: Request) {
   try {
     const { curso_id, email, newUser, name, surname, dni, phone } = await req.json()
 
-    const { data: existing } = await supabaseAdmin
+    const query = supabaseAdmin
       .from('users')
       .select('uid')
       .eq('email', email)
-      .eq('dni', dni)
-      .maybeSingle()
+
+    if (dni) {
+      query.eq('dni', dni)
+    }
+
+    const { data: existing } = await query.maybeSingle()
 
     let uid = existing?.uid
 
