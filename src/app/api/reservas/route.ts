@@ -30,14 +30,7 @@ export async function POST (req: Request) {
         return NextResponse.json({ error: authErr?.message || 'auth_error' }, { status: 400 })
       }
       uid = auth.user.id
-      const { error: insErr } = await supabaseAdmin
-        .from('users')
-        .insert({ uid, name, surname, dni, email, phone, role: 'citizen' })
-      if (insErr) {
-        // limpiar el usuario auth creado para evitar inconsistencias
-        await supabaseAdmin.auth.admin.deleteUser(uid)
-        return NextResponse.json({ error: insErr.message }, { status: 400 })
-      }
+      
     } else {
       return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
     }
