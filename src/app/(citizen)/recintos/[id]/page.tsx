@@ -4,7 +4,12 @@ import { notFound } from "next/navigation";
 
 export const dynamic = "force-dynamic";
 
-export default async function RecintoDetail({ params }: { params: { id: string } }) {
+export default async function RecintoDetail({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -22,7 +27,12 @@ export default async function RecintoDetail({ params }: { params: { id: string }
       }
     }
   );
-  const { data: recinto } = await supabase.from("recintos").select("*").eq("id", params.id).single();
+   const { data: recinto } = await supabase
+    .from("recintos")
+    .select("*")
+    .eq("id", id)
+    .single();
+    
   if (!recinto) return notFound();
 
   return (

@@ -4,12 +4,17 @@ import { createSupabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
-export default async function InscripcionCurso({ params }: { params: { id: string } }) {
+export default async function InscripcionCurso({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
   const supabase = await createSupabaseServer();
   const { data: curso } = await supabase
     .from("cursos")
     .select("id,name")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!curso) return notFound();

@@ -1,9 +1,9 @@
-import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { createSupabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
 export default async function WorkerReservasPage() {
-  const supabase = supabaseAdmin;
+  const supabase = await createSupabaseServer();
   const { data: reservas } = await supabase
     .from("reservas")
     .select("id,start_at,end_at,users(name),recintos(name)")

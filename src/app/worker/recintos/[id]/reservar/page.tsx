@@ -5,12 +5,17 @@ import ReservationForm from "./ReservationForm";
 
 export const dynamic = "force-dynamic";
 
-export default async function ReservarRecinto({ params }: { params: { id: string } }) {
+export default async function ReservarRecinto({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
   const supabase = await createSupabaseServer();
   const { data: recinto } = await supabase
     .from("recintos")
     .select("id,name,ubication,state")
-    .eq("id", params.id)
+    .eq("id", id)
     .single();
 
   if (!recinto) return notFound();
