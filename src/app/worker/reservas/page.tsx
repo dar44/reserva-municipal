@@ -1,13 +1,23 @@
 import { createSupabaseServer } from "@/lib/supabaseServer";
+import DeleteButton from "./DeleteButton";
 
 export const dynamic = "force-dynamic";
+
+interface Reserva {
+  id: number;
+  start_at: string;
+  end_at: string;
+  users: { email: string } | null;
+  recintos: { name: string } | null;
+}
 
 export default async function WorkerReservasPage() {
   const supabase = await createSupabaseServer();
   const { data: reservas } = await supabase
     .from("reservas")
-    .select("id,start_at,end_at,users(name),recintos(name)")
-    .order("start_at", { ascending: true });
+    .select("id,start_at,end_at,users(email),recintos(name)")
+    .order("start_at", { ascending: true })
+    .returns<Reserva[]>(); //uso interfaz reserva para que VSCode no me de como error
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
 
@@ -28,11 +38,11 @@ export default async function WorkerReservasPage() {
           {reservas?.map(r => (
             <tr key={r.id} className="border-t border-gray-700">
               <td className="px-4 py-2">{r.id}</td>
-              <td className="px-4 py-2">{r.users?.[0]?.name ?? ''}</td>
-              <td className="px-4 py-2">{r.recintos?.[0]?.name ?? ''}</td>
+              <td className="px-4 py-2">{r.users?.email ?? ''}</td>
+              <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
               <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
               <td className="px-4 py-2">
-                <button className="bg-red-600 px-2 py-1 rounded text-xs">Eliminar</button>
+                <DeleteButton id={r.id} />
               </td>
             </tr>
           ))}

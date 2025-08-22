@@ -9,6 +9,14 @@ interface SearchParams {
   to?: string
 }
 
+interface Reserva {
+  id: number
+  start_at: string
+  status: string
+  users: { email: string } | null
+  recintos: { name: string } | null
+}
+
 export default async function AdminReservasPage ({ searchParams }: { searchParams: Promise<SearchParams> }) {
   const supabase = await createSupabaseServer()
 
@@ -16,15 +24,16 @@ export default async function AdminReservasPage ({ searchParams }: { searchParam
 
   let query = supabase
     .from('reservas')
-    .select('id,start_at,status, users(name), recintos(name)')
+    .select('id,start_at,status, users(email), recintos(name)')
     .order('start_at', { ascending: false })
 
   if (user) query = query.eq('user_uid', user)
   if (recinto) query = query.eq('recinto_id', recinto)
   if (from) query = query.gte('start_at', new Date(from).toISOString())
   if (to) query = query.lte('start_at', new Date(to).toISOString())
-
-  const { data: reservas } = await query
+  
+  //uso de la interfaz Reserva para que VSCode no me de fallo
+  const { data: reservas } = await query.returns<Reserva[]>()
   const { data: usuarios } = await supabase.from('users').select('uid,name').order('name')
   const { data: recintos } = await supabase.from('recintos').select('id,name').order('name')
 
@@ -78,8 +87,8 @@ export default async function AdminReservasPage ({ searchParams }: { searchParam
         <tbody>
           {reservas?.map(r => (
             <tr key={r.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">{r.users?.[0]?.name}</td>
-              <td className="px-4 py-2">{r.recintos?.[0]?.name}</td>
+              <td className="px-4 py-2">{r.users?.email}</td>
+              <td className="px-4 py-2">{r.recintos?.name}</td>
               <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
               <td className="px-4 py-2">{r.status}</td>
             </tr>
