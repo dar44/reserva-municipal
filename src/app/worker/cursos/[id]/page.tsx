@@ -5,6 +5,16 @@ import CancelButton from './CancelButton'
 
 export const dynamic = 'force-dynamic'
 
+interface Inscripcion {
+  id: number
+  users: {
+    dni: string | null
+    name: string | null
+    email: string | null
+    phone: string | null
+  } | null
+}
+
 export default async function CursoDetallePage({ params }: { params: Promise<{ id: string }> }) {
   const { id: idParam } = await params
   const id = Number(idParam)
@@ -23,6 +33,7 @@ export default async function CursoDetallePage({ params }: { params: Promise<{ i
     .select('id,users(dni,name,email,phone)')
     .eq('curso_id', id)
     .eq('status', 'activa')
+    .returns<Inscripcion[]>()
 
   return (
     <div>
