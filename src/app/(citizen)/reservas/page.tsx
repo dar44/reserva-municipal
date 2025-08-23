@@ -1,9 +1,19 @@
-
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import Link from "next/link";
+
 export const dynamic = "force-dynamic";
 
-export default async function ReservasPage() {
+interface Reserva {
+  id: number
+  start_at: string
+  end_at: string
+  price: number
+  status: string
+  recintos: { name: string } | null
+}
+
+export default async function ReservasPage () {
   const cookieStore = await cookies();
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -29,29 +39,45 @@ export default async function ReservasPage() {
   const userUid = user.id
 
   const { data: reservas } = await supabase
-    .from('reservas')
-    .select('id,start_at,end_at,status,recintos(name)')
-    .eq('user_id',userUid)
-    .order('start_at', { ascending: false });
+    .from("reservas")
+    .select("id,start_at,end_at,price,status,recintos(name)")
+    .eq("user_uid", userUid)
+    .order("start_at", { ascending: false })
+    .returns<Reserva[]>();
 
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Tus reservas</h1>
-      <div className="space-y-4">
-        {reservas?.map(r => (
-          <div key={r.id} className="bg-gray-800 p-4 rounded flex justify-between items-center">
-            <div>
-              <p className="font-semibold">{r.recintos?.[0]?.name}</p>
-              <p className="text-sm text-gray-400">{new Date(r.start_at).toLocaleString()} – {new Date(r.end_at).toLocaleTimeString()}</p>
-            </div>
-            {r.status==='activa' ? (
-              <form action={`/api/reservas/${r.id}/cancel`} method="post">
-                <button className="bg-red-600 px-3 py-1 rounded text-sm">Cancelar</button>
-              </form>
-            ) : <span className="text-sm text-gray-500">{r.status}</span>}
-          </div>
-        ))}
-      </div>
+      <table className="min-w-full text-left bg-gray-800 rounded overflow-hidden">
+        <thead className="bg-gray-700">
+          <tr>
+            <th className="px-4 py-2">Recinto</th>
+            <th className="px-4 py-2">Fecha de inicio</th>
+            <th className="px-4 py-2">Fecha de fin</th>
+            <th className="px-4 py-2">Precio</th>
+            <th className="px-4 py-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          {reservas?.map(r => (
+            <tr key={r.id} className="border-t border-gray-700">
+              <td className="px-4 py-2">{r.recintos?.name}</td>
+              <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
+              <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
+              <td className="px-4 py-2">{r.price}€</td>
+              <td className="px-4 py-2">
+                {r.status === "activa" ? (
+                  <Link href={`/reservas/${r.id}/eliminar`} className="text-red-400">
+                    Eliminar
+                  </Link>
+                ) : (
+                  <span className="text-sm text-gray-500">{r.status}</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }

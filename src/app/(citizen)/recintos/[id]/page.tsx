@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -27,17 +28,24 @@ export default async function RecintoDetail({
       }
     }
   );
-   const { data: recinto } = await supabase
+  const { data: recinto } = await supabase
     .from("recintos")
     .select("*")
     .eq("id", id)
     .single();
-    
+
   if (!recinto) return notFound();
+
+  const slots = Array.from({ length: 12 }, (_, i) => {
+    const start = 8 + i;
+    const end = start + 1;
+    const pad = (n: number) => n.toString().padStart(2, "0");
+    return `${pad(start)}:00-${pad(end)}:00`;
+  });
 
   return (
     <div className="space-y-6">
-      <button onClick={() => history.back()} className="text-sm underline">← Volver al listado</button>
+      <Link href="/recintos" className="text-sm underline">← Volver al listado</Link>
       <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
         <div className="h-64 bg-gray-700 flex items-center justify-center text-gray-400">
           {recinto.image ? <img src={recinto.image} alt={recinto.name} className="object-cover w-full h-full" /> : "Imagen"}
@@ -51,23 +59,31 @@ export default async function RecintoDetail({
           <p><strong>Descripción:</strong> {recinto.description}</p>
 
           {/* Reservar horario */}
-          {recinto.state==='Disponible' && (
-            <form action={`/api/reservas`} method="post" className="space-y-3">
-              <input type="hidden" name="recinto_id" value={recinto.id} />
-              <label className="block text-sm">Fecha de reserva
-                <input type="date" name="date" className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required />
-              </label>
-              <label className="block text-sm">Hora inicio – fin
-                <select name="slot" className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1">
-                  <option value="14:00-15:00">14:00‑15:00</option>
-                  <option value="15:00-16:00">15:00‑16:00</option>
-                </select>
-              </label>
-              <button className="w-full bg-blue-600 py-2 rounded">Confirmar reserva – 1 €</button>
-            </form>
-          )}
+            {recinto.state==='Disponible' && (
+              <form action={`/api/reservas`} method="post" className="space-y-3">
+                <input type="hidden" name="recinto_id" value={recinto.id} />
+                <label className="block text-sm">Fecha de reserva
+                  <input
+                    type="date"
+                    name="date"
+                    className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1"
+                    required
+                  />
+                </label>
+                <label className="block text-sm">Hora inicio – fin
+                  <select name="slot" className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1">
+                    {slots.map((slot) => (
+                      <option key={slot} value={slot}>
+                        {slot}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <button className="w-full bg-blue-600 py-2 rounded">Confirmar reserva – 1 €</button>
+              </form>
+            )}
+          </div>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
