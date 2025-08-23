@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation'
+import Link from 'next/link'
 import InscripcionActions from './InscripcionActions'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 
@@ -38,7 +39,7 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
 
   return (
     <div className="space-y-6">
-      <button onClick={() => history.back()} className="text-sm underline">← Volver</button>
+      <Link href="/cursos" className="text-sm underline">← Volver</Link>
       <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
         <div className="h-64 bg-gray-700 flex items-center justify-center text-gray-400">
           {curso.image ? (
