@@ -22,7 +22,8 @@ export async function POST (req: Request) {
       if (updErr) return NextResponse.json({ error: updErr.message }, { status: 400 })
       
       return NextResponse.json({ ok: true, uid: auth.user.id })
-      } catch (e: any) {
-    return NextResponse.json({ error: e?.message ?? 'signup_failed' }, { status: 500 })
-  }
+      } catch (e: unknown) {
+      const message = (e as Error)?.message ?? 'signup_failed'
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
 }

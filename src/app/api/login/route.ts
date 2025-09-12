@@ -10,7 +10,7 @@ export async function POST(req: Request) {
 
   // guardamos las cookies que supabase quiera setear
   const cookieJar = await cookies()
-  const pendingCookies: { name: string; value: string; options?: any }[] = []
+  const pendingCookies: { name: string; value: string; options?: Record<string, unknown> }[] = []
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -20,11 +20,11 @@ export async function POST(req: Request) {
         get(name: string) {
           return cookieJar.get(name)?.value
         },
-        set(name: string, value: string, options: any) {
+        set(name: string, value: string, options: Record<string, unknown>) {
           // no escribas aún; las aplicamos al final sobre la respuesta JSON
           pendingCookies.push({ name, value, options })
         },
-        remove(name: string, options: any) {
+        remove(name: string, options: Record<string, unknown>) {
           pendingCookies.push({ name, value: '', options: { ...options, maxAge: 0 } })
         },
       },

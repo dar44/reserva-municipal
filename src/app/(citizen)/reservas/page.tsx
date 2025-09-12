@@ -1,6 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
-import Link from "next/link";
 import DeleteButton from './DeleteButton'
 
 export const dynamic = "force-dynamic";

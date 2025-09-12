@@ -14,11 +14,11 @@ export async function middleware(req: NextRequest) {
     {
       cookies: {
         get: (name: string) => req.cookies.get(name)?.value,
-        set: (name: string, value: string, options: any) => {
+        set: (name: string, value: string, options: Record<string, unknown>) => {
           // Escribimos en la respuesta (no tocamos req.cookies)
           res.cookies.set(name, value, options)
         },
-        remove: (name: string, options: any) => {
+        remove: (name: string, options: Record<string, unknown>) => {
           res.cookies.set(name, '', { ...options, maxAge: 0 })
         },
       },
@@ -44,20 +44,20 @@ const go = (to: string) => NextResponse.redirect(new URL(to, req.url))
     return res
   }
 
-  // 🔎 Rol SIEMPRE desde BD (fuente única)
+  // Rol SIEMPRE desde BD (fuente única)
   let role: 'admin' | 'worker' | 'citizen' | null = null
   const { data, error } = await supabase
     .from('users')
     .select('role')
     .eq('uid', user.id)
     .maybeSingle()
-  role = (data?.role as any) ?? null
+  role = (data?.role as 'admin' | 'worker' | 'citizen' | null) ?? null
 
   // 🚧 Guardas por rol
   if (isAdminArea && role !== 'admin') return go('/login')
   if (isWorkerArea && !(role === 'admin' || role === 'worker')) return go('/login')
 
-  // ✅ Si el usuario ya está logueado y entra a /login → llévalo a su panel
+  // Si el usuario ya está logueado y entra a /login → llévalo a su panel
   if (path.startsWith('/login')) {
     if (role === 'admin')  return go('/admin/panel')
     if (role === 'worker') return go('/worker/panel')

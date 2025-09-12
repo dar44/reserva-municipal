@@ -7,7 +7,7 @@ export async function POST(req: Request) {
   // 1) Obtener uid del usuario en Auth
   const { data: listData, error: listErr } = await supabaseAdmin.auth.admin.listUsers()
   if (listErr) return NextResponse.json(listErr, { status: 400 })
-  const user = listData?.users?.find((u: any) => u.email === email)
+  const user = listData?.users?.find(u  => u.email === email)
   if (!user) return NextResponse.json({ message: 'user_not_found' }, { status: 404 })
 
   // 2) Obtener id de la fila en public.users

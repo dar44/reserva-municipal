@@ -60,8 +60,8 @@ export default async function EditarCursoPage({
       revalidatePath(`/admin/cursos/${id}`)
       revalidatePath('/admin/cursos')
       redirect(`/admin/cursos/${id}`)
-    } catch (e: any) {
-      if (e?.digest?.startsWith('NEXT_REDIRECT')) {
+    } catch (e: unknown) {
+      if ((e as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')) {
     // Es un redirect, lo ignoramos
         throw e
     }
