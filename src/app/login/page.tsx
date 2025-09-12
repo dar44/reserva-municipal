@@ -1,9 +1,11 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useToast } from '@/components/Toast'
 
 export default function LoginPage() {
   const router = useRouter()
+  const toast = useToast()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
@@ -17,7 +19,7 @@ export default function LoginPage() {
     })
 
     if (!res.ok) {
-      alert('Credenciales incorrectas')
+      toast({ type: 'error', message: 'Credenciales incorrectas' })
       return
     }
 

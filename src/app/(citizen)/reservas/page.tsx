@@ -1,6 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import Link from "next/link";
+import DeleteButton from './DeleteButton'
 
 export const dynamic = "force-dynamic";
 
@@ -65,15 +66,13 @@ export default async function ReservasPage () {
               <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
               <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
               <td className="px-4 py-2">{r.price}€</td>
-              <td className="px-4 py-2">
-                {r.status === "activa" ? (
-                  <Link href={`/reservas/${r.id}/eliminar`} className="text-red-400">
-                    Eliminar
-                  </Link>
-                ) : (
-                  <span className="text-sm text-gray-500">{r.status}</span>
-                )}
-              </td>
+                <td className="px-4 py-2">
+                  {r.status === "activa" ? (
+                    <DeleteButton id={r.id} />
+                  ) : (
+                    <span className="text-sm text-gray-500">{r.status}</span>
+                  )}
+                </td>
             </tr>
           ))}
         </tbody>

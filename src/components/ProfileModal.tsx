@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
 import { supabase } from '@/lib/supabaseClient'
+import { useToast } from '@/components/Toast'
 
 interface Props {
   onClose: () => void
@@ -34,6 +35,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [editing, setEditing] = useState(false)
   const [fieldEditing, setFieldEditing] = useState<keyof Profile | null>(null)
   const [tempValue, setTempValue] = useState('')
+  const toast = useToast()
 
   const loadProfile = async () => {
     const {
@@ -80,7 +82,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       data: { [field]: value }
     })
     if (authError) {
-      alert('No se pudo actualizar')
+      toast({ type: 'error', message: 'No se pudo actualizar' })
       return
     }
     const { error } = await supabase
@@ -93,7 +95,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       if (field === 'name') onUpdated(value)
       setFieldEditing(null)
     } else {
-      alert('No se pudo actualizar')
+      toast({ type: 'error', message: 'No se pudo actualizar' })
     }
   }
 

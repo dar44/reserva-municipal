@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import DeleteButton from './DeleteButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -47,7 +48,7 @@ export default async function CursoDetallePage({
 
       <div className="space-x-3">
         <Link href={`/admin/cursos/${id}/editar`} className="text-yellow-400">Editar</Link>
-         <Link href={`/admin/cursos/${id}/eliminar`} className="text-red-400">Eliminar</Link>
+        <DeleteButton id={id} />
       </div>
     </div>
   )

@@ -1,9 +1,11 @@
 'use client'
 
 import { useState } from 'react'
+import { useToast } from '@/components/Toast'
 
 export default function ReservationForm ({ recintoId }: { recintoId: number }) {
   const [isNew, setIsNew] = useState(false)
+  const toast = useToast()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -31,11 +33,11 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       body: JSON.stringify(payload)
     })
     if (res.ok) {
-      alert('Reserva creada')
+      toast({ type: 'success', message: 'Reserva creada' })
       window.location.href = '/worker/recintos'
     } else {
       const data = await res.json()
-      alert(data.error || 'Error al crear la reserva')
+      toast({ type: 'error', message: data.error || 'Error al crear la reserva' })
     }
   }
 

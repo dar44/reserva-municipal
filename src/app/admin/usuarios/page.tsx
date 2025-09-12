@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import UsuarioActions from './UsuarioActions'
+
 
 
 export const dynamic = 'force-dynamic'
@@ -72,10 +74,8 @@ export default async function AdminUsuariosPage () {
               <td className="px-4 py-2">{u.phone}</td>
               <td className="px-4 py-2">{u.dni}</td>
               <td className="px-4 py-2">{u.role}</td>
-              <td className="px-4 py-2 space-x-2">
-                <Link href={`/admin/usuarios/${u.id}`} className="text-blue-400">Ver</Link>
-                <Link href={`/admin/usuarios/${u.id}/editar`} className="text-yellow-400">Modificar</Link>
-                <Link href={`/admin/usuarios/${u.id}/eliminar`} className="text-red-400">Eliminar</Link>
+              <td className="px-4 py-2">
+                  <UsuarioActions id={u.id} />
               </td>
             </tr>
           ))}

@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import DeleteButton from './DeleteButton'
 
 export const dynamic = 'force-dynamic'
 
@@ -36,10 +37,10 @@ export default async function RecintoDetailPage({ params }: Props) {
         <p><strong>Estado:</strong> {recinto.state}</p>
       </div>
 
-      <div className="space-x-2">
-        <Link href={`/admin/recintos/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <Link href={`/admin/recintos/${id}/eliminar`} className="text-red-400">Eliminar</Link>
-      </div>
+        <div className="space-x-2">
+          <Link href={`/admin/recintos/${id}/editar`} className="text-yellow-400">Editar</Link>
+          <DeleteButton id={id} />
+        </div>
     </div>
   )
 }

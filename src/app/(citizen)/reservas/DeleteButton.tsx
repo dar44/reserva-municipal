@@ -21,7 +21,7 @@ export default function DeleteButton ({ id }: { id: number }) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="bg-red-600 px-2 py-1 rounded text-xs">Eliminar</button>
+      <button onClick={() => setOpen(true)} className="text-red-400">Eliminar</button>
       <ConfirmModal
         open={open}
         message="¿Eliminar la reserva?"

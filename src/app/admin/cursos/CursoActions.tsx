@@ -5,14 +5,14 @@ import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
 import { useToast } from '@/components/Toast'
 
-export default function RecintoActions ({ id }: { id: number }) {
+export default function CursoActions ({ id }: { id: number }) {
   const [open, setOpen] = useState(false)
   const toast = useToast()
 
   const remove = async () => {
-    const res = await fetch(`/api/recintos/${id}`, { method: 'DELETE' })
+    const res = await fetch(`/api/cursos/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ type: 'success', message: 'Recinto eliminado' })
+      toast({ type: 'success', message: 'Curso eliminado' })
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
@@ -22,18 +22,18 @@ export default function RecintoActions ({ id }: { id: number }) {
 
   return (
     <div className="space-x-2">
-      <Link href={`/admin/recintos/${id}`} className="text-blue-400">Ver</Link>
-      <Link href={`/admin/recintos/${id}/editar`} className="text-yellow-400">Modificar</Link>
+      <Link className="text-blue-400" href={`/admin/cursos/${id}`}>Ver</Link>
+      <Link className="text-yellow-400" href={`/admin/cursos/${id}/editar`}>Modificar</Link>
       <button onClick={() => setOpen(true)} className="text-red-400">Eliminar</button>
       <ConfirmModal
         open={open}
-        message="¿Estás seguro de eliminar el recinto? Se perderán sus datos."
+        title="Eliminar curso"
+        message="¿Estás seguro de eliminar el curso? Se perderán sus datos."
         onCancel={() => setOpen(false)}
         onConfirm={() => {
           setOpen(false)
           remove()
         }}
-        title="Eliminar recinto"
       />
     </div>
   )

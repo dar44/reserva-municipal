@@ -3,6 +3,7 @@ import Image from 'next/image'
 import { redirect } from 'next/navigation'
 
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import DeleteButton from './DeleteButton'
 
 
 export const dynamic = 'force-dynamic'
@@ -43,7 +44,7 @@ export default async function UsuarioDetailPage ({ params }: Props) {
 
       <div className="space-x-2">
         <Link href={`/admin/usuarios/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <Link href={`/admin/usuarios/${id}/eliminar`} className="text-red-400">Eliminar</Link>
+        <DeleteButton id={id} />
       </div>
     </div>
   )
