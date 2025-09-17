@@ -32,7 +32,12 @@ export async function POST (req: Request) {
           return NextResponse.json({ error: authErr?.message || 'auth_error' }, { status: 400 })
         }
 
-        const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL || 'https://dar44.netlify.app/auth/update-password'
+        const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
+        if (!redirectUrl) {
+          return NextResponse.json({
+            error: 'Config error: NEXT_PUBLIC_AUTH_REDIRECT_URL no está definida'
+          }, { status: 500 })
+        }
         await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
         
         uid = auth.user.id

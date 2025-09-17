@@ -9,7 +9,15 @@ export default function ResetPasswordPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL || 'https://dar44.netlify.app/auth/update-password'
+    const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
+    if (!redirectUrl) {
+      toast({
+        type: 'error',
+        message: 'Error de configuración: NEXT_PUBLIC_AUTH_REDIRECT_URL no está definida'
+      })
+      return
+    }
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: redirectUrl,
     })
