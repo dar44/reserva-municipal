@@ -32,11 +32,11 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload)
     })
-    if (res.ok) {
-      toast({ type: 'success', message: 'Reserva creada' })
-      window.location.href = '/worker/recintos'
-    } else {
-      const data = await res.json()
+    const data = await res.json().catch(() => ({}))
+    if (res.ok && data.checkoutUrl) {
+      toast({ type: 'success', message: 'Pago iniciado. Se abrirá el checkout.' })
+      window.open(data.checkoutUrl as string, '_blank', 'noopener')
+    } else if (!res.ok) {
       toast({ type: 'error', message: data.error || 'Error al crear la reserva' })
     }
   }

@@ -15,12 +15,17 @@ export default function InscripcionActions ({ cursoId, email, inscripcionId }: P
   const [open, setOpen] = useState(false)
 
   const inscribir = async () => {
-    await fetch('/api/inscripciones', {
+    const res = await fetch('/api/inscripciones', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ curso_id: cursoId, email })
     })
-    location.reload()
+    const data = await res.json().catch(() => ({}))
+    if (res.ok && data.checkoutUrl) {
+      window.location.href = data.checkoutUrl as string
+    } else if (!res.ok) {
+      toast({ type: 'error', message: data.error || 'No se pudo iniciar el pago' })
+    }
   }
 
   const cancelar = async () => {

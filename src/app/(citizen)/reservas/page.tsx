@@ -10,6 +10,7 @@ interface Reserva {
   end_at: string
   price: number
   status: string
+  paid: boolean
   recintos: { name: string } | null
 }
 
@@ -40,7 +41,7 @@ export default async function ReservasPage () {
 
   const { data: reservas } = await supabase
     .from("reservas")
-    .select("id,start_at,end_at,price,status,recintos(name)")
+    .select("id,start_at,end_at,price,status,paid,recintos(name)")
     .eq("user_uid", userUid)
     .order("start_at", { ascending: false })
     .returns<Reserva[]>();
@@ -55,6 +56,7 @@ export default async function ReservasPage () {
             <th className="px-4 py-2">Fecha de inicio</th>
             <th className="px-4 py-2">Fecha de fin</th>
             <th className="px-4 py-2">Precio</th>
+            <th className="px-4 py-2">Estado pago</th>
             <th className="px-4 py-2">Acciones</th>
           </tr>
         </thead>
@@ -64,14 +66,21 @@ export default async function ReservasPage () {
               <td className="px-4 py-2">{r.recintos?.name}</td>
               <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
               <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
-              <td className="px-4 py-2">{r.price}€</td>
+              <td className="px-4 py-2">{r.price}CLP</td>
                 <td className="px-4 py-2">
-                  {r.status === "activa" ? (
-                    <DeleteButton id={r.id} />
-                  ) : (
-                    <span className="text-sm text-gray-500">{r.status}</span>
-                  )}
-                </td>
+                {r.paid ? (
+                  <span className="text-sm text-green-500">Pagado</span>
+                ) : (
+                  <span className="text-sm text-yellow-400">Pendiente</span>
+                )}
+              </td>
+              <td className="px-4 py-2">
+                {r.status === "activa" ? (
+                  <DeleteButton id={r.id} />
+                ) : (
+                  <span className="text-sm text-gray-500">{r.status}</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

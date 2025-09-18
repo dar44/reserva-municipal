@@ -44,6 +44,10 @@ export default async function RecintoDetail({
     return `${pad(start)}:00-${pad(end)}:00`;
   });
 
+  const reservaPrice = Number(process.env.RESERVA_PRICE_EUR ?? "1");
+  const currency = new Intl.NumberFormat("es-ES", { style: "currency", currency: "CLP" });
+  const priceLabel = Number.isFinite(reservaPrice) && reservaPrice > 0 ? currency.format(reservaPrice) : "Pago";
+
   return (
     <div className="space-y-6">
       <Link href="/recintos" className="text-sm underline">← Volver al listado</Link>
@@ -90,7 +94,10 @@ export default async function RecintoDetail({
                     ))}
                   </select>
                 </label>
-                <button className="w-full bg-blue-600 py-2 rounded">Confirmar reserva – 1 €</button>
+                <button className="w-full bg-blue-600 py-2 rounded">Confirmar reserva – {priceLabel}</button>
+                <p className="text-xs text-gray-400 text-center">
+                  Serás redirigido al checkout seguro de Lemon Squeezy para completar el pago.
+                </p>
               </form>
             )}
           </div>

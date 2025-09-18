@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic'
 
 type Inscripcion = {
   id: number
+  paid: boolean
   usuario: {
     dni: string | null
     name: string | null
@@ -40,6 +41,7 @@ export default async function CursoDetallePage({
     .from('inscripciones')
     .select(`
       id,
+      paid,
       usuario:users!inscripciones_user_uid_fkey (
         dni,
         name,
@@ -68,6 +70,7 @@ export default async function CursoDetallePage({
             <th className="px-4 py-2 text-left">Nombre</th>
             <th className="px-4 py-2 text-left">Email</th>
             <th className="px-4 py-2 text-left">Teléfono</th>
+            <th className="px-4 py-2 text-left">Pago</th>
             <th className="px-4 py-2 text-left">Acciones</th>
           </tr>
         </thead>
@@ -78,6 +81,7 @@ export default async function CursoDetallePage({
               <td className="px-4 py-2">{i.usuario?.name ?? '—'}</td>
               <td className="px-4 py-2">{i.usuario?.email ?? '—'}</td>
               <td className="px-4 py-2">{i.usuario?.phone ?? '—'}</td>
+              <td className="px-4 py-2">{i.paid ? 'Pagado' : 'Pendiente'}</td>
               <td className="px-4 py-2">
                 <CancelButton id={i.id} />
               </td>

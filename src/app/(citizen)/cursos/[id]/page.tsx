@@ -77,6 +77,10 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
           </div>
           <p><strong>Precio:</strong> {curso.price}€</p>
           <InscripcionActions cursoId={curso.id} email={user?.email} inscripcionId={inscripcionId} />
+          <p className="text-xs text-gray-400">
+            Te enviaremos al checkout de Lemon Squeezy para realizar el pago y confirmar la inscripción.
+          </p>
+        
         </div>
       </div>
     </div>

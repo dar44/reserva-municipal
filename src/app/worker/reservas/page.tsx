@@ -7,6 +7,8 @@ interface Reserva {
   id: number;
   start_at: string;
   end_at: string;
+  price: number;
+  paid: boolean;
   users: { email: string } | null;
   recintos: { name: string } | null;
 }
@@ -15,7 +17,7 @@ export default async function WorkerReservasPage() {
   const supabase = await createSupabaseServer();
   const { data: reservas } = await supabase
     .from("reservas")
-    .select("id,start_at,end_at,users(email),recintos(name)")
+    .select("id,start_at,end_at,price,paid,users(email),recintos(name)")
     .order("start_at", { ascending: true })
     .returns<Reserva[]>(); //uso interfaz reserva para que VSCode no me de como error
 
@@ -31,6 +33,8 @@ export default async function WorkerReservasPage() {
             <th className="px-4 py-2 text-left">Usuario</th>
             <th className="px-4 py-2 text-left">Recinto</th>
             <th className="px-4 py-2 text-left">Fecha y Hora</th>
+            <th className="px-4 py-2 text-left">Precio</th>
+            <th className="px-4 py-2 text-left">Pago</th>
             <th className="px-4 py-2 text-left">Acciones</th>
           </tr>
         </thead>
@@ -41,6 +45,8 @@ export default async function WorkerReservasPage() {
               <td className="px-4 py-2">{r.users?.email ?? ''}</td>
               <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
               <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
+              <td className="px-4 py-2">{r.price}€</td>
+              <td className="px-4 py-2">{r.paid ? 'Pagado' : 'Pendiente'}</td>
               <td className="px-4 py-2">
                 <DeleteButton id={r.id} />
               </td>

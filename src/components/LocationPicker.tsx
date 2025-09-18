@@ -56,20 +56,6 @@ type LeafletNamespace = {
   marker: (coords: [number, number]) => LeafletMarker
 }
 
-type LeafletModule = {
-  default?: unknown
-} & Record<string, unknown>
-
-const isLeafletNamespace = (value: unknown): value is LeafletNamespace => {
-  if (!value || typeof value !== 'object') return false
-  const candidate = value as Partial<LeafletNamespace>
-  return (
-    typeof candidate.map === 'function' &&
-    typeof candidate.tileLayer === 'function' &&
-    typeof candidate.marker === 'function'
-  )
-}
-
 declare global {
   interface Window {
     L?: LeafletNamespace
@@ -114,7 +100,7 @@ const ensureLeaflet = (): Promise<LeafletNamespace | null> => {
       script.defer = true
       script.onload = () => resolve(window.L ?? null)
       script.onerror = async () => {
-    
+
       }
       document.body.appendChild(script)
     })
