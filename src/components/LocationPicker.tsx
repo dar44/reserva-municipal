@@ -415,7 +415,7 @@ const LocationPicker = ({
   }
 
   const suggestionsList = suggestions.length > 0 && suggestionsVisible && (
-    <ul className="absolute z-20 mt-1 max-h-52 w-full overflow-auto rounded border border-gray-700 bg-gray-900 text-sm shadow-lg">
+    <ul className="absolute z-[1000] mt-1 max-h-52 w-full overflow-auto rounded border border-gray-700 bg-gray-900 text-sm shadow-lg">
       {suggestions.map(suggestion => (
         <li
           key={suggestion.place_id}
