@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
@@ -32,7 +33,15 @@ export default async function CursoDetallePage({
       <h1 className="text-2xl font-bold">Detalles del Curso</h1>
 
       {curso.image && (
-        <img src={curso.image} alt={curso.name} className="w-full h-64 object-cover rounded" />
+         <div className="relative h-64 w-full overflow-hidden rounded bg-gray-700">
+          <Image
+            src={curso.image}
+            alt={curso.name}
+            fill
+            className="object-cover"
+            sizes="(min-width: 768px) 640px, 100vw"
+          />
+        </div>
       )}
 
       <div className="space-y-1 text-sm">

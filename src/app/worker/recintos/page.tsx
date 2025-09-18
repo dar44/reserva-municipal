@@ -1,4 +1,5 @@
 import { createSupabaseServer } from "@/lib/supabaseServer";
+import Image from "next/image";
 import RecintoActions from "./RecintoActions";
 
 export const dynamic = "force-dynamic";
@@ -28,7 +29,13 @@ export default async function WorkerRecintosPage() {
             <tr key={r.id} className="border-t border-gray-700">
               <td className="px-4 py-2">
                 {r.image ? (
-                  <img src={r.image} alt={r.name} className="h-10 w-10 object-cover rounded" />
+                  <Image
+                    src={r.image}
+                    alt={r.name}
+                    width={40}
+                    height={40}
+                    className="h-10 w-10 rounded object-cover"
+                  />
                 ) : (
                   <div className="h-10 w-10 bg-gray-700 rounded" />
                 )}

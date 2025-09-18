@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import Link from "next/link";
 
@@ -99,10 +100,12 @@ export default async function CursosPage({
           >
             <div className="h-40 bg-gray-700 flex items-center justify-center text-gray-400">
               {c.image ? (
-                <img
+                <Image
                   src={c.image}
                   alt={c.name}
-                  className="object-cover w-full h-full"
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 />
               ) : (
                 "Imagen"

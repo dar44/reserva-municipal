@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from 'next/link'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import CursoActions from './CursoActions'
@@ -40,7 +41,17 @@ export default async function AdminCursosPage () {
             {cursos.map(c => (
               <tr key={c.id} className="border-t border-gray-700">
                 <td className="px-4 py-2">
-                  {c.image ? <img src={c.image} alt={c.name} className="w-10 h-10 object-cover" /> : '—'}
+                  {c.image ? (
+                    <Image
+                      src={c.image}
+                      alt={c.name}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded object-cover"
+                    />
+                  ) : (
+                    '—'
+                  )}
                 </td>
                 <td className="px-4 py-2">{c.name}</td>
                 <td className="px-4 py-2">{c.description}</td>

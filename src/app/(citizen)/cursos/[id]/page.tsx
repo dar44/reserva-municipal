@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import InscripcionActions from './InscripcionActions'
@@ -41,9 +42,16 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
     <div className="space-y-6">
       <Link href="/cursos" className="text-sm underline">← Volver</Link>
       <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
-        <div className="h-64 bg-gray-700 flex items-center justify-center text-gray-400">
+         <div className="relative h-64 bg-gray-700 flex items-center justify-center text-gray-400">
           {curso.image ? (
-            <img src={curso.image} alt={curso.name} className="object-cover w-full h-full" />
+            <Image
+              src={curso.image}
+              alt={curso.name}
+              fill
+              className="object-cover"
+              sizes="(min-width: 768px) 50vw, 100vw"
+              priority
+            />
           ) : (
             'Imagen'
           )}

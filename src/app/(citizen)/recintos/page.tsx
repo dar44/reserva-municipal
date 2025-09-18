@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import Link from "next/link";
 
@@ -34,8 +35,18 @@ export default async function RecintosPage() {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {recintos?.map(r => (
           <Link key={r.id} href={`/recintos/${r.id}`} className="bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-lg transition">
-            <div className="h-40 bg-gray-700 flex items-center justify-center text-gray-400">
-              {r.image ? <img src={r.image} alt={r.name} className="object-cover w-full h-full" /> : "Imagen"}
+             <div className="relative h-40 bg-gray-700 flex items-center justify-center text-gray-400">
+              {r.image ? (
+                <Image
+                  src={r.image}
+                  alt={r.name}
+                  fill
+                  className="object-cover"
+                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                />
+              ) : (
+                "Imagen"
+              )}
             </div>
             <div className="p-4 space-y-1">
               <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.state==='Disponible'?'bg-green-700':'bg-red-700'}`}>{r.state}</span>

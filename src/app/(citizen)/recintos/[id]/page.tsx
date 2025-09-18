@@ -1,4 +1,5 @@
 import { createServerClient } from "@supabase/ssr";
+import Image from "next/image";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -47,8 +48,18 @@ export default async function RecintoDetail({
     <div className="space-y-6">
       <Link href="/recintos" className="text-sm underline">← Volver al listado</Link>
       <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
-        <div className="h-64 bg-gray-700 flex items-center justify-center text-gray-400">
-          {recinto.image ? <img src={recinto.image} alt={recinto.name} className="object-cover w-full h-full" /> : "Imagen"}
+         <div className="relative h-64 bg-gray-700 flex items-center justify-center text-gray-400">
+          {recinto.image ? (
+            <Image
+              src={recinto.image}
+              alt={recinto.name}
+              fill
+              className="object-cover"
+              sizes="(min-width: 768px) 50vw, 100vw"
+            />
+          ) : (
+            "Imagen"
+          )}
         </div>
         <div className="space-y-4">
           <div className="flex items-center gap-2">
