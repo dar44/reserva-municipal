@@ -69,43 +69,53 @@ let leafletPromise: Promise<LeafletNamespace | null> | null = null
 const ensureLeaflet = (): Promise<LeafletNamespace | null> => {
   if (typeof window === 'undefined') return Promise.resolve(null)
   if (window.L) return Promise.resolve(window.L)
+
   if (!leafletPromise) {
     leafletPromise = new Promise<LeafletNamespace | null>((resolve, reject) => {
       const existingScript = document.getElementById('leaflet-script') as HTMLScriptElement | null
       if (existingScript) {
-        if (window.L) {
-          resolve(window.L)
-          return
-        }
+        if (window.L) return resolve(window.L)
         existingScript.addEventListener('load', () => resolve(window.L ?? null))
         existingScript.addEventListener('error', reject)
         return
       }
 
-      const link = document.getElementById('leaflet-css') as HTMLLinkElement | null
-      if (!link) {
+      // CSS (SRI oficial Leaflet 1.9.4)
+      if (!document.getElementById('leaflet-css')) {
         const css = document.createElement('link')
         css.id = 'leaflet-css'
         css.rel = 'stylesheet'
         css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-        css.integrity = 'sha256-o9N1j7kP6+2slz1G6kMxG7Z5NsXwPNP6p3p3ZpQtGNg='
-        css.crossOrigin = ''
+        css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
+        css.crossOrigin = 'anonymous'
         document.head.appendChild(css)
       }
 
+      // JS (SRI oficial Leaflet 1.9.4)
       const script = document.createElement('script')
       script.id = 'leaflet-script'
       script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.integrity = 'sha256-o8LjIb16zGgBjv8P3d3uHuxbNqJEa0gd+7DYn2Lk0eI='
-      script.crossOrigin = ''
-      script.async = true
+      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
+      script.crossOrigin = 'anonymous'
+      script.defer = true
       script.onload = () => resolve(window.L ?? null)
-      script.onerror = reject
+      script.onerror = async () => {
+        // Fallback opcional a import dinámico si el CDN falla
+        try {
+          const mod = await import('leaflet')
+          // @ts-ignore
+          window.L = (mod as any).default ?? mod
+          resolve(window.L)
+        } catch (e) {
+          reject(e)
+        }
+      }
       document.body.appendChild(script)
     })
   }
-  return leafletPromise
+  return leafletPromise!
 }
+
 
 const extractCity = (address: Record<string, string> = {}) =>
   address.city || address.town || address.village || address.hamlet || address.municipality || ''
