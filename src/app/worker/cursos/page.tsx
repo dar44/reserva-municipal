@@ -48,12 +48,10 @@ export default async function WorkerCursosPage() {
               <tr key={c.id} className="border-t border-gray-700">
                 <td className="px-4 py-2">
                   {c.image ? (
-                    <Image
+                    <img
                       src={c.image}
                       alt={c.name}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10 rounded object-cover"
+                      className="h-10 w-10 object-cover rounded"
                     />
                   ) : (
                     <div className="h-10 w-10 bg-gray-700 rounded" />
