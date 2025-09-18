@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import LocationPicker from '@/components/LocationPicker'
 
 export const dynamic = 'force-dynamic'
 
@@ -51,9 +52,22 @@ export default async function EditRecintoPage({ params }: Props) {
       <form action={updateRecinto} className="space-y-3 bg-gray-800 p-4 rounded text-sm">
         <input name="name" defaultValue={recinto.name} className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
         <textarea name="description" defaultValue={recinto.description ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="Descripción" />
-        <input name="ubication" defaultValue={recinto.ubication ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="Ubicación" />
-        <input name="province" defaultValue={recinto.province ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="Provincia" />
-        <input name="postal_code" defaultValue={recinto.postal_code ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="Código Postal" />
+        <LocationPicker
+          valueNames={{
+            address: 'ubication',
+            postalCode: 'postal_code',
+            city: 'city',
+            province: 'province',
+            region: 'community',
+          }}
+          labels={{ region: 'Comunidad' }}
+          defaultValues={{
+            address: recinto.ubication ?? undefined,
+            postalCode: recinto.postal_code ?? undefined,
+            province: recinto.province ?? undefined,
+          }}
+          required
+        />
         <input name="image" defaultValue={recinto.image ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="URL de imagen" />
         <select name="state" defaultValue={recinto.state} className="w-full p-2 rounded bg-gray-700">
           <option value="Disponible">Disponible</option>

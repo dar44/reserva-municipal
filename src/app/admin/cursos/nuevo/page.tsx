@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import LocationPicker from '@/components/LocationPicker'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,11 +47,15 @@ export default function NuevoCursoPage () {
           placeholder="Descripción"
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
-        <input
-          type="text"
-          name="location"
-          placeholder="Ubicación"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+       <LocationPicker
+          valueNames={{
+            address: 'location',
+            postalCode: 'postal_code',
+            city: 'city',
+            province: 'province',
+            region: 'community',
+          }}
+          labels={{ region: 'Comunidad' }}
         />
         <input
           type="date"

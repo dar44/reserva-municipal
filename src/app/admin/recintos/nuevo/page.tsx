@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import LocationPicker from '@/components/LocationPicker'
 import { revalidatePath } from 'next/cache'
 
 export const dynamic = 'force-dynamic'
@@ -28,9 +29,17 @@ export default async function NewRecintoPage () {
       <form action={createRecinto} className="space-y-3 bg-gray-800 p-4 rounded text-sm">
         <input name="name" className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
         <textarea name="description" className="w-full p-2 rounded bg-gray-700" placeholder="Descripción" required />
-        <input name="ubication" className="w-full p-2 rounded bg-gray-700" placeholder="Ubicación" required />
-        <input name="province" className="w-full p-2 rounded bg-gray-700" placeholder="Provincia" required />
-        <input name="postal_code" className="w-full p-2 rounded bg-gray-700" placeholder="Código Postal" required />
+        <LocationPicker
+          valueNames={{
+            address: 'ubication',
+            postalCode: 'postal_code',
+            city: 'city',
+            province: 'province',
+            region: 'community',
+          }}
+          labels={{ region: 'Comunidad' }}
+          required
+        />
         <select name="state" className="w-full p-2 rounded bg-gray-700">
           <option value="Disponible">Disponible</option>
           <option value="No disponible">No disponible</option>
