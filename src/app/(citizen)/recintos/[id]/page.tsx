@@ -3,6 +3,8 @@ import Image from "next/image";
 import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
+import { formatCurrency } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -44,9 +46,14 @@ export default async function RecintoDetail({
     return `${pad(start)}:00-${pad(end)}:00`;
   });
 
-  const reservaPrice = Number(process.env.RESERVA_PRICE_EUR ?? "1");
-  const currency = new Intl.NumberFormat("es-ES", { style: "currency", currency: "CLP" });
-  const priceLabel = Number.isFinite(reservaPrice) && reservaPrice > 0 ? currency.format(reservaPrice) : "Pago";
+  let priceLabel = "Pago";
+  try {
+    const currency = getConfiguredCurrency();
+    const reservaPrice = getReservaPriceValue();
+    priceLabel = formatCurrency(reservaPrice, currency);
+  } catch {
+    priceLabel = "Pago";
+  }
 
   return (
     <div className="space-y-6">

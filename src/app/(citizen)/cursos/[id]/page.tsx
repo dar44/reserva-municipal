@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import InscripcionActions from './InscripcionActions'
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import { getConfiguredCurrency } from '@/lib/config'
+import { formatCurrency } from '@/lib/currency'
 
 export const dynamic = 'force-dynamic'
 
@@ -37,6 +39,9 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
   }
 
   const disponibles = (curso.capacity || 0) - (count || 0)
+  const currency = getConfiguredCurrency()
+  const priceNumber = Number(curso.price ?? 0)
+  const priceLabel = priceNumber > 0 ? formatCurrency(priceNumber, currency) : 'Gratis'
 
   return (
     <div className="space-y-6">
@@ -75,7 +80,7 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
               <p className="text-lg font-bold">{disponibles}</p>
             </div>
           </div>
-          <p><strong>Precio:</strong> {curso.price}€</p>
+          <p><strong>Precio:</strong> {priceLabel}</p>
           <InscripcionActions cursoId={curso.id} email={user?.email} inscripcionId={inscripcionId} />
           <p className="text-xs text-gray-400">
             Te enviaremos al checkout de Lemon Squeezy para realizar el pago y confirmar la inscripción.

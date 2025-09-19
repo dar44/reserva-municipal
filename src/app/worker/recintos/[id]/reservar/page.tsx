@@ -2,6 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createSupabaseServer } from "@/lib/supabaseServer";
 import ReservationForm from "./ReservationForm";
+import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
+import { formatCurrency } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -20,6 +22,13 @@ export default async function ReservarRecinto({
 
   if (!recinto) return notFound();
 
+  let priceLabel = "";
+  try {
+    priceLabel = formatCurrency(getReservaPriceValue(), getConfiguredCurrency());
+  } catch {
+    priceLabel = "";
+  }
+
   return (
     <div className="max-w-md mx-auto space-y-4">
       <Link href="/worker/recintos" className="text-sm underline">← Volver al listado</Link>
@@ -27,7 +36,7 @@ export default async function ReservarRecinto({
       <div className="bg-gray-800 p-4 rounded space-y-3">
         <span className={`inline-block px-2 py-0.5 rounded text-xs ${recinto.state === 'Disponible' ? 'bg-green-700' : 'bg-gray-600'}`}>{recinto.state}</span>
         <p className="text-sm">{recinto.ubication}</p>
-        <p className="text-sm">1€/hora</p>
+        {priceLabel && <p className="text-sm">{priceLabel}/hora</p>}
         <ReservationForm recintoId={recinto.id} />
       </div>
     </div>

@@ -5,6 +5,8 @@ import {
   getInscripcionVariantId,
   getLemonStoreId
 } from '@/lib/lemonSqueezy'
+import { toMinorUnits } from '@/lib/currency'
+import { getConfiguredCurrency } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +14,7 @@ export async function POST (req: Request) {
   try {
     const { curso_id, email, newUser, name, surname, dni, phone } = await req.json()
     const { origin } = new URL(req.url)
+    const currency = getConfiguredCurrency()
 
     const query = supabaseAdmin
       .from('users')
@@ -62,11 +65,11 @@ export async function POST (req: Request) {
     if (cursoErr) {
       return NextResponse.json({ error: cursoErr.message }, { status: 400 })
     }
-    const priceEuro = Number(curso?.price ?? 0)
-    if (!Number.isFinite(priceEuro) || priceEuro <= 0) {
+    const price = Number(curso?.price ?? 0)
+    if (!Number.isFinite(price) || price <= 0) {
       return NextResponse.json({ error: 'course_price_invalid' }, { status: 400 })
     }
-    const amountCents = Math.round(priceEuro * 100)
+    const amountMinorUnits = toMinorUnits(price, currency)
 
     const { data: inscripcion, error: insErr } = await supabaseAdmin.from('inscripciones').insert({
       curso_id,
@@ -79,8 +82,8 @@ export async function POST (req: Request) {
     const { data: pago, error: pagoErr } = await supabaseAdmin.from('pagos').insert({
       user_uid: uid!,
       inscripcion_id: inscripcion.id,
-      monto_centavos: amountCents,
-      moneda: 'EUR',
+      monto_centavos: amountMinorUnits,
+      moneda: currency,
       estado: 'pendiente',
       gateway: 'lemon_squeezy'
     }).select('id').single()
@@ -94,7 +97,7 @@ export async function POST (req: Request) {
       checkout = await createCheckout({
         variantId: getInscripcionVariantId(),
         storeId: getLemonStoreId(),
-        customPrice: amountCents,
+        customPrice: amountMinorUnits,
         customerEmail: email,
         successUrl: `${origin}/pagos/exito?pago=${pago.id}&tipo=inscripcion`,
         cancelUrl: `${origin}/pagos/cancelado?pago=${pago.id}&tipo=inscripcion`,

@@ -1,5 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabaseServer";
 import DeleteButton from "./DeleteButton";
+import { getConfiguredCurrency } from "@/lib/config";
+import { formatCurrency } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +24,8 @@ export default async function WorkerReservasPage() {
     .returns<Reserva[]>(); //uso interfaz reserva para que VSCode no me de como error
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
+  const currency = getConfiguredCurrency();
+  const formatPrice = (amount: number) => formatCurrency(amount, currency);
 
   return (
     <div>
@@ -45,7 +49,7 @@ export default async function WorkerReservasPage() {
               <td className="px-4 py-2">{r.users?.email ?? ''}</td>
               <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
               <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
-              <td className="px-4 py-2">{r.price}€</td>
+              <td className="px-4 py-2">{formatPrice(Number(r.price ?? 0))}</td>
               <td className="px-4 py-2">{r.paid ? 'Pagado' : 'Pendiente'}</td>
               <td className="px-4 py-2">
                 <DeleteButton id={r.id} />

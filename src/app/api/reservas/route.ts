@@ -6,12 +6,18 @@ import {
   getLemonStoreId,
   getReservaVariantId
 } from '@/lib/lemonSqueezy'
+import { toMinorUnits } from '@/lib/currency'
+import { getConfiguredCurrency, getReservaPriceValue } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
 export async function POST (req: Request) {
   try {
     const { origin } = new URL(req.url)
+
+    const currency = getConfiguredCurrency()
+    const reservaPrice = getReservaPriceValue()
+    const amountMinorUnits = toMinorUnits(reservaPrice, currency)
 
     if (req.headers.get('content-type')?.includes('application/json')) {
       const { email, date, time, recinto_id, newUser, name, surname, dni, phone } = await req.json()
@@ -55,16 +61,10 @@ export async function POST (req: Request) {
 
       const startAt = new Date(`${date}T${time}:00`)
       const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
-      const priceEuro = Number(process.env.RESERVA_PRICE_EUR ?? '1')
-      if (!Number.isFinite(priceEuro) || priceEuro <= 0) {
-        return NextResponse.json({ error: 'Config error: RESERVA_PRICE_EUR inválido' }, { status: 500 })
-      }
-      const amountCents = Math.round(priceEuro * 100)
-
       const { data: reserva, error: resErr } = await supabaseAdmin.from('reservas').insert({
         user_uid: uid,
         recinto_id,
-        price: priceEuro,
+        price: reservaPrice,
         start_at: startAt.toISOString(),
         end_at: endAt.toISOString()
       }).select('id').single()
@@ -75,8 +75,8 @@ export async function POST (req: Request) {
       const { data: pago, error: pagoErr } = await supabaseAdmin.from('pagos').insert({
         user_uid: uid,
         reserva_id: reserva.id,
-        monto_centavos: amountCents,
-        moneda: 'EUR',
+        monto_centavos: amountMinorUnits,
+        moneda: currency,
         estado: 'pendiente',
         gateway: 'lemon_squeezy'
       }).select('id').single()
@@ -99,7 +99,7 @@ export async function POST (req: Request) {
         checkout = await createCheckout({
           variantId,
           storeId,
-          customPrice: amountCents,
+          customPrice: amountMinorUnits,
           customerEmail: email,
           successUrl: `${origin}/pagos/exito?pago=${pago.id}&tipo=reserva`,
           cancelUrl: `${origin}/pagos/cancelado?pago=${pago.id}&tipo=reserva`,
@@ -133,16 +133,11 @@ export async function POST (req: Request) {
 
     const startAt = new Date(`${date}T${time}:00`)
     const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
-    const priceEuro = Number(process.env.RESERVA_PRICE_EUR ?? '1')
-    if (!Number.isFinite(priceEuro) || priceEuro <= 0) {
-      return NextResponse.json({ error: 'Config error: RESERVA_PRICE_EUR inválido' }, { status: 500 })
-    }
-    const amountCents = Math.round(priceEuro * 100)
 
     const { data: reserva, error: resErr } = await supabaseAdmin.from('reservas').insert({
       user_uid: user.id,
       recinto_id,
-      price: priceEuro,
+      price: reservaPrice,
       start_at: startAt.toISOString(),
       end_at: endAt.toISOString()
     }).select('id').single()
@@ -153,8 +148,8 @@ export async function POST (req: Request) {
     const { data: pago, error: pagoErr } = await supabaseAdmin.from('pagos').insert({
       user_uid: user.id,
       reserva_id: reserva.id,
-      monto_centavos: amountCents,
-      moneda: 'EUR',
+      monto_centavos: amountMinorUnits,
+      moneda: currency,
       estado: 'pendiente',
       gateway: 'lemon_squeezy'
     }).select('id').single()
@@ -168,7 +163,7 @@ export async function POST (req: Request) {
       checkout = await createCheckout({
         variantId: getReservaVariantId(),
         storeId: getLemonStoreId(),
-        customPrice: amountCents,
+        customPrice: amountMinorUnits,
         customerEmail: user.email ?? '',
         successUrl: `${origin}/pagos/exito?pago=${pago.id}&tipo=reserva`,
         cancelUrl: `${origin}/pagos/cancelado?pago=${pago.id}&tipo=reserva`,
