@@ -11,6 +11,21 @@ import { getConfiguredCurrency, getReservaPriceValue } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
+async function checkRecintoAvailability (recintoId: number, startIso: string, endIso: string) {
+  const { data, error } = await supabaseAdmin
+    .from('reservas')
+    .select('id')
+    .eq('recinto_id', recintoId)
+    .lt('start_at', endIso)
+    .gt('end_at', startIso)
+    .limit(1)
+
+  return {
+    error,
+    conflict: Boolean(data?.length)
+  }
+}
+
 export async function POST (req: Request) {
   try {
     const { origin } = new URL(req.url)
@@ -21,6 +36,30 @@ export async function POST (req: Request) {
 
     if (req.headers.get('content-type')?.includes('application/json')) {
       const { email, date, time, recinto_id, newUser, name, surname, dni, phone, fromWorker } = await req.json()
+
+      const recintoId = Number(recinto_id)
+      if (Number.isNaN(recintoId)) {
+        return NextResponse.json({ error: 'invalid_recinto' }, { status: 400 })
+      }
+
+      const startAt = new Date(`${date}T${time}:00`)
+      if (Number.isNaN(startAt.getTime())) {
+        return NextResponse.json({ error: 'invalid_datetime' }, { status: 400 })
+      }
+      const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
+      const startIso = startAt.toISOString()
+      const endIso = endAt.toISOString()
+
+      const availability = await checkRecintoAvailability(recintoId, startIso, endIso)
+      if (availability.error) {
+        return NextResponse.json({ error: availability.error.message }, { status: 400 })
+      }
+
+      if (availability.conflict) {
+        return NextResponse.json({
+          error: 'Ese horario ya está reservado. Por favor elige otro horario.'
+        }, { status: 409 })
+      }
 
       let uid
       // Comprobar si el usuario ya existe por email para evitar errores de clave duplicada
@@ -52,21 +91,19 @@ export async function POST (req: Request) {
           }, { status: 500 })
         }
         await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
-        
+
         uid = auth.user.id
 
       } else {
         return NextResponse.json({ error: 'user_not_found' }, { status: 404 })
       }
 
-      const startAt = new Date(`${date}T${time}:00`)
-      const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
       const { data: reserva, error: resErr } = await supabaseAdmin.from('reservas').insert({
         user_uid: uid,
-        recinto_id,
+        recinto_id: recintoId,
         price: reservaPrice,
-        start_at: startAt.toISOString(),
-        end_at: endAt.toISOString()
+        start_at: startIso,
+        end_at: endIso
       }).select('id').single()
       if (resErr || !reserva) {
         return NextResponse.json({ error: resErr.message }, { status: 400 })
@@ -93,9 +130,8 @@ export async function POST (req: Request) {
         tipo: 'reserva',
         reserva_id: reserva.id
       }
-
       let checkout
-      const successBase = fromWorker ? '/pagos/exito/worker' : '/pagos/exito'
+      const successBase = '/pagos/exito'
       const cancelBase = '/pagos/cancelado'
       try {
         checkout = await createCheckout({
@@ -122,10 +158,14 @@ export async function POST (req: Request) {
     }
 
     const formData = await req.formData()
-    const recinto_id = Number(formData.get('recinto_id'))
+    const recintoId = Number(formData.get('recinto_id'))
     const date = formData.get('date') as string
     const slot = (formData.get('slot') as string) || ''
     const time = slot.split('-')[0]
+
+    if (Number.isNaN(recintoId)) {
+      return NextResponse.json({ error: 'invalid_recinto' }, { status: 400 })
+    }
 
     const supabase = await createSupabaseServer()
     const { data: { user } } = await supabase.auth.getUser()
@@ -134,14 +174,30 @@ export async function POST (req: Request) {
     }
 
     const startAt = new Date(`${date}T${time}:00`)
+    if (Number.isNaN(startAt.getTime())) {
+      return NextResponse.json({ error: 'invalid_datetime' }, { status: 400 })
+    }
     const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
+    const startIso = startAt.toISOString()
+    const endIso = endAt.toISOString()
+
+    const availability = await checkRecintoAvailability(recintoId, startIso, endIso)
+    if (availability.error) {
+      return NextResponse.json({ error: availability.error.message }, { status: 400 })
+    }
+
+    if (availability.conflict) {
+      return NextResponse.json({
+        error: 'Ese horario ya está reservado. Por favor elige otro horario.'
+      }, { status: 409 })
+    }
 
     const { data: reserva, error: resErr } = await supabaseAdmin.from('reservas').insert({
       user_uid: user.id,
-      recinto_id,
+      recinto_id: recintoId,
       price: reservaPrice,
-      start_at: startAt.toISOString(),
-      end_at: endAt.toISOString()
+      start_at: startIso,
+      end_at: endIso
     }).select('id').single()
     if (resErr || !reserva) {
       return NextResponse.json({ error: resErr.message }, { status: 400 })
@@ -186,7 +242,7 @@ export async function POST (req: Request) {
       .update({ checkout_id: checkout.id })
       .eq('id', pago.id)
 
-    return NextResponse.redirect(checkout.url, { status: 303 })
+    return NextResponse.json({ checkoutUrl: checkout.url, pagoId: pago.id })
   } catch (e) {
     const message = e instanceof Error ? e.message : 'unknown_error'
     return NextResponse.json({ error: message }, { status: 500 })

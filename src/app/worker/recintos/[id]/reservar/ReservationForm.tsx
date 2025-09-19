@@ -3,6 +3,16 @@
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 
+const slots = Array.from({ length: 12 }, (_, i) => {
+  const start = 8 + i
+  const end = start + 1
+  const pad = (n: number) => n.toString().padStart(2, '0')
+  return {
+    value: `${pad(start)}:00`,
+    label: `${pad(start)}:00-${pad(end)}:00`
+  }
+})
+
 export default function ReservationForm ({ recintoId }: { recintoId: number }) {
   const [isNew, setIsNew] = useState(false)
   const toast = useToast()
@@ -17,7 +27,7 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       time: formData.get('time') as string,
       email: formData.get('email') as string,
       newUser: isNew,
-      fromWorker:true,
+      fromWorker: true,
     }
     if (isNew) {
       Object.assign(payload, {
@@ -38,7 +48,10 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       toast({ type: 'success', message: 'Pago iniciado. Se abrirá el checkout.' })
       window.open(data.checkoutUrl as string, '_blank', 'noopener')
     } else if (!res.ok) {
-      toast({ type: 'error', message: data.error || 'Error al crear la reserva' })
+      const message = data.error || (res.status === 409
+        ? 'Ese horario ya está reservado. Por favor elige otro horario.'
+        : 'Error al crear la reserva')
+      toast({ type: 'error', message })
     }
   }
 
@@ -47,8 +60,14 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       <label className="block text-sm">Fecha
         <input type="date" name="date" className="w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required />
       </label>
-      <label className="block text-sm">Hora
-        <input type="time" name="time" className="w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required />
+      <label className="block text-sm">Hora inicio – fin
+        <select name="time" className="w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required>
+          {slots.map((slot) => (
+            <option key={slot.value} value={slot.value}>
+              {slot.label}
+            </option>
+          ))}
+        </select>
       </label>
       <div className="space-y-2">
         <div className="flex gap-2">

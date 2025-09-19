@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
+import ReservationForm from "./ReservationForm";
 
 export const dynamic = "force-dynamic";
 
@@ -82,30 +83,7 @@ export default async function RecintoDetail({
 
           {/* Reservar horario */}
             {recinto.state==='Disponible' && (
-              <form action={`/api/reservas`} method="post" className="space-y-3">
-                <input type="hidden" name="recinto_id" value={recinto.id} />
-                <label className="block text-sm">Fecha de reserva
-                  <input
-                    type="date"
-                    name="date"
-                    className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1"
-                    required
-                  />
-                </label>
-                <label className="block text-sm">Hora inicio – fin
-                  <select name="slot" className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1">
-                    {slots.map((slot) => (
-                      <option key={slot} value={slot}>
-                        {slot}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-                <button className="w-full bg-blue-600 py-2 rounded">Confirmar reserva – {priceLabel}</button>
-                <p className="text-xs text-gray-400 text-center">
-                  Serás redirigido al checkout seguro de Lemon Squeezy para completar el pago.
-                </p>
-              </form>
+               <ReservationForm recintoId={recinto.id} slots={slots} priceLabel={priceLabel} />
             )}
           </div>
         </div>
