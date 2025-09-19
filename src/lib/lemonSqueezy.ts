@@ -186,9 +186,10 @@ export async function createCheckout ({
   customPrice,
   customerEmail,
   successUrl,
-  cancelUrl, // <- no se usa en el payload
+  cancelUrl: _cancelUrl, // <- no se usa en el payload
   metadata
 }: CheckoutRequest): Promise<CheckoutResponse> {
+  void _cancelUrl // para evitar linter no usado
   const variantInfo = await resolveVariant(variantId)
   const resolvedStoreId = storeId && storeId === variantInfo.storeId
     ? storeId
@@ -203,15 +204,13 @@ export async function createCheckout ({
           email: customerEmail,
           custom: serializeMetadata(metadata)
         },
-        // ✅ redirect_url va en product_options
+        //  redirect_url va en product_options
         product_options: {
           redirect_url: successUrl,
-          // Si quieres ocultar otras variantes:
+          
           enabled_variants: [Number(variantInfo.variantId)]
         }
-        // ❌ NO pongas aquí checkout_options con success/cancel
-        // checkout_options lo puedes usar si quieres UI (embed, colors...)
-        // checkout_options: { embed: true }
+        
       },
       relationships: {
         ...(resolvedStoreId ? {
