@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { getCheckoutStatus } from "@/lib/lemonSqueezy";
+import { getCheckoutStatus, getOrder } from "@/lib/lemonSqueezy";
 import {
   mapCheckoutStatusToPagoEstado,
   normalizePagoEstado,
@@ -25,9 +25,10 @@ type PagoRecord = {
 async function applyEstadoUpdate(
   pago: PagoRecord,
   estado: PagoEstado,
-  orderId: string | null
+  orderId: string | null,
+  extraUpdates: Record<string, unknown> = {}
 ): Promise<void> {
-  const updates: Record<string, unknown> = { estado };
+  const updates: Record<string, unknown> = { estado, ...extraUpdates };
   if (orderId) {
     updates.order_id = orderId;
   }
@@ -53,27 +54,14 @@ async function applyEstadoUpdate(
   }
 }
 
-export async function GET(
-  _req: Request,
-  { params }: RouteContext
-): Promise<NextResponse> {
-  const pagoId = params.id;
+export async function GET(req: Request, context: RouteContext) {
+  const { id } = context.params;
 
-  if (!pagoId) {
-    return NextResponse.json({ error: "missing_pago_id" }, { status: 400 });
-  }
-
-  const { data, error: pagoErr } = await supabaseAdmin
+  const { data: pago, error: pagoErr } = await supabaseAdmin
     .from("pagos")
-    .select("id,estado,checkout_id,order_id,reserva_id,inscripcion_id")
-    .eq("id", pagoId)
-    .maybeSingle();
-
-  const pago = data as PagoRecord | null;
-
-  if (pagoErr) {
-    return NextResponse.json({ error: pagoErr.message }, { status: 500 });
-  }
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (!pago) {
     return NextResponse.json({ error: "pago_not_found" }, { status: 404 });
@@ -99,16 +87,41 @@ export async function GET(
       return NextResponse.json(basePayload);
     }
 
-    const estado = mapCheckoutStatusToPagoEstado(checkout.status);
+    let estado = mapCheckoutStatusToPagoEstado(checkout.status);
     const orderId = checkout.orderId ?? pago.order_id ?? null;
+    const extraUpdates: Record<string, unknown> = {};
+
+    if (estado === "pendiente" && orderId) {
+      try {
+        const order = await getOrder(orderId);
+        const orderEstado = mapCheckoutStatusToPagoEstado(order.status);
+        if (orderEstado !== "pendiente") {
+          estado = orderEstado;
+        }
+        if (order.total != null) {
+          extraUpdates.monto_centavos = order.total;
+        }
+        if (order.currency) {
+          extraUpdates.moneda = order.currency;
+        }
+      } catch (orderError) {
+        basePayload.orderSyncError =
+          orderError instanceof Error ? orderError.message : "order_sync_failed";
+      }
+    }
 
     basePayload.estado = estado;
     if (orderId) {
       basePayload.orderId = orderId;
     }
 
-    if (estado !== currentEstado || (orderId && orderId !== pago.order_id)) {
-      await applyEstadoUpdate(pago, estado, orderId);
+    const shouldUpdate =
+      estado !== currentEstado ||
+      (orderId && orderId !== pago.order_id) ||
+      Object.keys(extraUpdates).length > 0;
+
+    if (shouldUpdate) {
+      await applyEstadoUpdate(pago, estado, orderId, extraUpdates);
       basePayload.synced = true;
     } else {
       basePayload.synced = false;
