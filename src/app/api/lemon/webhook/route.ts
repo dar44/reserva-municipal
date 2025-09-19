@@ -3,6 +3,64 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { verifyWebhookSignature } from '@/lib/lemonSqueezy' // ya la tienes
 import type { PostgrestSingleResponse } from '@supabase/supabase-js'
 
+type FlexibleValue = string | number | boolean | null
+
+type CustomData = {
+  pago_id?: string
+  reserva_id?: string | number
+  inscripcion_id?: string | number
+  checkout_id?: string | number
+  [key: string]: FlexibleValue | undefined
+}
+
+type LemonAttributes = {
+  status?: string | null
+  total?: number | null
+  currency?: string | null
+  test_mode?: boolean | null
+  [key: string]: FlexibleValue | null | undefined
+}
+
+type LemonWebhookData = {
+  id?: string | number | null
+  attributes?: LemonAttributes | null
+  [key: string]: FlexibleValue | LemonAttributes | null | undefined
+}
+
+type LemonWebhookBody = {
+  meta?: {
+    event_name?: string
+    webhook_id?: string
+    custom_data?: CustomData
+    [key: string]: FlexibleValue | CustomData | undefined
+  }
+  data?: LemonWebhookData | null
+  [key: string]: FlexibleValue | LemonWebhookData | null | undefined
+}
+
+type WebhookEventRow = {
+  id: string
+}
+
+type PagoRow = {
+  id: string
+  estado: PagoEstado
+  order_id: string | null
+  monto_centavos?: number | null
+  moneda?: string | null
+  checkout_id?: string | null
+  reserva_id?: number | null
+  inscripcion_id?: number | null
+  [key: string]: FlexibleValue | PagoEstado | null | undefined
+}
+
+type PagoUpdate = {
+  estado: PagoEstado
+  order_id?: string | null
+  monto_centavos?: number | null
+  moneda?: string | null
+}
+
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
@@ -40,14 +98,14 @@ export async function POST(req: Request) {
   }
 
   // 2) Parse
-  let body: any
-  try { body = JSON.parse(raw) } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }) }
+  let body: LemonWebhookBody
+  try { body = JSON.parse(raw) as LemonWebhookBody } catch { return NextResponse.json({ error: 'invalid_json' }, { status: 400 }) }
 
   const eventName: string = body?.meta?.event_name ?? ''
   const webhookId: string | undefined = body?.meta?.webhook_id
-  const custom: Record<string, any> = body?.meta?.custom_data ?? {}
-  const data: any = body?.data ?? {}
-  const attrs: any = data?.attributes ?? {}
+  const custom: CustomData = body?.meta?.custom_data ? { ...body.meta.custom_data } : {}
+  const data: LemonWebhookData = body?.data ?? {}
+  const attrs: LemonAttributes = data?.attributes ?? {}
 
   const orderId: string | null = data?.id ? String(data.id) : null
   const orderStatus: string | null = typeof attrs?.status === 'string' ? attrs.status : null
@@ -56,12 +114,13 @@ export async function POST(req: Request) {
 
   // 3) Idempotencia: si ya procesamos este webhook_id, devolvemos 200
   if (webhookId) {
-    const existing = await supabaseAdmin
+    const existingResponse = await supabaseAdmin
       .from('webhook_events')
       .select('id')
       .eq('id', webhookId)
       .maybeSingle()
-    if ((existing as PostgrestSingleResponse<any>).data?.id) {
+    const existing = existingResponse as PostgrestSingleResponse<WebhookEventRow>
+    if (existing.data && existing.data.id) {
       return NextResponse.json({ ok: true, duplicate: true })
     }
   }
@@ -69,43 +128,68 @@ export async function POST(req: Request) {
   // 4) Determinar estado final
   //    - prioridad: nombre de evento → 'pagado' si order_paid
   //    - si no, mapear por status de la order
-  let estado: PagoEstado =
+  const estado: PagoEstado =
     estadoFromEventName(eventName) ?? mapOrderStatusToPagoEstado(orderStatus)
 
-  // ⚠️ Requisito del usuario: “que se cambie sí o sí a pagado” cuando sea una compra correcta.
-  // Con el payload que nos pasaste (order_created con attributes.status = "paid"),
-  // este mapeo ya da 'pagado'. No forzamos pagado si el evento es de fallo/refund.
-  // Si AÚN así quieres forzar 'pagado' en TODOS los order_created/test_mode: descomenta abajo.
-  // if (eventName === 'order_created' && attrs?.test_mode === true) estado = 'pagado'
-
+  
   // 5) Localizar el pago
   const pagoIdMeta: string | undefined = custom?.pago_id
-  const reservaIdMeta: number | null = custom?.reserva_id ? Number(custom.reserva_id) : null
-  const inscripcionIdMeta: number | null = custom?.inscripcion_id ? Number(custom.inscripcion_id) : null
+  const reservaIdMeta: number | null = typeof custom.reserva_id !== 'undefined'
+    ? Number(custom.reserva_id)
+    : null
+  const inscripcionIdMeta: number | null = typeof custom.inscripcion_id !== 'undefined'
+    ? Number(custom.inscripcion_id)
+    : null
 
   // Preferimos buscar por pago_id de metadata (es lo más fiable)
-  let pago: any = null
+  let pago: PagoRow | null = null
   if (pagoIdMeta) {
-    const { data: row } = await supabaseAdmin.from('pagos').select('*').eq('id', pagoIdMeta).maybeSingle()
-    pago = row
+    const pagoResponse = await supabaseAdmin
+      .from('pagos')
+      .select('*')
+      .eq('id', pagoIdMeta)
+      .maybeSingle()
+    const row = pagoResponse.data as PagoRow | null
+    if (row) pago = row
   }
   // Fallback por order_id
   if (!pago && orderId) {
-    const { data: row } = await supabaseAdmin.from('pagos').select('*').eq('order_id', String(orderId)).maybeSingle()
-    pago = row
+    const orderResponse = await supabaseAdmin
+      .from('pagos')
+      .select('*')
+      .eq('order_id', String(orderId))
+      .maybeSingle()
+    const row = orderResponse.data as PagoRow | null
+    if (row) pago = row
   }
   // Fallback por checkout_id con meta (no viene en este payload, pero lo dejamos por si acaso)
   if (!pago && custom?.checkout_id) {
-    const { data: row } = await supabaseAdmin.from('pagos').select('*').eq('checkout_id', String(custom.checkout_id)).maybeSingle()
-    pago = row
+    const checkoutResponse = await supabaseAdmin
+      .from('pagos')
+      .select('*')
+      .eq('checkout_id', String(custom.checkout_id))
+      .maybeSingle()
+    const row = checkoutResponse.data as PagoRow | null
+    if (row) pago = row
   }
 
   // Si aún no lo encontramos pero tenemos pistas de reserva/inscripción, puedes hacer otro fallback (opcional):
-  if (!pago && (reservaIdMeta || inscripcionIdMeta)) {
-    const q = supabaseAdmin.from('pagos').select('*').limit(1)
-    if (reservaIdMeta) q.eq('reserva_id', reservaIdMeta)
-    if (inscripcionIdMeta) q.eq('inscripcion_id', inscripcionIdMeta)
-    const { data: rows } = await q
+  if (!pago && reservaIdMeta !== null) {
+    const reservaResponse = await supabaseAdmin
+      .from('pagos')
+      .select('*')
+      .eq('reserva_id', reservaIdMeta)
+      .limit(1)
+    const rows = reservaResponse.data as PagoRow[] | null
+    if (rows && rows.length > 0) pago = rows[0]
+  }
+  if (!pago && inscripcionIdMeta !== null) {
+    const inscripcionResponse = await supabaseAdmin
+      .from('pagos')
+      .select('*')
+      .eq('inscripcion_id', inscripcionIdMeta)
+      .limit(1)
+    const rows = inscripcionResponse.data as PagoRow[] | null
     if (rows && rows.length > 0) pago = rows[0]
   }
 
@@ -120,7 +204,7 @@ export async function POST(req: Request) {
   }
 
   // 6) Actualizar pago y entidades relacionadas
-  const updates: Record<string, any> = { estado }
+  const updates: PagoUpdate = { estado }
   if (orderId) updates.order_id = String(orderId)
   if (total != null) updates.monto_centavos = total
   if (currency) updates.moneda = currency
@@ -134,11 +218,11 @@ export async function POST(req: Request) {
   const reservaId = pago.reserva_id ?? reservaIdMeta
   const inscripcionId = pago.inscripcion_id ?? inscripcionIdMeta
 
-  if (reservaId) {
-    await supabaseAdmin.from('reservas').update({ paid }).eq('id', reservaId as number)
+  if (reservaId != null) {
+    await supabaseAdmin.from('reservas').update({ paid }).eq('id', reservaId)
   }
-  if (inscripcionId) {
-    await supabaseAdmin.from('inscripciones').update({ paid }).eq('id', inscripcionId as number)
+  if (inscripcionId != null) {
+    await supabaseAdmin.from('inscripciones').update({ paid }).eq('id', inscripcionId)
   }
 
   // 7) Registrar evento (idempotencia)
