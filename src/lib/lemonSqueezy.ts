@@ -255,6 +255,114 @@ export async function createCheckout ({
   return { id: checkoutId, url: checkoutUrl }
 }
 
+type CheckoutApiResponse = {
+  data?: {
+    id?: string
+    attributes?: Record<string, unknown>
+    relationships?: Record<
+      string,
+      { data?: { id?: string | number | null } | Array<{ id?: string | number | null }> | null }
+    >
+  }
+  included?: Array<{
+    type?: string
+    id?: string | number | null
+    attributes?: Record<string, unknown>
+  }>
+}
+
+export type CheckoutStatusResult = {
+  id: string
+  status?: string
+  orderId?: string | null
+}
+
+export async function getCheckoutStatus (checkoutId: string): Promise<CheckoutStatusResult | null> {
+  const response = await lemonFetch(`/checkouts/${checkoutId}?include=order`)
+
+  if (response.status === 404) {
+    return null
+  }
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Lemon Squeezy error: ${response.status} ${error}`)
+  }
+
+  const payload = await response.json() as CheckoutApiResponse
+
+  const id = payload.data?.id
+  if (!id) {
+    throw new Error('Respuesta de Lemon Squeezy incompleta al consultar el checkout')
+  }
+
+  const attributes = (payload.data?.attributes ?? {}) as Record<string, unknown>
+  const relationships = (payload.data?.relationships ?? {}) as Record<
+    string,
+    { data?: { id?: string | number | null } | Array<{ id?: string | number | null }> | null }
+  >
+  const included = (payload.included ?? []) as Array<{
+    type?: string
+    id?: string | number | null
+    attributes?: Record<string, unknown>
+  }>
+
+  let status: string | undefined
+
+  const directStatus = attributes['status']
+  if (typeof directStatus === 'string') {
+    status = directStatus
+  } else {
+    const checkoutStatus = attributes['checkout_status']
+    if (typeof checkoutStatus === 'string') {
+      status = checkoutStatus
+    }
+  }
+
+  let orderId: string | null = null
+  const attributeOrderId = attributes['order_id']
+  if (typeof attributeOrderId === 'string' || typeof attributeOrderId === 'number') {
+    orderId = String(attributeOrderId)
+  } else {
+    const firstOrderId = attributes['first_order_id']
+    if (typeof firstOrderId === 'string' || typeof firstOrderId === 'number') {
+      orderId = String(firstOrderId)
+    }
+  }
+
+  const orderRelationship = relationships.order
+  let orderRelationshipId: string | number | null | undefined
+  if (orderRelationship) {
+    if (Array.isArray(orderRelationship.data)) {
+      orderRelationshipId = orderRelationship.data[0]?.id
+    } else {
+      orderRelationshipId = orderRelationship.data?.id
+    }
+  }
+
+  if (orderId == null && (typeof orderRelationshipId === 'string' || typeof orderRelationshipId === 'number')) {
+    orderId = String(orderRelationshipId)
+  }
+
+  const orderRecord = included.find((item) => item.type === 'orders' && (
+    (orderId != null && item.id === orderId) ||
+    (orderRelationshipId != null && item.id === orderRelationshipId)
+  ))
+
+  if (!status && orderRecord?.attributes) {
+    const orderAttributes = orderRecord.attributes as Record<string, unknown>
+    const orderStatus = orderAttributes['status']
+    if (typeof orderStatus === 'string') {
+      status = orderStatus
+    }
+  }
+
+  return {
+    id,
+    status,
+    orderId: orderId ?? null
+  }
+}
 
 export function verifyWebhookSignature (payload: string, signature: string | null): boolean {
   if (!signature) return false

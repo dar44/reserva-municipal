@@ -1,36 +1,43 @@
-import Link from 'next/link'
-import SyncPago from './SyncPago'
+import Link from "next/link";
+import { PagoStatusWatcher } from "./PagoStatusWatcher";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 type SearchParams = {
-  pago?: string
-  tipo?: string
-}
+  pago?: string;
+  tipo?: string;
+};
 
-export default async function PagoExitoPage ({
+export default async function PagoExitoPage({
   searchParams
 }: {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }) {
-  const params = await searchParams
-  const tipo = params.tipo === 'inscripcion' ? 'inscripción' : 'reserva'
-  const pagoId = params.pago
-  const href = params.tipo === 'inscripcion' ? '/cursos' : '/reservas'
-  const label = params.tipo === 'inscripcion' ? 'Volver a cursos' : 'Ver mis reservas'
+  const params = await searchParams;
+  const pagoId = params.pago;
+  const tipoKey = params.tipo === "inscripcion" ? "inscripcion" : "reserva";
+  const tipoLabel = tipoKey === "inscripcion" ? "inscripción" : "reserva";
+  const href = tipoKey === "inscripcion" ? "/cursos" : "/reservas";
+  const label = tipoKey === "inscripcion" ? "Volver a cursos" : "Ver mis reservas";
 
   return (
     <div className="max-w-xl mx-auto text-center space-y-4">
       <h1 className="text-3xl font-bold text-green-500">Pago completado</h1>
       <p>
-        Hemos recibido correctamente tu pago. Estamos confirmando la {tipo} con la pasarela
-        y el estado cambiará automáticamente a pagado en unos instantes.
+        Hemos recibido correctamente tu pago. Estamos confirmando la {tipoLabel} con la
+        pasarela de cobro para que aparezca como pagada en tu panel.
       </p>
-      {pagoId && (
-        <>
-          <p className="text-sm text-gray-400">Identificador de pago: {pagoId}</p>
-          <SyncPago pagoId={pagoId} />
-        </>
+      {pagoId ? (
+        <div className="space-y-2">
+          <p className="text-sm text-gray-400">
+            Identificador interno del pago: {pagoId}
+          </p>
+          <PagoStatusWatcher pagoId={pagoId} tipo={tipoKey} />
+        </div>
+      ) : (
+        <p className="text-sm text-gray-400">
+          Si necesitas ayuda para localizar el pago, contacta con el equipo de soporte.
+        </p>
       )}
       <Link
         href={href}
@@ -39,5 +46,5 @@ export default async function PagoExitoPage ({
         {label}
       </Link>
     </div>
-  )
+  );
 }
