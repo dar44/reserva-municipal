@@ -11,6 +11,33 @@ import { getConfiguredCurrency, getReservaPriceValue } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
+function getIsoRangeFromDateTime (date: string, time: string) {
+  const [yearStr, monthStr, dayStr] = date.split('-')
+  const [hourStr, minuteStr] = time.split(':')
+
+  if (!yearStr || !monthStr || !dayStr || !hourStr || minuteStr === undefined) {
+    return null
+  }
+
+  const year = Number(yearStr)
+  const month = Number(monthStr)
+  const day = Number(dayStr)
+  const hour = Number(hourStr)
+  const minute = Number(minuteStr)
+
+  if ([year, month, day, hour, minute].some(n => Number.isNaN(n))) {
+    return null
+  }
+
+  const startAt = new Date(Date.UTC(year, month - 1, day, hour, minute))
+  const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
+
+  return {
+    startIso: startAt.toISOString(),
+    endIso: endAt.toISOString()
+  }
+}
+
 async function checkRecintoAvailability (recintoId: number, startIso: string, endIso: string) {
   const { data, error } = await supabaseAdmin
     .from('reservas')
@@ -35,20 +62,18 @@ export async function POST (req: Request) {
     const amountMinorUnits = toMinorUnits(reservaPrice, currency)
 
     if (req.headers.get('content-type')?.includes('application/json')) {
-      const { email, date, time, recinto_id, newUser, name, surname, dni, phone, fromWorker } = await req.json()
+      const { email, date, time, recinto_id, newUser, name, surname, dni, phone} = await req.json()
 
       const recintoId = Number(recinto_id)
       if (Number.isNaN(recintoId)) {
         return NextResponse.json({ error: 'invalid_recinto' }, { status: 400 })
       }
 
-      const startAt = new Date(`${date}T${time}:00`)
-      if (Number.isNaN(startAt.getTime())) {
+      const isoRange = getIsoRangeFromDateTime(date, time)
+      if (!isoRange) {
         return NextResponse.json({ error: 'invalid_datetime' }, { status: 400 })
       }
-      const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
-      const startIso = startAt.toISOString()
-      const endIso = endAt.toISOString()
+      const { startIso, endIso } = isoRange
 
       const availability = await checkRecintoAvailability(recintoId, startIso, endIso)
       if (availability.error) {
@@ -173,13 +198,11 @@ export async function POST (req: Request) {
       return NextResponse.json({ error: 'not_authenticated' }, { status: 401 })
     }
 
-    const startAt = new Date(`${date}T${time}:00`)
-    if (Number.isNaN(startAt.getTime())) {
+    const isoRange = getIsoRangeFromDateTime(date, time)
+    if (!isoRange) {
       return NextResponse.json({ error: 'invalid_datetime' }, { status: 400 })
     }
-    const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
-    const startIso = startAt.toISOString()
-    const endIso = endAt.toISOString()
+    const { startIso, endIso } = isoRange
 
     const availability = await checkRecintoAvailability(recintoId, startIso, endIso)
     if (availability.error) {
