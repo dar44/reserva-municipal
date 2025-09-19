@@ -20,7 +20,7 @@ export async function POST (req: Request) {
     const amountMinorUnits = toMinorUnits(reservaPrice, currency)
 
     if (req.headers.get('content-type')?.includes('application/json')) {
-      const { email, date, time, recinto_id, newUser, name, surname, dni, phone } = await req.json()
+      const { email, date, time, recinto_id, newUser, name, surname, dni, phone, fromWorker } = await req.json()
 
       let uid
       // Comprobar si el usuario ya existe por email para evitar errores de clave duplicada
@@ -95,14 +95,16 @@ export async function POST (req: Request) {
       }
 
       let checkout
+      const successBase = fromWorker ? '/pagos/exito/worker' : '/pagos/exito'
+      const cancelBase = '/pagos/cancelado'
       try {
         checkout = await createCheckout({
           variantId,
           storeId,
           customPrice: amountMinorUnits,
           customerEmail: email,
-          successUrl: `${origin}/pagos/exito?pago=${pago.id}&tipo=reserva`,
-          cancelUrl: `${origin}/pagos/cancelado?pago=${pago.id}&tipo=reserva`,
+          successUrl: `${origin}${successBase}?pago=${pago.id}&tipo=reserva`,
+          cancelUrl: `${origin}${cancelBase}?pago=${pago.id}&tipo=reserva`,
           metadata
         })
       } catch (error) {

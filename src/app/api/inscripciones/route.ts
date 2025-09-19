@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 export async function POST (req: Request) {
   try {
-    const { curso_id, email, newUser, name, surname, dni, phone } = await req.json()
+    const { curso_id, email, newUser, name, surname, dni, phone, fromWorker } = await req.json()
     const { origin } = new URL(req.url)
     const currency = getConfiguredCurrency()
 
@@ -93,14 +93,18 @@ export async function POST (req: Request) {
     }
 
     let checkout
+    const successBase = fromWorker ? '/pagos/exito/worker' : '/pagos/exito'
+    const successExtra = fromWorker ? `&curso=${curso_id}` : ''
+    const cancelBase = '/pagos/cancelado'
+
     try {
       checkout = await createCheckout({
         variantId: getInscripcionVariantId(),
         storeId: getLemonStoreId(),
         customPrice: amountMinorUnits,
         customerEmail: email,
-        successUrl: `${origin}/pagos/exito?pago=${pago.id}&tipo=inscripcion`,
-        cancelUrl: `${origin}/pagos/cancelado?pago=${pago.id}&tipo=inscripcion`,
+        successUrl: `${origin}${successBase}?pago=${pago.id}&tipo=inscripcion${successExtra}`,
+        cancelUrl: `${origin}${cancelBase}?pago=${pago.id}&tipo=inscripcion`,
         metadata: {
           pago_id: pago.id,
           tipo: 'inscripcion',

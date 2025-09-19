@@ -15,6 +15,7 @@ export default function InscripcionForm ({ cursoId }: { cursoId: number }) {
       curso_id: cursoId,
       email: formData.get('email') as string,
       newUser: isNew,
+      fromWorker:true,
     }
     if (isNew) {
       Object.assign(payload, {

@@ -17,6 +17,7 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
       time: formData.get('time') as string,
       email: formData.get('email') as string,
       newUser: isNew,
+      fromWorker:true,
     }
     if (isNew) {
       Object.assign(payload, {

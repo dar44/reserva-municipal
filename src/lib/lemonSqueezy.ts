@@ -14,6 +14,19 @@ type CheckoutResponse = {
   url: string
 }
 
+type CheckoutDetails = {
+  id: string
+  status?: string | null
+  orderId?: string | null
+}
+
+type OrderDetails = {
+  id: string
+  status?: string | null
+  total?: number | null
+  currency?: string | null
+}
+
 type VariantInfo = {
   variantId: string
   storeId: string
@@ -255,4 +268,81 @@ export function verifyWebhookSignature (payload: string, signature: string | nul
     return false
   }
   return crypto.timingSafeEqual(received, expected)
+
+  }
+
+export async function getCheckout (checkoutId: string): Promise<CheckoutDetails> {
+  const response = await lemonFetch(`/checkouts/${checkoutId}?include=order`)
+
+  if (response.status === 404) {
+    throw new Error('checkout_not_found')
+  }
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Lemon Squeezy error: ${response.status} ${error}`)
+  }
+
+  const payload = await response.json() as {
+    data?: {
+      id?: string
+      attributes?: {
+        status?: string | null
+        order_id?: number | string | null
+      }
+      relationships?: {
+        order?: { data?: { id?: string | number | null } | null }
+      }
+    }
+  }
+
+  const data = payload.data ?? {}
+  const attributes = data.attributes ?? {}
+  const relationships = data.relationships ?? {}
+
+  let orderId: string | null = null
+  const relOrderId = relationships.order?.data?.id
+  if (relOrderId != null) orderId = String(relOrderId)
+  const attrOrderId = attributes.order_id
+  if (!orderId && attrOrderId != null) orderId = String(attrOrderId)
+
+  return {
+    id: data.id ?? checkoutId,
+    status: attributes.status ?? null,
+    orderId
+  }
+}
+
+export async function getOrder (orderId: string): Promise<OrderDetails> {
+  const response = await lemonFetch(`/orders/${orderId}`)
+
+  if (response.status === 404) {
+    throw new Error('order_not_found')
+  }
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Lemon Squeezy error: ${response.status} ${error}`)
+  }
+
+  const payload = await response.json() as {
+    data?: {
+      id?: string
+      attributes?: {
+        status?: string | null
+        total?: number | null
+        currency?: string | null
+      }
+    }
+  }
+
+  const data = payload.data ?? {}
+  const attributes = data.attributes ?? {}
+
+  return {
+    id: data.id ?? orderId,
+    status: attributes.status ?? null,
+    total: attributes.total ?? null,
+    currency: attributes.currency ?? null
+  }
 }
