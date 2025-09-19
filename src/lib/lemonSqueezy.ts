@@ -100,11 +100,14 @@ async function fetchVariant (variantId: string): Promise<VariantInfo | null> {
 
   const id = payload.data?.id
   const storeId = payload.data?.attributes?.store_id
-  if (!id || !storeId) {
+  if (!id) {
     throw new Error('Respuesta de Lemon Squeezy incompleta al obtener la variante')
   }
 
-  const info: VariantInfo = { variantId: id, storeId: String(storeId) }
+  const info: VariantInfo = {
+    variantId: id,
+    storeId: storeId != null ? String(storeId) : getLemonStoreId()
+  }
   VARIANT_CACHE.set(variantId, info)
   VARIANT_CACHE.set(id, info)
   return info
@@ -148,13 +151,15 @@ async function fetchVariantFromProduct (productId: string): Promise<VariantInfo 
   const variantRecord = includedVariants.find((variant) => variant.id === firstVariantId) ?? includedVariants[0]
 
   const resolvedId = variantRecord?.id
-  const storeId = variantRecord?.attributes?.store_id
-
-  if (!resolvedId || !storeId) {
+  if (!resolvedId) {
     throw new Error('El producto de Lemon Squeezy no tiene variantes disponibles')
   }
 
-  const info: VariantInfo = { variantId: resolvedId, storeId: String(storeId) }
+  const storeId = variantRecord?.attributes?.store_id
+  const info: VariantInfo = {
+    variantId: resolvedId,
+    storeId: storeId != null ? String(storeId) : getLemonStoreId()
+  }
   VARIANT_CACHE.set(productId, info)
   VARIANT_CACHE.set(resolvedId, info)
   return info
@@ -194,8 +199,8 @@ export async function createCheckout ({
             email: customerEmail,
             custom: serializeMetadata(metadata)
           },
-          product_options: {
-            redirect_url: successUrl,
+          checkout_options: {
+            success_url: successUrl,
             cancel_url: cancelUrl
           },
           custom_price: customPrice,

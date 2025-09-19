@@ -1,11 +1,16 @@
 import type { CurrencyCode } from './currency'
 
+const FALLBACK_RESERVA_PRICE = 500
+
 export function getReservaPriceValue (): number {
   const raw =
     process.env.RESERVA_PRICE ??
     process.env.RESERVA_PRICE_CLP ??
-    process.env.RESERVA_PRICE_EUR ??
-    '0'
+    process.env.RESERVA_PRICE_EUR
+
+  if (raw === undefined) {
+    return FALLBACK_RESERVA_PRICE
+  }
 
   const price = Number(raw)
   if (!Number.isFinite(price) || price <= 0) {
