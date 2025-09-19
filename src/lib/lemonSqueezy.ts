@@ -219,12 +219,10 @@ export async function createCheckout ({
         },
         //  redirect_url va en product_options
         product_options: {
-          redirect_url: successUrl
-        },
-        checkout_options: {
+          redirect_url: successUrl,
           enabled_variants: [String(variantInfo.variantId)]
         }
-        
+
       },
       relationships: {
         ...(resolvedStoreId ? {
