@@ -22,9 +22,12 @@ export default function SyncPago ({ pagoId }: Props) {
 
     const sync = async () => {
       try {
-        const res = await fetch(`/api/pagos/${pagoId}/sync`, { method: 'POST' })
-        const data = await res.json().catch(() => ({})) as { estado?: string; error?: string }
-
+        const res = await fetch(`/api/pagos/${encodeURIComponent(pagoId)}`, {
+          cache: 'no-store'
+        })
+        const data = await res
+          .json()
+          .catch(() => ({})) as { estado?: string | null; error?: string | null }
         if (abort) return
 
         if (!res.ok) {
@@ -32,7 +35,19 @@ export default function SyncPago ({ pagoId }: Props) {
           return
         }
 
-        const nuevoEstado = (data?.estado as EstadoPago | undefined) ?? 'desconocido'
+         const estadoNormalizado = typeof data?.estado === 'string'
+          ? data.estado.toLowerCase()
+          : undefined
+        const nuevoEstado: EstadoPago =
+          estadoNormalizado === 'pagado' ||
+          estadoNormalizado === 'pendiente' ||
+          estadoNormalizado === 'fallido' ||
+          estadoNormalizado === 'reembolsado' ||
+          estadoNormalizado === 'cancelado'
+            ? estadoNormalizado
+            : 'desconocido'
+
+        setError(null)
         setEstado(nuevoEstado)
         intentosRef.current += 1
 
