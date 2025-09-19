@@ -9,7 +9,7 @@ import { mapEstado, updateRelated } from '@/app/api/lemon/utils'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-type Params = { params: { id: string } }
+type Params = { params: Promise<{ id: string }> }
 
 function parsePagoId (rawId: string): number | null {
   const id = Number(rawId)
@@ -17,7 +17,8 @@ function parsePagoId (rawId: string): number | null {
 }
 
 export async function POST (_req: Request, { params }: Params) {
-  const pagoId = parsePagoId(params.id)
+  const { id } = await params
+  const pagoId = parsePagoId(id)
   if (!pagoId) {
     return NextResponse.json({ error: 'invalid_pago_id' }, { status: 400 })
   }

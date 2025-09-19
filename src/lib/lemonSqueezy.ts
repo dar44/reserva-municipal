@@ -278,7 +278,7 @@ export type CheckoutStatusResult = {
 }
 
 export async function getCheckoutStatus (checkoutId: string): Promise<CheckoutStatusResult | null> {
-  const response = await lemonFetch(`/checkouts/${checkoutId}?include=order`)
+  const response = await lemonFetch(`/checkouts/${checkoutId}`)
 
   if (response.status === 404) {
     return null
@@ -380,7 +380,7 @@ export function verifyWebhookSignature (payload: string, signature: string | nul
   }
 
 export async function getCheckout (checkoutId: string): Promise<CheckoutDetails> {
-  const response = await lemonFetch(`/checkouts/${checkoutId}?include=order`)
+  const response = await lemonFetch(`/checkouts/${checkoutId}`)
 
   if (response.status === 404) {
     throw new Error('checkout_not_found')
