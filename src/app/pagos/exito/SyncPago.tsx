@@ -1,6 +1,8 @@
 'use client'
-
 import { useEffect, useRef, useState } from 'react'
+
+const RETRY_DELAY_MS = 4000
+const MAX_INTENTOS = 10
 
 type Props = {
   pagoId?: string
@@ -21,6 +23,7 @@ export default function SyncPago ({ pagoId }: Props) {
     intentosRef.current = 0
 
     const sync = async () => {
+        intentosRef.current += 1
       try {
         const res = await fetch(`/api/pagos/${encodeURIComponent(pagoId)}`, {
           cache: 'no-store'
@@ -31,7 +34,11 @@ export default function SyncPago ({ pagoId }: Props) {
         if (abort) return
 
         if (!res.ok) {
-          setError(data?.error ?? 'No se pudo confirmar el estado del pago')
+           if (intentosRef.current >= MAX_INTENTOS) {
+            setError(data?.error ?? `Error ${res.status}`)
+          } else {
+            timeout = setTimeout(sync, RETRY_DELAY_MS)
+          }
           return
         }
 
@@ -49,15 +56,21 @@ export default function SyncPago ({ pagoId }: Props) {
 
         setError(null)
         setEstado(nuevoEstado)
-        intentosRef.current += 1
-
-        if (nuevoEstado !== 'pagado' && intentosRef.current < 5) {
-          timeout = setTimeout(sync, 4000)
+        if (nuevoEstado !== 'pagado') {
+          if (intentosRef.current >= MAX_INTENTOS) {
+            setError('No se pudo confirmar el estado del pago automáticamente')
+          } else {
+            timeout = setTimeout(sync, RETRY_DELAY_MS)
+          }
         }
       } catch (e) {
         if (abort) return
         const message = e instanceof Error ? e.message : 'No se pudo confirmar el estado del pago'
-        setError(message)
+        if (intentosRef.current >= MAX_INTENTOS) {
+          setError(message)
+        } else {
+          timeout = setTimeout(sync, RETRY_DELAY_MS)
+        }
       }
     }
 

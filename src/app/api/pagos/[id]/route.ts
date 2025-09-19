@@ -1,6 +1,10 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
-import { getCheckoutStatus, getOrder } from "@/lib/lemonSqueezy";
+import {
+  findOrderByCheckoutId,
+  getCheckoutStatus,
+  getOrder
+} from "@/lib/lemonSqueezy";
 import {
   mapCheckoutStatusToPagoEstado,
   normalizePagoEstado,
@@ -89,7 +93,7 @@ export async function GET(
     }
 
     let estado = mapCheckoutStatusToPagoEstado(checkout.status);
-    const orderId = checkout.orderId ?? pago.order_id ?? null;
+    let orderId = checkout.orderId ?? pago.order_id ?? null;
     const extraUpdates: Record<string, unknown> = {};
 
     if (estado === "pendiente" && orderId) {
@@ -110,6 +114,31 @@ export async function GET(
           orderError instanceof Error ? orderError.message : "order_sync_failed";
       }
     }
+
+     if (estado === "pendiente") {
+      try {
+        const order = await findOrderByCheckoutId(pago.checkout_id);
+        if (order) {
+          orderId = order.id;
+          const orderEstado = mapCheckoutStatusToPagoEstado(order.status);
+          if (orderEstado !== "pendiente") {
+            estado = orderEstado;
+          }
+          if (order.total != null) {
+            extraUpdates.monto_centavos = order.total;
+          }
+          if (order.currency) {
+            extraUpdates.moneda = order.currency;
+          }
+        }
+      } catch (orderLookupError) {
+        basePayload.orderLookupError =
+          orderLookupError instanceof Error
+            ? orderLookupError.message
+            : "order_lookup_failed";
+      }
+    }
+
 
     basePayload.estado = estado;
     if (orderId) {

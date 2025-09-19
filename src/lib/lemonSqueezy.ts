@@ -453,3 +453,42 @@ export async function getOrder (orderId: string): Promise<OrderDetails> {
     currency: attributes.currency ?? null
   }
 }
+type OrdersListResponse = {
+  data?: Array<{
+    id?: string | number | null
+    attributes?: {
+      status?: string | null
+      total?: number | null
+      currency?: string | null
+      [key: string]: unknown
+    } | null
+  }> | null
+}
+
+export async function findOrderByCheckoutId (checkoutId: string): Promise<OrderDetails | null> {
+  const response = await lemonFetch(`/orders?filter[checkout_id]=${encodeURIComponent(checkoutId)}&page[size]=1`)
+
+  if (response.status === 404) {
+    return null
+  }
+
+  if (!response.ok) {
+    const error = await response.text()
+    throw new Error(`Lemon Squeezy error: ${response.status} ${error}`)
+  }
+
+  const payload = await response.json() as OrdersListResponse
+  const first = payload.data?.[0]
+  if (!first?.id) {
+    return null
+  }
+
+  const attributes = first.attributes ?? {}
+
+  return {
+    id: String(first.id),
+    status: typeof attributes.status === 'string' ? attributes.status : null,
+    total: typeof attributes.total === 'number' ? attributes.total : null,
+    currency: typeof attributes.currency === 'string' ? attributes.currency : null
+  }
+}

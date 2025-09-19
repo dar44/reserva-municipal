@@ -3,7 +3,9 @@
 import { JSX, useEffect, useState } from "react";
 import type { PagoEstado } from "@/lib/pagos";
 
-const MAX_ATTEMPTS = 8;
+const RETRY_DELAY_MS = 2000;
+const MAX_ATTEMPTS = 10;
+
 const TERMINAL_ESTADOS: PagoEstado[] = [
   "pagado",
   "fallido",
@@ -78,7 +80,7 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
           } else {
             setFinalError(null);
             setSyncing(true);
-            timeout = setTimeout(poll, 2000);
+            timeout = setTimeout(poll,  RETRY_DELAY_MS);
           }
           return;
         }
@@ -97,7 +99,7 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
 
         setFinalError(null);
         setSyncing(true);
-        timeout = setTimeout(poll, 2000);
+        timeout = setTimeout(poll, RETRY_DELAY_MS);
       } catch (error) {
         if (!active) return;
         if (attempt >= MAX_ATTEMPTS) {
@@ -108,7 +110,7 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
         } else {
           setFinalError(null);
           setSyncing(true);
-          timeout = setTimeout(poll, 2000);
+          timeout = setTimeout(poll, RETRY_DELAY_MS);
         }
       }
     };
