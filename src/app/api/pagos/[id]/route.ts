@@ -9,9 +9,7 @@ import {
 
 export const dynamic = "force-dynamic";
 
-type RouteContext = {
-  params: { id: string };
-};
+
 
 type PagoRecord = {
   id: string;
@@ -54,10 +52,13 @@ async function applyEstadoUpdate(
   }
 }
 
-export async function GET(req: Request, context: RouteContext) {
-  const { id } = context.params;
+export async function GET(
+  req: Request,
+  { params }: { params: { id: string } },
+) {
+  const { id } = params;
 
-  const { data: pago, error: pagoErr } = await supabaseAdmin
+  const { data: pago } = await supabaseAdmin
     .from("pagos")
     .select("*")
     .eq("id", id)
