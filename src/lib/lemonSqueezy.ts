@@ -61,12 +61,17 @@ function serializeMetadata (metadata: CheckoutRequest['metadata']): Record<strin
 async function lemonFetch (path: string, init: RequestInit = {}): Promise<Response> {
   const apiKey = getLemonApiKey()
   const headers = new Headers(init.headers ?? {})
-  headers.set('Accept', 'application/json')
+
+  // ✅ JSON:API siempre
+  headers.set('Accept', 'application/vnd.api+json')
   headers.set('Authorization', `Bearer ${apiKey}`)
   headers.set('User-Agent', 'reserva-municipal/1.0')
+
+  // Para POST/PUT con body
   if (init.body && !headers.has('Content-Type')) {
     headers.set('Content-Type', 'application/vnd.api+json')
   }
+
   try {
     return await fetch(`${API_BASE_URL}${path}`, { ...init, headers })
   } catch (error) {
@@ -181,7 +186,7 @@ export async function createCheckout ({
   customPrice,
   customerEmail,
   successUrl,
-  cancelUrl,
+  cancelUrl, // <- no se usa en el payload
   metadata
 }: CheckoutRequest): Promise<CheckoutResponse> {
   const variantInfo = await resolveVariant(variantId)
@@ -189,37 +194,37 @@ export async function createCheckout ({
     ? storeId
     : variantInfo.storeId
 
+  const body = {
+    data: {
+      type: 'checkouts',
+      attributes: {
+        custom_price: customPrice, // requiere "Allow custom price" en la variante
+        checkout_data: {
+          email: customerEmail,
+          custom: serializeMetadata(metadata)
+        },
+        // ✅ redirect_url va en product_options
+        product_options: {
+          redirect_url: successUrl,
+          // Si quieres ocultar otras variantes:
+          enabled_variants: [Number(variantInfo.variantId)]
+        }
+        // ❌ NO pongas aquí checkout_options con success/cancel
+        // checkout_options lo puedes usar si quieres UI (embed, colors...)
+        // checkout_options: { embed: true }
+      },
+      relationships: {
+        ...(resolvedStoreId ? {
+          store: { data: { type: 'stores', id: String(resolvedStoreId) } }
+        } : {}),
+        variant: { data: { type: 'variants', id: String(variantInfo.variantId) } }
+      }
+    }
+  }
+
   const response = await lemonFetch('/checkouts', {
     method: 'POST',
-    body: JSON.stringify({
-      data: {
-        type: 'checkouts',
-        attributes: {
-          checkout_data: {
-            email: customerEmail,
-            custom: serializeMetadata(metadata)
-          },
-          checkout_options: {
-            success_url: successUrl,
-            cancel_url: cancelUrl
-          },
-          custom_price: customPrice,
-          ...(resolvedStoreId ? { store_id: Number(resolvedStoreId) } : {})
-        },
-        relationships: {
-          ...(resolvedStoreId
-            ? {
-                store: {
-                  data: { type: 'stores', id: resolvedStoreId }
-                }
-              }
-            : {}),
-          variant: {
-            data: { type: 'variants', id: variantInfo.variantId }
-          }
-        }
-      }
-    })
+    body: JSON.stringify(body)
   })
 
   if (!response.ok) {
@@ -228,23 +233,16 @@ export async function createCheckout ({
   }
 
   const payload = await response.json() as {
-    data?: {
-      id: string
-      attributes?: {
-        url?: string
-      }
-    }
+    data?: { id: string; attributes?: { url?: string } }
   }
 
   const checkoutUrl = payload.data?.attributes?.url
   const checkoutId = payload.data?.id
-
-  if (!checkoutUrl || !checkoutId) {
-    throw new Error('Respuesta de Lemon Squeezy incompleta')
-  }
+  if (!checkoutUrl || !checkoutId) throw new Error('Respuesta de Lemon Squeezy incompleta')
 
   return { id: checkoutId, url: checkoutUrl }
 }
+
 
 export function verifyWebhookSignature (payload: string, signature: string | null): boolean {
   if (!signature) return false
