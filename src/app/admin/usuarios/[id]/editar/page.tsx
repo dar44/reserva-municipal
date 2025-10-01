@@ -54,6 +54,9 @@ export default async function EditUsuarioPage ({ params }: Props) {
     }
     const password = (formData.get('password') as string) || ''
 
+    if (!usuario) {
+      throw new Error('Usuario not found')
+    }
     const imageResult = await processUserImageInput({
       formData,
       supabase: supabaseAdmin,

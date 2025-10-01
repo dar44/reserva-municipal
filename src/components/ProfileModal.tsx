@@ -30,6 +30,7 @@ interface ProfileData {
 }
 
 type EditableField = 'name' | 'surname' | 'dni' | 'phone'
+type ImageMode = 'keep' | 'default' | 'upload' | 'none'
 
 const fieldLabels: Record<EditableField, string> = {
   name: 'Nombre',
@@ -54,6 +55,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [tempValue, setTempValue] = useState('')
   const [imageUrl, setImageUrl] = useState<string | null>(null)
   const [imageEditing, setImageEditing] = useState(false)
+  const [imageMode, setImageMode] = useState<ImageMode>('keep')
   const [imageFile, setImageFile] = useState<File | null>(null)
   const [imageDefault, setImageDefault] = useState('')
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
@@ -114,16 +116,16 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
   useEffect(() => {
     let cancelled = false
-    if (imageFile) {
+    let cleanup: (() => void) | undefined
+
+    if (imageMode === 'upload' && imageFile) {
       const objectUrl = URL.createObjectURL(imageFile)
       setImagePreviewUrl(objectUrl)
-      return () => {
-        cancelled = true
+      cleanup = () => {
         URL.revokeObjectURL(objectUrl)
       }
-    }
 
-    if (imageDefault) {
+    } else if (imageMode === 'default' && imageDefault) {
       (async () => {
         const url = await buildStorageUrl(
           supabase,
@@ -138,8 +140,9 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
     return () => {
       cancelled = true
+      if (cleanup) cleanup()
     }
-  }, [imageFile, imageDefault])
+  }, [imageFile, imageDefault, imageMode])
 
   const startEdit = (field: EditableField) => {
     setFieldEditing(field)
@@ -184,6 +187,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
   const cancelImageEdit = () => {
     setImageEditing(false)
+    setImageMode('keep')
     setImageFile(null)
     setImageDefault('')
     setImagePreviewUrl(null)
@@ -200,7 +204,16 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
     let newImagePath: string | null = profile.image
     let newBucket: string | null = profile.image_bucket
 
-    if (imageFile && imageFile.size > 0) {
+    if (imageMode === 'keep') {
+      cancelImageEdit()
+      return
+    }
+
+    if (imageMode === 'upload') {
+      if (!imageFile || imageFile.size === 0) {
+        toast({ type: 'error', message: 'Selecciona un archivo de imagen' })
+        return
+      }
       const uploadPath = buildUserProfilePath(userUid, imageFile.name)
       const { error: uploadError } = await supabase.storage
         .from(USER_STORAGE_BUCKET)
@@ -214,10 +227,14 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       }
       newImagePath = uploadPath
       newBucket = USER_STORAGE_BUCKET
-    } else if (imageDefault) {
+    } else if (imageMode === 'default') {
+      if (!imageDefault) {
+        toast({ type: 'error', message: 'Selecciona una imagen predeterminada' })
+        return
+      }
       newImagePath = imageDefault
       newBucket = USER_STORAGE_BUCKET
-    } else {
+    } else if (imageMode === 'none') {
       newImagePath = null
       newBucket = null
     }
@@ -337,18 +354,36 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
             {editing && !imageEditing && (
               <button
                 onClick={() => {
-                  setImageEditing(true)
-                  if (
+                  const hasDefaults = defaultImages.length > 0
+                  const isDefaultImage =
                     profile.image_bucket === USER_STORAGE_BUCKET &&
                     typeof profile.image === 'string' &&
                     profile.image.startsWith(`${USER_DEFAULTS_FOLDER}/`)
-                  ) {
-                    setImageDefault(profile.image)
+                  const hasImage = Boolean(profile.image)
+
+                  let nextMode: ImageMode
+                  if (isDefaultImage && hasDefaults) {
+                    nextMode = 'default'
+                  } else if (hasImage) {
+                    nextMode = 'keep'
+                  } else if (hasDefaults) {
+                    nextMode = 'default'
+                  } else {
+                    nextMode = 'upload'
+                  }
+
+                  setImageMode(nextMode)
+                  if (nextMode === 'default') {
+                    const fallback = isDefaultImage
+                      ? (profile.image ?? '')
+                      : defaultImages[0]?.path ?? ''
+                    setImageDefault(fallback)
                   } else {
                     setImageDefault('')
                   }
                   setImageFile(null)
                   setImagePreviewUrl(null)
+                  setImageEditing(true)
                 }}
                 className="text-blue-600 text-xs"
               >
@@ -358,36 +393,109 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
           </div>
 
           {editing && imageEditing && (
-            <div className="space-y-2 border rounded p-2 bg-gray-50">
-              <input
-                type="file"
-                accept="image/*"
-                onChange={event => {
-                  const file = event.target.files?.[0] ?? null
-                  setImageFile(file)
-                  if (file) {
-                    setImageDefault('')
-                  }
-                }}
-                className="w-full text-xs"
-              />
-              <select
-                value={imageDefault}
-                onChange={event => {
-                  setImageDefault(event.target.value)
-                  if (event.target.value) {
-                    setImageFile(null)
-                  }
-                }}
-                className="w-full border rounded p-1 text-xs"
-              >
-                <option value="">Sin cambio / Ninguna</option>
-                {defaultImages.map(option => (
-                  <option key={option.path} value={option.path}>
-                    {option.name}
-                  </option>
-                ))}
-              </select>
+            <div className="space-y-3 border rounded p-2 bg-gray-50">
+              <div className="space-y-2 text-xs">
+                <label className={`flex items-center gap-2 ${profile.image ? '' : 'opacity-60'}`}>
+                  <input
+                    type="radio"
+                    name="profile_image_option"
+                    value="keep"
+                    checked={imageMode === 'keep'}
+                    onChange={() => {
+                      setImageMode('keep')
+                      setImageFile(null)
+                      setImagePreviewUrl(null)
+                    }}
+                    disabled={!profile.image}
+                  />
+                  Mantener imagen actual
+                </label>
+
+                <label className={`flex flex-col gap-2 ${defaultImages.length === 0 ? 'opacity-60' : ''}`}>
+                  <span className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="profile_image_option"
+                      value="default"
+                      checked={imageMode === 'default'}
+                      onChange={() => {
+                        setImageMode('default')
+                        if (!imageDefault && defaultImages[0]) {
+                          setImageDefault(defaultImages[0].path)
+                        }
+                        setImageFile(null)
+                      }}
+                      disabled={defaultImages.length === 0}
+                    />
+                    Usar imagen predeterminada
+                  </span>
+                  <select
+                    value={imageDefault}
+                    onChange={event => {
+                      setImageDefault(event.target.value)
+                      setImageMode('default')
+                      setImageFile(null)
+                    }}
+                    disabled={defaultImages.length === 0 || imageMode !== 'default'}
+                    className="w-full border rounded p-1"
+                  >
+                    {defaultImages.length === 0 && <option value="">Sin opciones disponibles</option>}
+                    {defaultImages.map(option => (
+                      <option key={option.path} value={option.path}>
+                        {option.name}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+
+                <label className="flex flex-col gap-2">
+                  <span className="flex items-center gap-2">
+                    <input
+                      type="radio"
+                      name="profile_image_option"
+                      value="upload"
+                      checked={imageMode === 'upload'}
+                      onChange={() => {
+                        setImageMode('upload')
+                        setImageDefault('')
+                        setImageFile(null)
+                        setImagePreviewUrl(null)
+                      }}
+                    />
+                    Subir nueva imagen
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={event => {
+                      const file = event.target.files?.[0] ?? null
+                      setImageFile(file)
+                      if (file) {
+                        setImageMode('upload')
+                        setImageDefault('')
+                      }
+                    }}
+                    disabled={imageMode !== 'upload'}
+                    className="w-full text-xs"
+                  />
+                </label>
+
+                <label className="flex items-center gap-2">
+                  <input
+                    type="radio"
+                    name="profile_image_option"
+                    value="none"
+                    checked={imageMode === 'none'}
+                    onChange={() => {
+                      setImageMode('none')
+                      setImageFile(null)
+                      setImageDefault('')
+                      setImagePreviewUrl(null)
+                    }}
+                  />
+                  Quitar imagen
+                </label>
+              </div>
               {imagePreviewUrl && (
                 <div className="flex justify-center">
                   <Image

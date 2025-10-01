@@ -1,13 +1,26 @@
 import Link from 'next/link'
-import { randomUUID } from 'crypto'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
+import CourseImagePicker from '@/components/CursoImagePicker'
+import {
+  COURSE_DEFAULTS_FOLDER,
+  COURSE_IMAGE_BUCKET,
+  processCourseImageInput,
+} from '@/lib/cursoImages'
+import { listBucketPrefix } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
-export default function NuevoCursoPage () {
+export default async function NuevoCursoPage () {
+  const supabase = await createSupabaseServer()
+  const defaultImages = await listBucketPrefix(
+    supabase,
+    COURSE_IMAGE_BUCKET,
+    COURSE_DEFAULTS_FOLDER,
+  )
+
   const crearCurso = async (formData: FormData) => {
     'use server'
     const supabase = await createSupabaseServer()
@@ -15,32 +28,14 @@ export default function NuevoCursoPage () {
     const begining_date = (formData.get('begining_date') as string) || null
     const end_date = (formData.get('end_date') as string) || null
 
-    let image: string | null = null
-    let image_bucket: string | null = null
-    let uploadedImagePath: string | null = null
-
-    const imageFile = formData.get('image_file')
-    if (imageFile instanceof File && imageFile.size > 0) {
-      const extension = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg'
-      const filePath = `course-images/${randomUUID()}.${extension}`
-      const fileBuffer = await imageFile.arrayBuffer()
-
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('cursos')
-        .upload(filePath, fileBuffer, {
-          contentType: imageFile.type || 'application/octet-stream',
-          upsert: false,
-        })
-
-      if (uploadError) {
-        console.error('UPLOAD curso image error:', uploadError)
-        throw new Error(uploadError.message)
-      }
-
-      image = uploadData.path
-      image_bucket = 'cursos'
-      uploadedImagePath = uploadData.path
-    }
+    const {
+      image,
+      image_bucket,
+      uploadedPath: uploadedImagePath,
+    } = await processCourseImageInput({
+      supabase,
+      formData,
+    })
 
     const data = {
       name: String(formData.get('name') || ''),
@@ -144,16 +139,7 @@ export default function NuevoCursoPage () {
           placeholder="Capacidad"
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
-        <div className="space-y-1">
-          <label className="block text-sm font-medium">Imagen del curso</label>
-          <input
-            type="file"
-            name="image_file"
-            accept="image/*"
-            className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-          />
-          <p className="text-xs text-gray-400">Si no subes ninguna imagen se mostrará una imagen por defecto.</p>
-        </div>
+       <CourseImagePicker defaultImages={defaultImages} />
         <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Crear</button>
       </form>
     </div>

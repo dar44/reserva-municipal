@@ -1,11 +1,16 @@
-import { randomUUID } from 'crypto'
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import Image from 'next/image'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
-import { getPublicStorageUrl } from '@/lib/storage'
+import CourseImagePicker from '@/components/CursoImagePicker'
+import {
+  COURSE_DEFAULTS_FOLDER,
+  COURSE_IMAGE_BUCKET,
+  processCourseImageInput,
+} from '@/lib/cursoImages'
+import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,6 +34,11 @@ export default async function EditarCursoPage({
   if (!curso) return notFound()
 
   const imageUrl = getPublicStorageUrl(supabase, curso.image, curso.image_bucket)
+  const defaultImages = await listBucketPrefix(
+    supabase,
+    COURSE_IMAGE_BUCKET,
+    COURSE_DEFAULTS_FOLDER,
+  )
 
   const actualizarCurso = async (formData: FormData) => {
     'use server'
@@ -38,43 +48,17 @@ export default async function EditarCursoPage({
       const begining_date = (formData.get('begining_date') as string) || null
       const end_date      = (formData.get('end_date') as string) || null
 
-      const imageFile = formData.get('image_file')
-      const removeImage = formData.get('remove_image') === 'on'
-
-      let image = curso.image
-      let image_bucket = curso.image_bucket
-      let uploadedImagePath: string | null = null
-      let previousImageToRemove: { bucket: string; path: string } | null = null
-
-      if (imageFile instanceof File && imageFile.size > 0) {
-        const extension = imageFile.name.split('.').pop()?.toLowerCase() || 'jpg'
-        const filePath = `course-images/${randomUUID()}.${extension}`
-        const fileBuffer = await imageFile.arrayBuffer()
-
-        const { data: uploadData, error: uploadError } = await supabase.storage
-          .from('cursos')
-          .upload(filePath, fileBuffer, {
-            contentType: imageFile.type || 'application/octet-stream',
-            upsert: false,
-          })
-
-        if (uploadError) {
-          console.error('UPLOAD curso image error:', uploadError)
-          throw new Error(uploadError.message)
-        }
-
-        if (image && image_bucket) {
-          previousImageToRemove = { bucket: image_bucket, path: image }
-        }
-
-        image = uploadData.path
-        image_bucket = 'cursos'
-        uploadedImagePath = uploadData.path
-      } else if (removeImage && image && image_bucket) {
-        previousImageToRemove = { bucket: image_bucket, path: image }
-        image = null
-        image_bucket = null
-      }
+      const {
+        image,
+        image_bucket,
+        uploadedPath: uploadedImagePath,
+        previousImageToRemove,
+      } = await processCourseImageInput({
+        supabase,
+        formData,
+        currentImage: curso.image,
+        currentBucket: curso.image_bucket,
+      })
 
       const data = {
         name:        String(formData.get('name') || ''),
@@ -226,20 +210,11 @@ export default async function EditarCursoPage({
               <span>Sin imagen personalizada</span>
             )}
           </div>
-          <input
-            type="file"
-            name="image_file"
-            accept="image/*"
-            className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+          <CourseImagePicker
+            defaultImages={defaultImages}
+            initialImage={curso.image}
+            initialBucket={curso.image_bucket}
           />
-          <label className={`flex items-center gap-2 text-sm ${curso.image ? '' : 'text-gray-500'}`}>
-            <input
-              type="checkbox"
-              name="remove_image"
-              disabled={!curso.image}
-            />
-            <span>Eliminar la imagen actual y usar la imagen por defecto</span>
-          </label>
         </div>
 
         <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Guardar</button>
