@@ -7,10 +7,10 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import {
   USER_DEFAULTS_FOLDER,
   USER_STORAGE_BUCKET,
-  buildUserProfilePath,
-  isUserProfileObject,
   listBucketPrefix
 } from '@/lib/storage'
+import UserImagePicker from '@/components/UserImagePicker'
+import { processUserImageInput } from '@/lib/userImages'
 
 export const dynamic = 'force-dynamic'
 
@@ -54,32 +54,16 @@ export default async function EditUsuarioPage ({ params }: Props) {
     }
     const password = (formData.get('password') as string) || ''
 
-    const imageFile = formData.get('imageFile') as File | null
-    const defaultImage = (formData.get('imageDefault') as string) || ''
-    const removeImage = Boolean(formData.get('imageRemove'))
+    const imageResult = await processUserImageInput({
+      formData,
+      supabase: supabaseAdmin,
+      userUid: id,
+      currentImage: usuario.image ?? null,
+      currentBucket: usuario.image_bucket ?? null
+    })
 
-    let imageBucket: string | null = usuario ? usuario.image_bucket ?? null : null
-    let imagePath: string | null = usuario ? usuario.image ?? null : null
-
-    if (imageFile && imageFile.size > 0) {
-      const uploadPath = buildUserProfilePath(id, imageFile.name)
-      const { error: uploadError } = await supabaseAdmin.storage
-        .from(USER_STORAGE_BUCKET)
-        .upload(uploadPath, imageFile, {
-          cacheControl: '3600',
-          upsert: true
-        })
-      if (!uploadError) {
-        imageBucket = USER_STORAGE_BUCKET
-        imagePath = uploadPath
-      }
-    } else if (defaultImage) {
-      imageBucket = USER_STORAGE_BUCKET
-      imagePath = defaultImage
-    } else if (removeImage) {
-      imageBucket = null
-      imagePath = null
-    }
+    const imageBucket = imageResult.image_bucket
+    const imagePath = imageResult.image
 
     await supabaseAdmin.auth.admin.updateUserById(id, {
       email: payload.email,
@@ -107,19 +91,6 @@ export default async function EditUsuarioPage ({ params }: Props) {
       updated_at: new Date().toISOString()
     }).eq('uid', id)
 
-    if (
-      usuario &&
-      usuario.image &&
-      usuario.image_bucket === USER_STORAGE_BUCKET &&
-      imagePath !== usuario.image &&
-      isUserProfileObject(usuario.image, id)
-    ) {
-      await supabaseAdmin.storage
-        .from(USER_STORAGE_BUCKET)
-        .remove([usuario.image])
-        .catch(() => {})
-    }
-
     revalidatePath(`/admin/usuarios/${id}`)
     revalidatePath('/admin/usuarios')
     redirect(`/admin/usuarios/${id}`)
@@ -143,23 +114,12 @@ export default async function EditUsuarioPage ({ params }: Props) {
           <p className="break-all">
             Actual: {usuario.image_bucket ? `${usuario.image_bucket}/${usuario.image ?? ''}` : 'Sin imagen'}
           </p>
-          <input name="imageFile" type="file" accept="image/*" className="w-full text-xs" />
-          <select
-            name="imageDefault"
-            defaultValue={defaultSelection}
-            className="w-full p-2 rounded bg-gray-700"
-          >
-            <option value="">Seleccionar imagen predeterminada</option>
-            {defaultImages.map(option => (
-              <option key={option.path} value={option.path}>
-                {option.name}
-              </option>
-            ))}
-          </select>
-          <label className="flex items-center space-x-2">
-            <input type="checkbox" name="imageRemove" value="1" />
-            <span>Quitar imagen actual</span>
-          </label>
+          <UserImagePicker
+            defaultImages={defaultImages}
+            initialImage={usuario.image}
+            initialBucket={usuario.image_bucket}
+            initialDefault={defaultSelection}
+          />
         </div>
         <select name="role" defaultValue={usuario.role} className="w-full p-2 rounded bg-gray-700">
           <option value="citizen">citizen</option>

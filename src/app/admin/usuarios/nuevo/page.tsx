@@ -5,9 +5,10 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import {
   USER_DEFAULTS_FOLDER,
   USER_STORAGE_BUCKET,
-  buildUserProfilePath,
   listBucketPrefix
 } from '@/lib/storage'
+import UserImagePicker from '@/components/UserImagePicker'
+import { processUserImageInput } from '@/lib/userImages'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,9 +31,6 @@ export default async function NewUsuarioPage () {
       role: formData.get('role') as string
     }
 
-    const imageFile = formData.get('imageFile') as File | null
-    const defaultImage = (formData.get('imageDefault') as string) || ''
-
     const { data: created } = await supabaseAdmin.auth.admin.createUser({
       email: data.email,
       password: data.password,
@@ -52,22 +50,16 @@ export default async function NewUsuarioPage () {
     let imagePath: string | null = null
 
     if (createdUser) {
-      if (imageFile && imageFile.size > 0) {
-        const uploadPath = buildUserProfilePath(createdUser.id, imageFile.name)
-        const { error: uploadError } = await supabaseAdmin.storage
-          .from(USER_STORAGE_BUCKET)
-          .upload(uploadPath, imageFile, {
-            cacheControl: '3600',
-            upsert: true
-          })
-        if (!uploadError) {
-          imageBucket = USER_STORAGE_BUCKET
-          imagePath = uploadPath
-        }
-      } else if (defaultImage) {
-        imageBucket = USER_STORAGE_BUCKET
-        imagePath = defaultImage
-      }
+      const imageResult = await processUserImageInput({
+        formData,
+        supabase: supabaseAdmin,
+        userUid: createdUser.id,
+        currentImage: null,
+        currentBucket: null
+      })
+
+      imageBucket = imageResult.image_bucket
+      imagePath = imageResult.image
 
       await supabaseAdmin.auth.admin.updateUserById(createdUser.id, {
         user_metadata: {
@@ -114,15 +106,10 @@ export default async function NewUsuarioPage () {
         <input name="password" type="password" className="w-full p-2 rounded bg-gray-700" placeholder="Password" required />
         <input name="phone" className="w-full p-2 rounded bg-gray-700" placeholder="Teléfono" required />
         <input name="dni" className="w-full p-2 rounded bg-gray-700" placeholder="DNI" required />
-        <input name="imageFile" type="file" accept="image/*" className="w-full text-xs" />
-        <select name="imageDefault" className="w-full p-2 rounded bg-gray-700 text-xs">
-          <option value="">Seleccionar imagen predeterminada</option>
-          {defaultImages.map(option => (
-            <option key={option.path} value={option.path}>
-              {option.name}
-            </option>
-          ))}
-        </select>
+        <UserImagePicker
+          defaultImages={defaultImages}
+          helpText="Si no subes ninguna imagen se mostrará una imagen por defecto."
+        />
         <select name="role" className="w-full p-2 rounded bg-gray-700">
           <option value="citizen">citizen</option>
           <option value="worker">worker</option>
