@@ -2,7 +2,9 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
+import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { revalidatePath } from 'next/cache'
+import { processRecintoImageInput } from '@/lib/recintoImages'
 
 export const dynamic = 'force-dynamic'
 
@@ -10,16 +12,25 @@ export default async function NewRecintoPage () {
   async function createRecinto (formData: FormData) {
     'use server'
     const supabase = await createSupabaseServer()
+    const { image, image_bucket } = await processRecintoImageInput({
+      formData,
+      supabase,
+    })
     const data = {
       name: formData.get('name') as string,
       description: formData.get('description') as string,
       ubication: formData.get('ubication') as string,
       province: formData.get('province') as string,
       postal_code: formData.get('postal_code') as string,
-      state: formData.get('state') as string
+      state: formData.get('state') as string,
+      image,
+      image_bucket,
     }
-    await supabase.from('recintos').insert(data)
+    const { error } = await supabase.from('recintos').insert(data)
+    if (error) throw new Error(error.message)
     revalidatePath('/admin/recintos')
+    revalidatePath('/worker/recintos')
+    revalidatePath('/recintos')
     redirect('/admin/recintos')
   }
 
@@ -45,6 +56,7 @@ export default async function NewRecintoPage () {
           <option value="No disponible">No disponible</option>
           <option value="Bloqueado">Bloqueado</option>
         </select>
+        <RecintoImagePicker />
         <div className="space-x-2">
           <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Crear</button>
           <Link href="/admin/recintos" className="text-gray-300">Cancelar</Link>

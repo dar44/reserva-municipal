@@ -1,7 +1,8 @@
-import Image from "next/image";
+import Image from 'next/image'
 import Link from 'next/link'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import CursoActions from './CursoActions'
+import { getPublicStorageUrl } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,12 +10,17 @@ export default async function AdminCursosPage () {
   const supabase = await createSupabaseServer()
   const { data: cursos, error } = await supabase
     .from('cursos')
-    .select('id,image,name,description,begining_date,state')
+    .select('id,image,image_bucket,name,description,begining_date,state')
     .order('name')
 
   if (error) {
     console.error('LIST cursos error:', error)
   }
+
+  const cursosWithImages = cursos?.map(curso => ({
+    ...curso,
+    imageUrl: getPublicStorageUrl(supabase, curso.image, curso.image_bucket),
+  }))
 
   return (
     <div>
@@ -23,9 +29,9 @@ export default async function AdminCursosPage () {
         <Link href="/admin/cursos/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Curso</Link>
       </div>
 
-      {!cursos?.length && <p className="text-sm opacity-80">No hay cursos.</p>}
+      {!cursosWithImages?.length && <p className="text-sm opacity-80">No hay cursos.</p>}
 
-      {!!cursos?.length && (
+      {!!cursosWithImages?.length && (
         <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
           <thead className="bg-gray-700">
             <tr>
@@ -38,19 +44,21 @@ export default async function AdminCursosPage () {
             </tr>
           </thead>
           <tbody>
-            {cursos.map(c => (
+            {cursosWithImages.map(c => (
               <tr key={c.id} className="border-t border-gray-700">
                 <td className="px-4 py-2">
-                  {c.image ? (
+                  {c.imageUrl ? (
                     <Image
-                      src={c.image}
+                      src={c.imageUrl}
                       alt={c.name}
                       width={40}
                       height={40}
                       className="h-10 w-10 rounded object-cover"
                     />
                   ) : (
-                    '—'
+                    <div className="h-10 w-10 rounded bg-gray-700 flex items-center justify-center text-lg font-semibold text-gray-400">
+                      {c.name.charAt(0).toUpperCase()}
+                    </div>
                   )}
                 </td>
                 <td className="px-4 py-2">{c.name}</td>

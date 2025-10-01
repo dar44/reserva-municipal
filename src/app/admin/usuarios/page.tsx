@@ -2,6 +2,8 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 import { createSupabaseServer } from '@/lib/supabaseServer'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { buildStorageUrl } from '@/lib/storage'
 import UsuarioActions from './UsuarioActions'
 
 
@@ -11,28 +13,35 @@ export const dynamic = 'force-dynamic'
 type Usuario = {
   id: string
   image: string | null
+  image_bucket: string | null
   name: string
   email: string
   phone: string
   dni: string
   role: string
+  avatarUrl: string | null
 }
 
 export default async function AdminUsuariosPage () {
   const supabase = await createSupabaseServer()
   const { data } = await supabase
     .from('users')
-    .select('uid,image,name,email,phone,dni,role')
+    .select('uid,image,image_bucket,name,email,phone,dni,role')
     .order('name')
-  const usuarios: Usuario[] = (data ?? []).map(u => ({
-    id: u.uid,
-    image: u.image,
-    name: u.name,
-    email: u.email,
-    phone: u.phone,
-    dni: u.dni,
-    role: u.role
-  }))
+
+  const usuarios: Usuario[] = await Promise.all(
+    (data ?? []).map(async u => ({
+      id: u.uid,
+      image: u.image,
+      image_bucket: u.image_bucket,
+      name: u.name,
+      email: u.email,
+      phone: u.phone,
+      dni: u.dni,
+      role: u.role,
+      avatarUrl: await buildStorageUrl(supabaseAdmin, u.image_bucket, u.image)
+    }))
+  )
 
 
   return (
@@ -57,9 +66,9 @@ export default async function AdminUsuariosPage () {
           {usuarios?.map(u => (
             <tr key={u.id} className="border-t border-gray-700">
               <td className="px-4 py-2">
-                {u.image ? (
+                {u.avatarUrl ? (
                   <Image
-                    src={u.image}
+                    src={u.avatarUrl}
                     alt={u.name}
                     width={40}
                     height={40}

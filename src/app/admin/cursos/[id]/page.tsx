@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import DeleteButton from './DeleteButton'
+import { getPublicStorageUrl } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,24 +26,26 @@ export default async function CursoDetallePage({
   if (error) console.error('FETCH curso error:', error)
   if (!curso) return notFound()
 
-
+  const imageUrl = getPublicStorageUrl(supabase, curso.image, curso.image_bucket)
 
   return (
     <div className="max-w-xl mx-auto space-y-4">
       <Link href="/admin/cursos" className="text-sm underline">← Volver</Link>
       <h1 className="text-2xl font-bold">Detalles del Curso</h1>
 
-      {curso.image && (
-         <div className="relative h-64 w-full overflow-hidden rounded bg-gray-700">
+      <div className="relative h-64 w-full overflow-hidden rounded bg-gray-700 flex items-center justify-center text-sm text-gray-400">
+        {imageUrl ? (
           <Image
-            src={curso.image}
+            src={imageUrl}
             alt={curso.name}
             fill
             className="object-cover"
             sizes="(min-width: 768px) 640px, 100vw"
           />
-        </div>
-      )}
+        ) : (
+          <span>Sin imagen personalizada</span>
+        )}
+      </div>
 
       <div className="space-y-1 text-sm">
         <p><strong>Nombre:</strong> {curso.name}</p>

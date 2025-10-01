@@ -1,7 +1,8 @@
-import { createServerClient } from "@supabase/ssr";
-import Image from "next/image";
-import { cookies } from "next/headers";
-import Link from "next/link";
+import { createServerClient } from '@supabase/ssr'
+import Image from 'next/image'
+import { cookies } from 'next/headers'
+import Link from 'next/link'
+import { getPublicStorageUrl } from '@/lib/storage'
 
 export const dynamic = "force-dynamic";
 
@@ -36,12 +37,12 @@ export default async function CursosPage({
   const params = await searchParams;
 
   let query = supabase
-    .from("cursos")
+    .from('cursos')
     .select(
-      "id,name,description,price,begining_date,end_date,image,state"
+      'id,name,description,price,begining_date,end_date,image,image_bucket,state'
     )
-    .eq("state", "Disponible")
-    .order("begining_date", { ascending: true });
+    .eq('state', 'Disponible')
+    .order('begining_date', { ascending: true })
 
   if (params.from) {
     query = query.gte("begining_date", params.from);
@@ -50,7 +51,12 @@ export default async function CursosPage({
     query = query.lte("end_date", params.to);
   }
 
-  const { data: cursos } = await query;
+  const { data: cursos } = await query
+
+  const cursosWithImages = cursos?.map(curso => ({
+    ...curso,
+    imageUrl: getPublicStorageUrl(supabase, curso.image, curso.image_bucket),
+  }))
 
   const currency = new Intl.NumberFormat("es-ES", {
     style: "currency",
@@ -92,23 +98,23 @@ export default async function CursosPage({
       </form>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cursos?.map(c => (
+        {cursosWithImages?.map(c => (
           <Link
             key={c.id}
             href={`/cursos/${c.id}`}
             className="bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col"
           >
-            <div className="h-40 bg-gray-700 flex items-center justify-center text-gray-400">
-              {c.image ? (
+            <div className="relative h-40 bg-gray-700 flex items-center justify-center text-gray-400">
+              {c.imageUrl ? (
                 <Image
-                  src={c.image}
+                  src={c.imageUrl}
                   alt={c.name}
                   fill
                   className="object-cover"
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 />
               ) : (
-                "Imagen"
+                <span className="text-sm">Sin imagen disponible</span>
               )}
             </div>
             <div className="p-4 flex flex-col flex-1 justify-between">
@@ -130,6 +136,9 @@ export default async function CursosPage({
             </div>
           </Link>
         ))}
+        {!cursosWithImages?.length && (
+          <p className="text-sm text-gray-400">No se han encontrado cursos disponibles con los filtros seleccionados.</p>
+        )}
       </div>
     </div>
   );
