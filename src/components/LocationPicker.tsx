@@ -1,6 +1,13 @@
 'use client'
-
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  DEFAULT_CENTER,
+  ensureLeaflet,
+  type Coordinates,
+  type LeafletMap,
+  type LeafletMarker,
+  type LeafletMouseEvent,
+} from '@/lib/leaflet'
 
 interface LocationPickerProps {
   valueNames: {
@@ -28,86 +35,6 @@ type Suggestion = {
   lon: string
   address?: Record<string, string>
 }
-
-type Coordinates = { lat: number; lng: number }
-
-type LeafletMouseEvent = { latlng: Coordinates }
-
-type LeafletMap = {
-  setView: (coords: [number, number], zoom: number) => LeafletMap
-  getZoom: () => number
-  on: (event: 'click', handler: (event: LeafletMouseEvent) => void) => void
-  remove: () => void
-}
-
-type LeafletMarker = {
-  addTo: (map: LeafletMap) => LeafletMarker
-  setLatLng: (coords: [number, number]) => LeafletMarker
-  remove: () => void
-}
-
-type LeafletTileLayer = {
-  addTo: (map: LeafletMap) => LeafletTileLayer
-}
-
-type LeafletNamespace = {
-  map: (element: HTMLElement) => LeafletMap
-  tileLayer: (url: string, options: { attribution?: string; maxZoom?: number }) => LeafletTileLayer
-  marker: (coords: [number, number]) => LeafletMarker
-}
-
-declare global {
-  interface Window {
-    L?: LeafletNamespace
-  }
-}
-
-const DEFAULT_CENTER: Coordinates = { lat: 40.4168, lng: -3.7038 }
-
-let leafletPromise: Promise<LeafletNamespace | null> | null = null
-
-const ensureLeaflet = (): Promise<LeafletNamespace | null> => {
-  if (typeof window === 'undefined') return Promise.resolve(null)
-  if (window.L) return Promise.resolve(window.L)
-
-  if (!leafletPromise) {
-    leafletPromise = new Promise<LeafletNamespace | null>((resolve, reject) => {
-      const existingScript = document.getElementById('leaflet-script') as HTMLScriptElement | null
-      if (existingScript) {
-        if (window.L) return resolve(window.L)
-        existingScript.addEventListener('load', () => resolve(window.L ?? null))
-        existingScript.addEventListener('error', reject)
-        return
-      }
-
-      // CSS (SRI oficial Leaflet 1.9.4)
-      if (!document.getElementById('leaflet-css')) {
-        const css = document.createElement('link')
-        css.id = 'leaflet-css'
-        css.rel = 'stylesheet'
-        css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'
-        css.integrity = 'sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY='
-        css.crossOrigin = 'anonymous'
-        document.head.appendChild(css)
-      }
-
-      // JS (SRI oficial Leaflet 1.9.4)
-      const script = document.createElement('script')
-      script.id = 'leaflet-script'
-      script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'
-      script.integrity = 'sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo='
-      script.crossOrigin = 'anonymous'
-      script.defer = true
-      script.onload = () => resolve(window.L ?? null)
-      script.onerror = async () => {
-
-      }
-      document.body.appendChild(script)
-    })
-  }
-  return leafletPromise!
-}
-
 
 const extractCity = (address: Record<string, string> = {}) =>
   address.city || address.town || address.village || address.hamlet || address.municipality || ''

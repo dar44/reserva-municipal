@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PagoStatusWatcher } from "./PagoStatusWatcher";
+import { createSupabaseServer } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +18,42 @@ export default async function PagoExitoPage({
   const pagoId = params.pago;
   const tipoKey = params.tipo === "inscripcion" ? "inscripcion" : "reserva";
   const tipoLabel = tipoKey === "inscripcion" ? "inscripción" : "reserva";
-  const href = tipoKey === "inscripcion" ? "/cursos" : "/reservas";
-  const label = tipoKey === "inscripcion" ? "Volver a cursos" : "Ver mis reservas";
+  let reservaHref: string | null = null;
+
+  if (tipoKey === "reserva" && pagoId) {
+    try {
+      const supabase = await createSupabaseServer();
+      const {
+        data: { user }
+      } = await supabase.auth.getUser();
+
+      if (user) {
+        const { data: pago } = await supabase
+          .from("pagos")
+          .select("reserva_id")
+          .eq("id", pagoId)
+          .eq("user_uid", user.id)
+          .maybeSingle<{ reserva_id: number | null }>();
+
+        if (pago?.reserva_id) {
+          reservaHref = `/reservas/${pago.reserva_id}`;
+        }
+      }
+    } catch {
+      reservaHref = null;
+    }
+  }
+
+  const href =
+    tipoKey === "inscripcion"
+      ? "/cursos"
+      : reservaHref ?? "/reservas";
+  const label =
+    tipoKey === "inscripcion"
+      ? "Volver a cursos"
+      : reservaHref
+        ? "Ver detalle de la reserva"
+        : "Ver mis reservas";
 
   return (
     <div className="max-w-xl mx-auto text-center space-y-4">

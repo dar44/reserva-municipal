@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import DeleteButton from './DeleteButton'
+import { Fragment } from "react";
+import OpenStreetMapView from "@/components/OpenStreetMapView";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
@@ -11,7 +14,7 @@ interface Reserva {
   price: number
   status: string
   paid: boolean
-  recintos: { name: string } | null
+  recintos: { name: string; ubication?: string } | null
 }
 
 export default async function ReservasPage () {
@@ -41,7 +44,7 @@ export default async function ReservasPage () {
 
   const { data: reservas } = await supabase
     .from("reservas")
-    .select("id,start_at,end_at,price,status,paid,recintos(name)")
+    .select("id,start_at,end_at,price,status,paid,recintos(name,ubication)")
     .eq("user_uid", userUid)
     .order("start_at", { ascending: false })
     .returns<Reserva[]>();
@@ -62,26 +65,51 @@ export default async function ReservasPage () {
         </thead>
         <tbody>
           {reservas?.map(r => (
-            <tr key={r.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">{r.recintos?.name}</td>
-              <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
-              <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
-              <td className="px-4 py-2">{r.price}CLP</td>
+             <Fragment key={r.id}>
+              <tr className="border-t border-gray-700">
+                <td className="px-4 py-2">{r.recintos?.name}</td>
+                <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
+                <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
+                <td className="px-4 py-2">{r.price}CLP</td>
                 <td className="px-4 py-2">
-                {r.paid ? (
-                  <span className="text-sm text-green-500">Pagado</span>
-                ) : (
-                  <span className="text-sm text-yellow-400">Pendiente</span>
-                )}
-              </td>
-              <td className="px-4 py-2">
-                {r.status === "activa" ? (
-                  <DeleteButton id={r.id} />
-                ) : (
-                  <span className="text-sm text-gray-500">{r.status}</span>
-                )}
-              </td>
-            </tr>
+                  {r.paid ? (
+                    <span className="text-sm text-green-500">Pagado</span>
+                  ) : (
+                    <span className="text-sm text-yellow-400">Pendiente</span>
+                  )}
+                </td>
+                <td className="px-4 py-2">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                      href={`/reservas/${r.id}`}
+                      className="text-blue-400 underline"
+                    >
+                      Ver detalle
+                    </Link>
+                    {r.status === "activa" ? (
+                      <DeleteButton id={r.id} />
+                    ) : (
+                      <span className="text-sm text-gray-500">{r.status}</span>
+                    )}
+                  </div>
+                </td>
+              </tr>
+              {r.status === "activa" && r.recintos?.ubication && (
+                <tr className="border-t border-gray-800 bg-gray-900/60">
+                  <td colSpan={6} className="px-4 py-4">
+                    <div className="space-y-3">
+                      <p className="text-sm font-medium text-gray-200">
+                        Cómo llegar a tu reserva
+                      </p>
+                      <OpenStreetMapView
+                        address={r.recintos.ubication}
+                        title={r.recintos.name ? `Ubicación de ${r.recintos.name}` : 'Ubicación de la reserva'}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </Fragment>
           ))}
         </tbody>
       </table>

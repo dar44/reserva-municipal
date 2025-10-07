@@ -6,6 +6,7 @@ import { createSupabaseServer } from '@/lib/supabaseServer'
 import { getConfiguredCurrency } from '@/lib/config'
 import { formatCurrency } from '@/lib/currency'
 import { getPublicStorageUrl } from '@/lib/storage'
+import OpenStreetMapView from '@/components/OpenStreetMapView'
 
 export const dynamic = 'force-dynamic'
 
@@ -85,6 +86,13 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
           </div>
           <p><strong>Precio:</strong> {priceLabel}</p>
           <InscripcionActions cursoId={curso.id} email={user?.email} inscripcionId={inscripcionId} />
+          {inscripcionId && curso.location && (
+            <OpenStreetMapView
+              className="mt-4"
+              address={curso.location}
+              title="Cómo llegar al curso"
+            />
+          )}
           <p className="text-xs text-gray-400">
             Te enviaremos al checkout de Lemon Squeezy para realizar el pago y confirmar la inscripción.
           </p>
