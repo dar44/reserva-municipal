@@ -94,7 +94,7 @@ export default async function ReservasPage () {
                   </div>
                 </td>
               </tr>
-              {r.status === "activa" && r.recintos?.ubication && (
+              {r.status === "activa" && r.paid && r.recintos?.ubication && (
                 <tr className="border-t border-gray-800 bg-gray-900/60">
                   <td colSpan={6} className="px-4 py-4">
                     <div className="space-y-3">
