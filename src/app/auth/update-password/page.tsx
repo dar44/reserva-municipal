@@ -34,8 +34,10 @@ export default function UpdatePasswordPage() {
         } else {
           throw new Error('Enlace inválido: falta token de recuperación.')
         }
-      } catch (e: any) {
-        toast({ type: 'error', message: `No se pudo iniciar la recuperación: ${e.message ?? e}` })
+      } catch (e: unknown) {
+        const errorMessage =
+          e instanceof Error ? e.message : typeof e === 'string' ? e : 'Error desconocido';
+        toast({ type: 'error', message: `No se pudo iniciar la recuperación: ${errorMessage}` });
       } finally {
         setLoading(false)
       }
