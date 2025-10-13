@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { verifyWebhookSignature } from '@/lib/lemonSqueezy' // ya la tienes
+import { verifyWebhookSignature } from '@/lib/lemonSqueezy' 
 import type { PostgrestSingleResponse } from '@supabase/supabase-js'
+import { notifyPagoConfirmado } from '@/lib/emailNotifications'
+import { normalizePagoEstado, type PagoEstado } from '@/lib/pagos'
 
 type FlexibleValue = string | number | boolean | null
 
@@ -44,18 +46,18 @@ type WebhookEventRow = {
 
 type PagoRow = {
   id: string
-  estado: PagoEstado
+  estado: string | null
   order_id: string | null
   monto_centavos?: number | null
   moneda?: string | null
   checkout_id?: string | null
   reserva_id?: number | null
   inscripcion_id?: number | null
-  [key: string]: FlexibleValue | PagoEstado | null | undefined
+  [key: string]: FlexibleValue | string | null | undefined
 }
 
 type PagoUpdate = {
-  estado: PagoEstado
+  estado: string | null
   order_id?: string | null
   monto_centavos?: number | null
   moneda?: string | null
@@ -64,7 +66,6 @@ type PagoUpdate = {
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-type PagoEstado = 'pendiente' | 'pagado' | 'fallido' | 'reembolsado' | 'cancelado'
 
 function mapOrderStatusToPagoEstado(s?: string | null): PagoEstado {
   if (!s) return 'pendiente'
@@ -203,6 +204,8 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, reason: 'pago_not_found' }, { status: 202 })
   }
 
+  const previousEstado = normalizePagoEstado(pago.estado)
+
   // 6) Actualizar pago y entidades relacionadas
   const updates: PagoUpdate = { estado }
   if (orderId) updates.order_id = String(orderId)
@@ -224,6 +227,17 @@ export async function POST(req: Request) {
   if (inscripcionId != null) {
     await supabaseAdmin.from('inscripciones').update({ paid }).eq('id', inscripcionId)
   }
+
+  console.log('[WEBHOOK] pago', { id: pago.id, previousEstado, nextEstado: estado, reservaId, inscripcionId })
+
+  await notifyPagoConfirmado({
+    previousEstado,
+    nextEstado: estado,
+    reservaId,
+    inscripcionId
+  }).catch((e) => {
+    console.error('[WEBHOOK] notifyPagoConfirmado failed', e)
+  })
 
   // 7) Registrar evento (idempotencia)
   if (webhookId) {
