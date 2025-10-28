@@ -30,6 +30,16 @@ type Props = {
   reservations: OrganizerReservation[]
 }
 
+const DAY_OPTIONS = [
+  { value: 1, label: 'Lunes' },
+  { value: 2, label: 'Martes' },
+  { value: 3, label: 'Miércoles' },
+  { value: 4, label: 'Jueves' },
+  { value: 5, label: 'Viernes' },
+  { value: 6, label: 'Sábado' },
+  { value: 0, label: 'Domingo' },
+]
+
 export default function OrganizerReservationsClient ({ courses, recintos, reservations }: Props) {
   const [reservationList, setReservationList] = useState(reservations)
   const [submittingReservation, setSubmittingReservation] = useState(false)
@@ -62,6 +72,15 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     return date.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })
   }
 
+  const parseTime = (value: string) => {
+    const [hoursStr, minutesStr] = value.split(':')
+    const hours = Number(hoursStr)
+    const minutes = Number(minutesStr)
+    if (!Number.isInteger(hours) || !Number.isInteger(minutes)) return null
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null
+    return { hours, minutes }
+  }
+
   const handleReservationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     if (submittingReservation) return
@@ -71,33 +90,67 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
 
     const cursoId = Number(formData.get('curso_id'))
     const recintoId = Number(formData.get('recinto_id'))
-    const startRaw = formData.get('start_at') as string | null
-    const endRaw = formData.get('end_at') as string | null
+    const startDateRaw = formData.get('start_date') as string | null
+    const endDateRaw = formData.get('end_date') as string | null
+    const startTimeRaw = formData.get('start_time') as string | null
+    const endTimeRaw = formData.get('end_time') as string | null
+    const daysSelected = formData.getAll('days_of_week') as string[]
     const observationsRaw = (formData.get('observations') as string) || ''
 
-    if (!cursoId || !recintoId || !startRaw || !endRaw) {
+    if (!cursoId || !recintoId || !startDateRaw || !endDateRaw || !startTimeRaw || !endTimeRaw) {
       toast({ type: 'error', message: 'Todos los campos son obligatorios' })
       return
     }
 
-    const startDate = new Date(startRaw)
-    const endDate = new Date(endRaw)
+    if (daysSelected.length === 0) {
+      toast({ type: 'error', message: 'Debes seleccionar al menos un día para la reserva' })
+      return
+    }
+
+    const startDate = new Date(`${startDateRaw}T00:00:00`)
+    const endDate = new Date(`${endDateRaw}T00:00:00`)
 
     if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
       toast({ type: 'error', message: 'Fechas inválidas' })
       return
     }
 
-    if (endDate <= startDate) {
+    if (endDate < startDate) {
+      toast({ type: 'error', message: 'La fecha de término debe ser posterior o igual a la de inicio' })
+      return
+    }
+
+    const parsedStartTime = startTimeRaw ? parseTime(startTimeRaw) : null
+    const parsedEndTime = endTimeRaw ? parseTime(endTimeRaw) : null
+
+    if (!parsedStartTime || !parsedEndTime) {
+      toast({ type: 'error', message: 'Horarios inválidos' })
+      return
+    }
+
+    const startMinutes = parsedStartTime.hours * 60 + parsedStartTime.minutes
+    const endMinutes = parsedEndTime.hours * 60 + parsedEndTime.minutes
+
+    if (endMinutes <= startMinutes) {
       toast({ type: 'error', message: 'La hora de fin debe ser posterior a la de inicio' })
+      return
+    }
+
+    const daysOfWeek = Array.from(new Set(daysSelected.map(value => Number(value)).filter(value => !Number.isNaN(value))))
+
+    if (daysOfWeek.length === 0) {
+      toast({ type: 'error', message: 'Selecciona al menos un día válido de la semana' })
       return
     }
 
     const payload = {
       curso_id: cursoId,
       recinto_id: recintoId,
-      start_at: startDate.toISOString(),
-      end_at: endDate.toISOString(),
+      start_date: startDateRaw,
+      end_date: endDateRaw,
+      start_time: startTimeRaw,
+      end_time: endTimeRaw,
+      days_of_week: daysOfWeek,
       observations: observationsRaw.trim() || null,
     }
 
@@ -116,9 +169,21 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
         return
       }
 
-      if (data.reserva) {
-        setReservationList(prev => [data.reserva, ...prev])
-        toast({ type: 'success', message: 'Solicitud enviada correctamente' })
+      if (Array.isArray(data.reservas) && data.reservas.length > 0) {
+        setReservationList(prev => {
+          const next = [...data.reservas, ...prev]
+          return next.sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime())
+        })
+        const count = data.reservas.length
+        toast({
+          type: 'success',
+          message: count === 1
+            ? 'Se generó 1 bloque de reserva'
+            : `Se generaron ${count} bloques de reserva`,
+        })
+        form.reset()
+      } else {
+        toast({ type: 'success', message: 'Solicitud registrada' })
         form.reset()
       }
     } catch (error) {
@@ -137,14 +202,35 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
           <p className="text-sm text-gray-400">Envía nuevas peticiones y consulta el historial de respuestas.</p>
         </header>
         <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-          <p>Selecciona un curso y un recinto disponible para solicitar una nueva reserva.</p>
+          <p>Selecciona un curso, el recinto deseado y programa los días y horarios en los que necesitas usarlo.</p>
+          <p className="mt-2">Cada solicitud puede generar varios bloques dentro del rango de fechas indicado.</p>
         </article>
       </section>
 
       <section className="space-y-4">
         <div>
+          <h2 className="text-xl font-semibold">Recintos disponibles</h2>
+          <p className="text-sm text-gray-400">Estos recintos están habilitados para nuevas solicitudes.</p>
+        </div>
+
+        {availableRecintos.length === 0 ? (
+          <p className="text-sm text-gray-400">No hay recintos con disponibilidad en este momento.</p>
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            {availableRecintos.map(recinto => (
+              <article key={recinto.id} className="rounded border border-gray-700 bg-gray-900 p-4">
+                <h3 className="text-sm font-semibold text-gray-100">{recinto.name}</h3>
+                <p className="mt-1 text-xs text-emerald-400">Disponible para solicitudes</p>
+              </article>
+            ))}
+          </div>
+        )}
+      </section>
+
+      <section className="space-y-4">
+        <div>
           <h2 className="text-xl font-semibold">Nueva solicitud</h2>
-          <p className="text-sm text-gray-400">Indica la fecha y el recinto que deseas reservar para tu actividad.</p>
+          <p className="text-sm text-gray-400">Define el rango de fechas, los días de la semana y la franja horaria que necesitas reservar.</p>
         </div>
 
         {courses.length === 0 ? (
@@ -152,56 +238,103 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
         ) : availableRecintos.length === 0 ? (
           <p className="text-sm text-gray-400">No hay recintos disponibles en este momento. Inténtalo más tarde.</p>
         ) : (
-          <form onSubmit={handleReservationSubmit} className="grid gap-3 md:grid-cols-2">
-            <label className="text-sm">
-              Curso
-              <select
-                name="curso_id"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              >
-                <option value="">Selecciona un curso</option>
-                {courses.map(course => (
-                  <option key={course.id} value={course.id}>{course.name}</option>
+          <form onSubmit={handleReservationSubmit} className="space-y-4">
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-sm">
+                Curso
+                <select
+                  name="curso_id"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                >
+                  <option value="">Selecciona un curso</option>
+                  {courses.map(course => (
+                    <option key={course.id} value={course.id}>{course.name}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="text-sm">
+                Recinto
+                <select
+                  name="recinto_id"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                >
+                  <option value="">Selecciona un recinto</option>
+                  {availableRecintos.map(recinto => (
+                    <option key={recinto.id} value={recinto.id}>{recinto.name}</option>
+                  ))}
+                </select>
+              </label>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-sm">
+                Fecha de inicio
+                <input
+                  type="date"
+                  name="start_date"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                />
+              </label>
+
+              <label className="text-sm">
+                Fecha de término
+                <input
+                  type="date"
+                  name="end_date"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                />
+              </label>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <label className="text-sm">
+                Hora de inicio
+                <input
+                  type="time"
+                  name="start_time"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                />
+              </label>
+
+              <label className="text-sm">
+                Hora de término
+                <input
+                  type="time"
+                  name="end_time"
+                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  required
+                />
+              </label>
+            </div>
+
+            <fieldset className="text-sm">
+              <legend className="font-medium text-gray-200">Días de la semana</legend>
+              <p className="text-xs text-gray-400">Selecciona los días en los que se debe reservar el recinto.</p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {DAY_OPTIONS.map(day => (
+                  <label
+                    key={day.value}
+                    className="flex items-center gap-2 rounded border border-gray-700 bg-gray-900 px-3 py-2 text-xs uppercase tracking-wide"
+                  >
+                    <input
+                      type="checkbox"
+                      name="days_of_week"
+                      value={day.value}
+                      className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                    />
+                    {day.label}
+                  </label>
                 ))}
-              </select>
-            </label>
+              </div>
+            </fieldset>
 
-            <label className="text-sm">
-              Recinto
-              <select
-                name="recinto_id"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              >
-                <option value="">Selecciona un recinto</option>
-                {availableRecintos.map(recinto => (
-                  <option key={recinto.id} value={recinto.id}>{recinto.name}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="text-sm">
-              Fecha y hora de inicio
-              <input
-                type="datetime-local"
-                name="start_at"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              />
-            </label>
-
-            <label className="text-sm">
-              Fecha y hora de fin
-              <input
-                type="datetime-local"
-                name="end_at"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              />
-            </label>
-
-            <label className="text-sm md:col-span-2">
+            <label className="block text-sm">
               Observaciones
               <textarea
                 name="observations"
@@ -211,7 +344,7 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
               />
             </label>
 
-            <div className="md:col-span-2">
+            <div>
               <button
                 type="submit"
                 className="w-full rounded bg-emerald-600 py-2 text-white transition hover:bg-emerald-500 md:w-auto md:px-4"

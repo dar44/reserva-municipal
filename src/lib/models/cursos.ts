@@ -48,11 +48,14 @@ export interface CourseInput {
   organizer_uid?: string
 }
 
-export interface CourseReservationInput {
+export interface CourseReservationRequestInput {
   curso_id: number
   recinto_id: number
-  start_at: string
-  end_at: string
+  start_date: string
+  end_date: string
+  start_time: string
+  end_time: string
+  days_of_week: number[]
   observations?: string | null
   organizer_uid?: string
 }

@@ -45,8 +45,8 @@ export default async function OrganizerPanelPage () {
 
         <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
           <p>
-            Usa la barra superior para crear cursos, consultar los recintos disponibles y enviar nuevas reservas.
-            Aquí encontrarás un resumen rápido de tu actividad más reciente.
+            Usa la barra superior para crear cursos y gestionar tus solicitudes. Desde la sección de reservas podrás
+            consultar los recintos disponibles y enviar nuevos bloques de horarios en un solo paso.
           </p>
         </article>
       </section>
@@ -65,7 +65,7 @@ export default async function OrganizerPanelPage () {
         <div className="rounded border border-gray-700 bg-gray-900 p-4">
           <h2 className="text-sm uppercase text-gray-400">Recintos disponibles</h2>
           <p className="mt-2 text-3xl font-semibold">{availableRecintos}</p>
-          <p className="mt-2 text-xs text-gray-400">Revisa los detalles y disponibilidad en la sección de recintos.</p>
+          <p className="mt-2 text-xs text-gray-400">Consulta la lista actualizada en la sección de reservas.</p>
         </div>
       </section>
 
