@@ -18,7 +18,7 @@ export default function WorkerPanelPage() {
         </div>
         <div className="bg-gray-800 p-4 rounded flex flex-col">
           <h2 className="text-lg font-semibold mb-2">Reservas</h2>
-          <p className="text-sm text-gray-300 flex-1">Consulta y elimina reservas realizadas por los ciudadanos.</p>
+          <p className="text-sm text-gray-300 flex-1">Consulta las reservas ciudadanas y valida las solicitudes de recintos para cursos.</p>
           <Link href="/worker/reservas" className="mt-4 bg-blue-600 px-3 py-1 rounded text-center text-sm">Ver Reservas</Link>
         </div>
       </div>
