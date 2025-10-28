@@ -45,7 +45,7 @@ async function checkRecintoAvailability (recintoId: number, startIso: string, en
     recintoId,
     startAt: startIso,
     endAt: endIso,
-    courseStatuses: ['aprobada'],
+    courseStatuses: ['pendiente', 'aprobada'],
   })
 }
 

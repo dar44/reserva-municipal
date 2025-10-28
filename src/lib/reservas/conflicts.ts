@@ -29,7 +29,7 @@ export async function hasRecintoConflicts ({
   includeCitizenReservations = true,
   includeCourseReservations = true,
   citizenStatuses,
-  courseStatuses = ['aprobada'],
+  courseStatuses = ['pendiente', 'aprobada'],
 }: ConflictOptions): Promise<ConflictResult> {
   let courseConflict = false
   let citizenConflict = false
