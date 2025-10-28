@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
 import type { CourseReservation, CourseReservationRequestInput } from '@/lib/models/cursos'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 
 export const dynamic = 'force-dynamic'
 
@@ -203,27 +205,20 @@ export async function POST (req: Request) {
     const firstBlockStart = sanitized.blocks[0].start_at
     const lastBlockEnd = sanitized.blocks[sanitized.blocks.length - 1].end_at
 
-    const { data: conflicts, error: conflictsError } = await supabase
-      .from('curso_reservas')
-      .select('id,start_at,end_at')
-      .eq('recinto_id', sanitized.recinto_id)
-      .in('status', ['pendiente', 'aprobada'])
-      .lt('start_at', lastBlockEnd)
-      .gt('end_at', firstBlockStart)
+   const availability = await hasRecintoConflicts({
+      supabase: supabaseAdmin,
+      recintoId: sanitized.recinto_id,
+      startAt: firstBlockStart,
+      endAt: lastBlockEnd,
+      courseStatuses: ['pendiente', 'aprobada'],
+    })
 
-    if (conflictsError) {
-      return NextResponse.json({ error: conflictsError.message }, { status: 400 })
+    if (availability.error) {
+      return NextResponse.json({ error: availability.error.message }, { status: 400 })
     }
 
-    const hasConflict = (conflicts ?? []).some(conflict =>
-      sanitized.blocks.some(block =>
-        new Date(conflict.start_at).getTime() < new Date(block.end_at).getTime() &&
-        new Date(conflict.end_at).getTime() > new Date(block.start_at).getTime(),
-      ),
-    )
-
-    if (hasConflict) {
-      return NextResponse.json({ error: 'El recinto ya está reservado para uno de los horarios seleccionados' }, { status: 409 })
+    if (availability.conflict) {
+      return NextResponse.json({ error: 'El recinto ya está reservado para ese horario' }, { status: 409 })
     }
 
     const entries = sanitized.blocks.map(block => ({

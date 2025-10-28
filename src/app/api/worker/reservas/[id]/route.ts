@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
 import type { CourseReservation, ReservationDecisionInput } from '@/lib/models/cursos'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 
 export const dynamic = 'force-dynamic'
 
@@ -44,7 +46,7 @@ export async function PATCH (
 
     const { data: current, error: currentError } = await supabase
       .from('curso_reservas')
-      .select('id, status')
+      .select('id, status, recinto_id, start_at, end_at')
       .eq('id', id)
       .maybeSingle()
 
@@ -58,6 +60,25 @@ export async function PATCH (
 
     if (current.status !== 'pendiente' && !isRole(profile, 'admin')) {
       return NextResponse.json({ error: 'Solo reservas pendientes pueden ser validadas' }, { status: 409 })
+    }
+
+    if (decision.status === 'aprobada') {
+      const availability = await hasRecintoConflicts({
+        supabase: supabaseAdmin,
+        recintoId: current.recinto_id,
+        startAt: current.start_at,
+        endAt: current.end_at,
+        ignoreCourseReservationId: id,
+        courseStatuses: ['aprobada'],
+      })
+
+      if (availability.error) {
+        return NextResponse.json({ error: availability.error.message }, { status: 400 })
+      }
+
+      if (availability.conflict) {
+        return NextResponse.json({ error: 'El recinto ya está reservado para ese horario' }, { status: 409 })
+      }
     }
 
     const { data, error } = await supabase

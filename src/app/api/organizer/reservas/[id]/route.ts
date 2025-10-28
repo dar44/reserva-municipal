@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
 import type { CourseReservation } from '@/lib/models/cursos'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 
 export const dynamic = 'force-dynamic'
 
@@ -65,21 +67,21 @@ export async function PATCH (
 
     const updates = sanitizeUpdate(await req.json().catch(() => ({})))
 
+    const { data: current, error } = await supabase
+      .from('curso_reservas')
+      .select('id, organizer_uid, status, recinto_id, start_at, end_at')
+      .eq('id', id)
+      .maybeSingle()
+
+    if (error) {
+      return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    if (!current) {
+      return NextResponse.json({ error: 'Reserva no encontrada' }, { status: 404 })
+    }
+
     if (isRole(profile, 'organizer')) {
-      // Ensure ownership and status
-      const { data: current, error } = await supabase
-        .from('curso_reservas')
-        .select('id, organizer_uid, status, recinto_id, start_at, end_at')
-        .eq('id', id)
-        .maybeSingle()
-
-      if (error) {
-        return NextResponse.json({ error: error.message }, { status: 400 })
-      }
-
-      if (!current) {
-        return NextResponse.json({ error: 'Reserva no encontrada' }, { status: 404 })
-      }
 
       if (current.organizer_uid !== profile.uid) {
         return NextResponse.json({ error: 'No puedes modificar esta reserva' }, { status: 403 })
@@ -88,38 +90,41 @@ export async function PATCH (
       if (current.status !== 'pendiente' && updates.status !== 'cancelada') {
         return NextResponse.json({ error: 'Solo puedes cancelar reservas aprobadas/rechazadas' }, { status: 403 })
       }
-
-      const startAt = updates.start_at ?? current.start_at
-      const endAt = updates.end_at ?? current.end_at
-
-      if (updates.start_at || updates.end_at) {
-        const { data: conflicts } = await supabase
-          .from('curso_reservas')
-          .select('id')
-          .eq('recinto_id', current.recinto_id)
-          .in('status', ['pendiente', 'aprobada'])
-          .neq('id', id)
-          .lt('start_at', endAt)
-          .gt('end_at', startAt)
-          .limit(1)
-
-        if (conflicts && conflicts.length > 0) {
-          return NextResponse.json({ error: 'El recinto ya está reservado para ese horario' }, { status: 409 })
-        }
-      }
     } else {
       assertRole(profile, ['admin'])
     }
 
-    const { data, error } = await supabase
+    const startAt = updates.start_at ?? current.start_at
+    const endAt = updates.end_at ?? current.end_at
+
+    if (updates.start_at || updates.end_at) {
+      const availability = await hasRecintoConflicts({
+        supabase: supabaseAdmin,
+        recintoId: current.recinto_id,
+        startAt,
+        endAt,
+        ignoreCourseReservationId: id,
+        courseStatuses: ['pendiente', 'aprobada'],
+      })
+
+      if (availability.error) {
+        return NextResponse.json({ error: availability.error.message }, { status: 400 })
+      }
+
+      if (availability.conflict) {
+        return NextResponse.json({ error: 'El recinto ya está reservado para ese horario' }, { status: 409 })
+      }
+    }
+
+    const { data, error: updateError } = await supabase
       .from('curso_reservas')
       .update(updates)
       .eq('id', id)
       .select('*')
       .single()
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 400 })
+    if (updateError) {
+      return NextResponse.json({ error: updateError.message }, { status: 400 })
     }
 
     return NextResponse.json({ reserva: data as CourseReservation })

@@ -39,7 +39,6 @@ export default function OrganizerNavBar () {
         <div className="space-x-2">
           <Link href="/organizer/panel" className={linkClass('/organizer/panel')}>Panel</Link>
           <Link href="/organizer/cursos" className={linkClass('/organizer/cursos')}>Cursos</Link>
-          <Link href="/organizer/recintos" className={linkClass('/organizer/recintos')}>Recintos</Link>
           <Link href="/organizer/reservas" className={linkClass('/organizer/reservas')}>Reservas</Link>
         </div>
         <div className="relative">

@@ -8,6 +8,7 @@ import {
 } from '@/lib/lemonSqueezy'
 import { toMinorUnits } from '@/lib/currency'
 import { getConfiguredCurrency, getReservaPriceValue } from '@/lib/config'
+import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,18 +40,13 @@ function getIsoRangeFromDateTime (date: string, time: string) {
 }
 
 async function checkRecintoAvailability (recintoId: number, startIso: string, endIso: string) {
-  const { data, error } = await supabaseAdmin
-    .from('reservas')
-    .select('id')
-    .eq('recinto_id', recintoId)
-    .lt('start_at', endIso)
-    .gt('end_at', startIso)
-    .limit(1)
-
-  return {
-    error,
-    conflict: Boolean(data?.length)
-  }
+  return hasRecintoConflicts({
+    supabase: supabaseAdmin,
+    recintoId,
+    startAt: startIso,
+    endAt: endIso,
+    courseStatuses: ['aprobada'],
+  })
 }
 
 export async function POST (req: Request) {
