@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 
 type OrganizerCourse = {
@@ -15,29 +15,9 @@ type OrganizerCourse = {
   state: string
 }
 
-type OrganizerRecinto = {
-  id: number
-  name: string
-  ubication: string | null
-  state: string
-}
-
-type OrganizerReservation = {
-  id: number
-  curso_id: number
-  recinto_id: number
-  start_at: string
-  end_at: string
-  status: 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
-  observations: string | null
-  reviewed_at: string | null
-  worker_uid: string | null
-}
-
 type Props = {
   courses: OrganizerCourse[]
-  recintos: OrganizerRecinto[]
-  reservations: OrganizerReservation[]
+  
 }
 
 type CoursePayload = {
@@ -50,46 +30,17 @@ type CoursePayload = {
   capacity: number | null
 }
 
-export default function OrganizerPanelClient ({ courses, recintos, reservations }: Props) {
+export default function OrganizerCoursesClient ({ courses }: Props) {
   const [courseList, setCourseList] = useState(courses)
-  const [reservationList, setReservationList] = useState(reservations)
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
-  const [submittingReservation, setSubmittingReservation] = useState(false)
   const toast = useToast()
-
-  const availableRecintos = useMemo(
-    () => recintos.filter(r => r.state === 'Disponible'),
-    [recintos],
-  )
-
-  const courseNameById = useMemo(() => {
-    const map = new Map<number, string>()
-    courseList.forEach(course => {
-      map.set(course.id, course.name)
-    })
-    return map
-  }, [courseList])
-
-  const recintoNameById = useMemo(() => {
-    const map = new Map<number, string>()
-    recintos.forEach(recinto => {
-      map.set(recinto.id, recinto.name)
-    })
-    return map
-  }, [recintos])
 
   const formatDate = (value: string | null) => {
     if (!value) return '—'
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return '—'
     return date.toLocaleDateString('es-ES')
-  }
-
-  const formatDateTime = (value: string) => {
-    const date = new Date(value)
-    if (Number.isNaN(date.getTime())) return value
-    return date.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })
   }
 
   const handleCreateCourse = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -213,88 +164,16 @@ export default function OrganizerPanelClient ({ courses, recintos, reservations 
     }
   }
 
-  const handleReservationSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    if (submittingReservation) return
-
-    const form = event.currentTarget
-    const formData = new FormData(form)
-
-    const cursoId = Number(formData.get('curso_id'))
-    const recintoId = Number(formData.get('recinto_id'))
-    const startRaw = formData.get('start_at') as string | null
-    const endRaw = formData.get('end_at') as string | null
-    const observationsRaw = (formData.get('observations') as string) || ''
-
-    if (!cursoId || !recintoId || !startRaw || !endRaw) {
-      toast({ type: 'error', message: 'Todos los campos son obligatorios' })
-      return
-    }
-
-    const startDate = new Date(startRaw)
-    const endDate = new Date(endRaw)
-
-    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-      toast({ type: 'error', message: 'Fechas inválidas' })
-      return
-    }
-
-    if (endDate <= startDate) {
-      toast({ type: 'error', message: 'La hora de fin debe ser posterior a la de inicio' })
-      return
-    }
-
-    const payload = {
-      curso_id: cursoId,
-      recinto_id: recintoId,
-      start_at: startDate.toISOString(),
-      end_at: endDate.toISOString(),
-      observations: observationsRaw.trim() || null,
-    }
-
-    setSubmittingReservation(true)
-    try {
-      const response = await fetch('/api/organizer/reservas', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      })
-
-      const data = await response.json().catch(() => ({}))
-
-      if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo enviar la solicitud' })
-        return
-      }
-
-      if (data.reserva) {
-        setReservationList(prev => [data.reserva, ...prev])
-        toast({ type: 'success', message: 'Solicitud enviada correctamente' })
-        form.reset()
-      }
-    } catch (error) {
-      console.error('Error creating reservation request', error)
-      toast({ type: 'error', message: 'Error al enviar la solicitud' })
-    } finally {
-      setSubmittingReservation(false)
-    }
-  }
-
   return (
     <div className="space-y-8">
       <section className="space-y-4">
         <header>
-          <h1 className="text-2xl font-semibold">Panel de organizadores</h1>
-          <p className="text-sm text-gray-400">
-            Gestiona tus cursos, consulta recintos disponibles y solicita reservas para tus actividades.
-          </p>
+          <h1 className="text-2xl font-semibold">Gestión de cursos</h1>
+          <p className="text-sm text-gray-400">Crea nuevos programas/cursos y administra los ya publicados.</p>
         </header>
 
         <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-          <p>
-            Crea tus cursos, modifica su información y solicita la reserva de recintos para las fechas que necesites.
-            El equipo municipal revisará las solicitudes y te notificará cuando se aprueben o rechacen.
-          </p>
+           <p>Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
         </article>
       </section>
 
@@ -523,14 +402,16 @@ export default function OrganizerPanelClient ({ courses, recintos, reservations 
                     </dl>
                     <div className="flex flex-wrap gap-2">
                       <button
-                        className="rounded bg-blue-600 px-3 py-1 text-sm"
+                        type="button"
                         onClick={() => setEditingCourseId(course.id)}
+                        className="rounded bg-blue-600 px-3 py-1 text-sm"
                       >
                         Editar
                       </button>
                       <button
-                        className="rounded bg-red-600 px-3 py-1 text-sm"
+                        type="button"
                         onClick={() => handleDeleteCourse(course.id)}
+                        className="rounded bg-red-600 px-3 py-1 text-sm"
                       >
                         Eliminar
                       </button>
@@ -540,162 +421,6 @@ export default function OrganizerPanelClient ({ courses, recintos, reservations 
               </li>
             ))}
           </ul>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Recintos disponibles</h2>
-          <p className="text-sm text-gray-400">Consulta rápidamente los recintos municipales listos para reservar.</p>
-        </div>
-        {availableRecintos.length === 0 ? (
-          <p className="text-sm text-gray-400">No hay recintos disponibles en este momento.</p>
-        ) : (
-          <div className="grid gap-3 md:grid-cols-2">
-            {availableRecintos.map(recinto => (
-              <article key={recinto.id} className="rounded border border-gray-700 bg-gray-900 p-4 text-sm">
-                <h3 className="text-base font-semibold">{recinto.name}</h3>
-                <p className="text-gray-400">{recinto.ubication ?? 'Sin ubicación registrada'}</p>
-              </article>
-            ))}
-          </div>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Solicitar reserva de recinto</h2>
-          <p className="text-sm text-gray-400">
-            Selecciona un curso, el recinto deseado y las fechas para enviar la solicitud al equipo municipal.
-          </p>
-        </div>
-
-        {courseList.length === 0 ? (
-          <p className="text-sm text-gray-400">Necesitas al menos un curso para poder solicitar un recinto.</p>
-        ) : availableRecintos.length === 0 ? (
-          <p className="text-sm text-gray-400">Actualmente no hay recintos disponibles para solicitar.</p>
-        ) : (
-          <form onSubmit={handleReservationSubmit} className="grid gap-3 md:grid-cols-2">
-            <label className="text-sm">
-              Curso
-              <select
-                name="curso_id"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              >
-                <option value="">Selecciona un curso</option>
-                {courseList.map(course => (
-                  <option key={course.id} value={course.id}>{course.name}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="text-sm">
-              Recinto
-              <select
-                name="recinto_id"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              >
-                <option value="">Selecciona un recinto</option>
-                {availableRecintos.map(recinto => (
-                  <option key={recinto.id} value={recinto.id}>{recinto.name}</option>
-                ))}
-              </select>
-            </label>
-
-            <label className="text-sm">
-              Fecha y hora de inicio
-              <input
-                type="datetime-local"
-                name="start_at"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              />
-            </label>
-
-            <label className="text-sm">
-              Fecha y hora de fin
-              <input
-                type="datetime-local"
-                name="end_at"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                required
-              />
-            </label>
-
-            <label className="text-sm md:col-span-2">
-              Observaciones
-              <textarea
-                name="observations"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-                rows={3}
-                placeholder="Información adicional para el trabajador municipal (opcional)"
-              />
-            </label>
-
-            <div className="md:col-span-2">
-              <button
-                type="submit"
-                className="w-full rounded bg-emerald-600 py-2 text-white transition hover:bg-emerald-500 md:w-auto md:px-4"
-                disabled={submittingReservation}
-              >
-                {submittingReservation ? 'Enviando…' : 'Enviar solicitud'}
-              </button>
-            </div>
-          </form>
-        )}
-      </section>
-
-      <section className="space-y-4">
-        <div>
-          <h2 className="text-xl font-semibold">Historial de solicitudes</h2>
-          <p className="text-sm text-gray-400">Consulta el estado de tus peticiones de reserva.</p>
-        </div>
-
-        {reservationList.length === 0 ? (
-          <p className="text-sm text-gray-400">Todavía no has enviado solicitudes de reserva.</p>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full overflow-hidden rounded bg-gray-900 text-sm">
-              <thead className="bg-gray-800 text-xs uppercase text-gray-300">
-                <tr>
-                  <th className="px-4 py-2 text-left">Curso</th>
-                  <th className="px-4 py-2 text-left">Recinto</th>
-                  <th className="px-4 py-2 text-left">Inicio</th>
-                  <th className="px-4 py-2 text-left">Fin</th>
-                  <th className="px-4 py-2 text-left">Estado</th>
-                  <th className="px-4 py-2 text-left">Observaciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {reservationList.map(reservation => (
-                  <tr key={reservation.id} className="border-t border-gray-800">
-                    <td className="px-4 py-2">{courseNameById.get(reservation.curso_id) ?? `Curso #${reservation.curso_id}`}</td>
-                    <td className="px-4 py-2">{recintoNameById.get(reservation.recinto_id) ?? `Recinto #${reservation.recinto_id}`}</td>
-                    <td className="px-4 py-2">{formatDateTime(reservation.start_at)}</td>
-                    <td className="px-4 py-2">{formatDateTime(reservation.end_at)}</td>
-                    <td className="px-4 py-2">
-                      <span className={`rounded px-2 py-0.5 text-xs uppercase ${
-                        reservation.status === 'pendiente'
-                          ? 'bg-yellow-600 text-black'
-                          : reservation.status === 'aprobada'
-                            ? 'bg-green-700 text-white'
-                            : reservation.status === 'rechazada'
-                              ? 'bg-red-700 text-white'
-                              : 'bg-gray-700 text-white'
-                      }`}>
-                        {reservation.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-2 text-xs text-gray-300">
-                      {reservation.observations ? reservation.observations : '—'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
         )}
       </section>
     </div>
