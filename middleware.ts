@@ -34,10 +34,10 @@ const go = (to: string) => NextResponse.redirect(new URL(to, req.url))
   // Sesión
   const { data: { user } } = await supabase.auth.getUser()
 
-  // 🔒 Bloquea zonas protegidas si no hay sesión
+  //  Bloquea zonas protegidas si no hay sesión
   const isAdminArea  = path.startsWith('/admin')  || path.startsWith('/api/admin')
   const isWorkerArea = path.startsWith('/worker') || path.startsWith('/api/worker')
-
+  const isOrganizerArea = path.startsWith('/organizer') || path.startsWith('/api/organizer')
   if (!user) {
     if (isAdminArea || isWorkerArea) return go('/login')
     // /recintos, /cursos, etc. públicas/mixtas → deja pasar
@@ -45,22 +45,24 @@ const go = (to: string) => NextResponse.redirect(new URL(to, req.url))
   }
 
   // Rol SIEMPRE desde BD (fuente única)
-  let role: 'admin' | 'worker' | 'citizen' | null = null
+  let role: 'admin' | 'worker' | 'citizen' | 'organizer' | null = null
   const { data, error } = await supabase
     .from('users')
     .select('role')
     .eq('uid', user.id)
     .maybeSingle()
-  role = (data?.role as 'admin' | 'worker' | 'citizen' | null) ?? null
+  role = (data?.role as 'admin' | 'worker' | 'citizen' | 'organizer' | null) ?? null
 
-  // 🚧 Guardas por rol
+  //  Guardar por rol
   if (isAdminArea && role !== 'admin') return go('/login')
   if (isWorkerArea && !(role === 'admin' || role === 'worker')) return go('/login')
-
-  // Si el usuario ya está logueado y entra a /login → llévalo a su panel
+  if (isOrganizerArea && !(role === 'admin' || role === 'organizer')) return go('/login')
+ 
+    // Si el usuario ya está logueado y entra a /login → llévalo a su panel
   if (path.startsWith('/login')) {
     if (role === 'admin')  return go('/admin/panel')
     if (role === 'worker') return go('/worker/panel')
+    if (role === 'organizer') return go('/organizer/panel')
     return go('/recintos') // citizen
   }
 

@@ -34,6 +34,9 @@ export default function LoginPage() {
       case 'worker':
         router.replace('/worker/panel')
         break
+      case 'organizer':
+        router.replace('/organizer/panel')
+        break
       default:
         router.replace('/recintos')
         break

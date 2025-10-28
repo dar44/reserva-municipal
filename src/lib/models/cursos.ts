@@ -1,0 +1,68 @@
+import type { AppRole } from '@/lib/auth/roles' 
+
+export type CursoState = 'Disponible' | 'No disponible' | 'Cancelado'
+
+export interface Curso {
+  id: number
+  name: string
+  description: string | null
+  location: string | null
+  begining_date: string | null
+  end_date: string | null
+  price: number
+  state: CursoState
+  capacity: number
+  image: string | null
+  organizer_uid: string
+  created_at: string
+  updated_at: string
+}
+
+export type CourseReservationStatus = 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
+
+export interface CourseReservation {
+  id: number
+  curso_id: number
+  organizer_uid: string
+  recinto_id: number
+  start_at: string
+  end_at: string
+  status: CourseReservationStatus
+  worker_uid: string | null
+  reviewed_at: string | null
+  observations: string | null
+  created_at: string
+  updated_at: string
+}
+
+export interface CourseInput {
+  name: string
+  description?: string | null
+  location?: string | null
+  begining_date?: string | null
+  end_date?: string | null
+  price?: number
+  capacity?: number
+  image?: string | null
+  state?: CursoState
+  organizer_uid?: string
+}
+
+export interface CourseReservationInput {
+  curso_id: number
+  recinto_id: number
+  start_at: string
+  end_at: string
+  observations?: string | null
+  organizer_uid?: string
+}
+
+export interface ReservationDecisionInput {
+  status: Extract<CourseReservationStatus, 'aprobada' | 'rechazada' | 'cancelada'>
+  observations?: string | null
+}
+
+export interface ProfileSummary {
+  uid: string
+  role: AppRole
+}
