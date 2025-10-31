@@ -19,6 +19,21 @@ interface ConflictResult {
   error: PostgrestError | null
 }
 
+function applyOverlapFilter<
+  Q extends {
+    lt: (column: string, value: string) => Q
+    gt: (column: string, value: string) => Q
+  }
+> (query: Q, startAt: string, endAt: string): Q {
+  // Dos intervalos se solapan cuando el inicio de uno es anterior al final del otro
+  // y su final es posterior al inicio del otro. Esto cubre los casos de solapamiento
+  // parcial y total y evita que un bloqueo mueva automáticamente la reserva a la
+  // siguiente hora libre.
+  return query
+    .lt('start_at', endAt)
+    .gt('end_at', startAt)
+}
+
 export async function hasRecintoConflicts ({
   supabase,
   recintoId,
@@ -34,13 +49,12 @@ export async function hasRecintoConflicts ({
   let courseConflict = false
   let citizenConflict = false
 
-  if (includeCourseReservations) {
+  if(includeCourseReservations) {
     let courseQuery = supabase
       .from('curso_reservas')
       .select('id')
       .eq('recinto_id', recintoId)
-      .lt('start_at', endAt)
-      .gt('end_at', startAt)
+    courseQuery = applyOverlapFilter(courseQuery, startAt, endAt)
 
     if (ignoreCourseReservationId) {
       courseQuery = courseQuery.neq('id', ignoreCourseReservationId)
@@ -59,13 +73,12 @@ export async function hasRecintoConflicts ({
     courseConflict = Boolean(data?.length)
   }
 
-  if (includeCitizenReservations) {
+  if(includeCitizenReservations) {
     let citizenQuery = supabase
       .from('reservas')
       .select('id')
       .eq('recinto_id', recintoId)
-      .lt('start_at', endAt)
-      .gt('end_at', startAt)
+    citizenQuery = applyOverlapFilter(citizenQuery, startAt, endAt)
 
     if (ignoreCitizenReservationId) {
       citizenQuery = citizenQuery.neq('id', ignoreCitizenReservationId)
