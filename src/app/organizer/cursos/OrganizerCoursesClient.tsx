@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { getConfiguredCurrency } from '@/lib/config'
+import { formatCurrency } from '@/lib/currency'
 import { useToast } from '@/components/Toast'
 
 type OrganizerCourse = {
@@ -35,6 +37,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
   const toast = useToast()
+  const currency = getConfiguredCurrency()
 
   const formatDate = (value: string | null) => {
     if (!value) return '—'
@@ -232,7 +235,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
           </label>
 
           <label className="text-sm">
-            Precio (€)
+            Precio (CLP)
             <input
               type="number"
               step="0.01"
@@ -323,7 +326,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
                       />
                     </label>
                     <label className="text-sm">
-                      Precio (€)
+                      Precio (CLP)
                       <input
                         type="number"
                         step="0.01"
@@ -393,7 +396,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
                       </div>
                       <div>
                         <dt className="uppercase tracking-wide">Precio</dt>
-                        <dd>{course.price != null ? `${course.price.toFixed(2)} €` : '—'}</dd>
+                        <dd>{course.price != null ? formatCurrency(Number(course.price), currency) : '—'}</dd>
                       </div>
                       <div>
                         <dt className="uppercase tracking-wide">Capacidad</dt>

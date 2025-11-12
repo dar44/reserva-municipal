@@ -5,8 +5,7 @@ const FALLBACK_RESERVA_PRICE = 500
 export function getReservaPriceValue (): number {
   const raw =
     process.env.RESERVA_PRICE ??
-    process.env.RESERVA_PRICE_CLP ??
-    process.env.RESERVA_PRICE_EUR
+    process.env.RESERVA_PRICE_CLP
 
   if (raw === undefined) {
     return FALLBACK_RESERVA_PRICE

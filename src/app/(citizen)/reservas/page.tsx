@@ -4,6 +4,8 @@ import DeleteButton from './DeleteButton'
 import { Fragment } from "react";
 import OpenStreetMapView from "@/components/OpenStreetMapView";
 import Link from "next/link";
+import { getConfiguredCurrency } from "@/lib/config";
+import { formatCurrency } from "@/lib/currency";
 
 export const dynamic = "force-dynamic";
 
@@ -36,6 +38,8 @@ export default async function ReservasPage () {
     }
   );
   const { data: { user } } = await supabase.auth.getUser();
+
+  //ESTO YA NO HACE FALTA PORQUE LA PÁGINA ESTÁ PROTEGIDA
   if (!user) {
     return <p className="mt-20 text-center">🔒 Inicia sesión primero</p>;
   }
@@ -48,6 +52,8 @@ export default async function ReservasPage () {
     .eq("user_uid", userUid)
     .order("start_at", { ascending: false })
     .returns<Reserva[]>();
+
+    const currency = getConfiguredCurrency()
 
   return (
     <div>
@@ -70,7 +76,7 @@ export default async function ReservasPage () {
                 <td className="px-4 py-2">{r.recintos?.name}</td>
                 <td className="px-4 py-2">{new Date(r.start_at).toLocaleString()}</td>
                 <td className="px-4 py-2">{new Date(r.end_at).toLocaleString()}</td>
-                <td className="px-4 py-2">{r.price}CLP</td>
+                <td className="px-4 py-2">{Number(r.price) > 0 ? formatCurrency(Number(r.price), currency) : 'Gratis'}</td>
                 <td className="px-4 py-2">
                   {r.paid ? (
                     <span className="text-sm text-green-500">Pagado</span>

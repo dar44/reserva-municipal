@@ -58,9 +58,9 @@ export default async function CursosPage({
     imageUrl: getPublicStorageUrl(supabase, curso.image, curso.image_bucket),
   }))
 
-  const currency = new Intl.NumberFormat("es-ES", {
+  const currency = new Intl.NumberFormat("es-CL", {
     style: "currency",
-    currency: "EUR"
+    currency: "CLP"
   });
 
   return (

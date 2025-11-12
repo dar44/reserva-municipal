@@ -4,6 +4,8 @@ import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import DeleteButton from './DeleteButton'
 import { getPublicStorageUrl } from '@/lib/storage'
+import { getConfiguredCurrency } from '@/lib/config'
+import { formatCurrency } from '@/lib/currency'
 
 export const dynamic = 'force-dynamic'
 
@@ -27,6 +29,8 @@ export default async function CursoDetallePage({
   if (!curso) return notFound()
 
   const imageUrl = getPublicStorageUrl(supabase, curso.image, curso.image_bucket)
+
+  const currency = getConfiguredCurrency()
 
   return (
     <div className="max-w-xl mx-auto space-y-4">
@@ -53,7 +57,7 @@ export default async function CursoDetallePage({
         <p><strong>Ubicación:</strong> {curso.location}</p>
         <p><strong>Fecha Inicio:</strong> {curso.begining_date ? new Date(curso.begining_date).toLocaleDateString() : ''}</p>
         <p><strong>Fecha Fin:</strong> {curso.end_date ? new Date(curso.end_date).toLocaleDateString() : ''}</p>
-        <p><strong>Precio:</strong> {curso.price}</p>
+        <p><strong>Precio:</strong> {curso.price ? formatCurrency(Number(curso.price), currency) : 'Gratis'}</p>
         <p><strong>Estado:</strong> {curso.state}</p>
         <p><strong>Capacidad:</strong> {curso.capacity}</p>
       </div>
