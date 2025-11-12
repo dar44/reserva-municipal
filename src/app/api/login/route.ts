@@ -49,8 +49,8 @@ export async function POST(req: Request) {
     .maybeSingle()
 
   if (!roleErr && userRow?.role) role = userRow.role
-  console.log('LOGIN DEBUG users row:', userRow, 'error:', roleErr)
-  console.log('Rol obtenido desde BD (login):', role)
+  //console.log('LOGIN DEBUG users row:', userRow, 'error:', roleErr)
+  //console.log('Rol obtenido desde BD (login):', role)
 
   // 3) Respuesta + cookies (sesión de supabase + sm_role)
   const res = NextResponse.json({ message: 'login_ok', role }, { status: 200 })
