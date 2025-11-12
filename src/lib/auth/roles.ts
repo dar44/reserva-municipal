@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { redirect } from 'next/navigation'
 
 export type AppRole = 'admin' | 'worker' | 'citizen' | 'organizer'
 
@@ -20,7 +21,8 @@ export class AuthorizationError extends Error {
 export async function getSessionProfile (supabase: SupabaseClient): Promise<SessionProfile> {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {
-    throw new AuthorizationError('Usuario no autenticado', 401)
+    redirect('/login')
+
   }
 
   const { data, error } = await supabase

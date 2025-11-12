@@ -66,9 +66,15 @@ export default function LoginPage() {
           Entrar
         </button>
       </form>
-      <div className="text-center mt-4">
-        <Link href="/auth/reset-password" className="text-sm text-blue-600">
+      <div className="max-w-sm mx-auto mt-4 space-y-2 text-center">
+        <Link href="/auth/reset-password" className="block text-sm text-blue-600">
           ¿Has olvidado la contraseña?
+        </Link>
+        <Link
+          href="/signup"
+          className="block w-full rounded bg-blue-600 py-2 text-white"
+        >
+          Crear cuenta
         </Link>
       </div>
     </>
