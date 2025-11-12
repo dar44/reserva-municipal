@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServer } from '@/lib/supabaseServer'
-import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
+import { AuthorizationError, isRole } from '@/lib/auth/roles'
 import type { CourseReservation, ReservationDecisionInput } from '@/lib/models/cursos'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
+import { requireAuthAPI } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -35,11 +35,14 @@ export async function PATCH (
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
-  try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
-    assertRole(profile, ['worker', 'admin'])
+  const auth = await requireAuthAPI(['worker', 'admin'])
+  if ('error' in auth) {
+    return auth.error
+  }
 
+  const { supabase, profile } = auth
+
+  try {
     const { id: rawId } = await params
     const id = parseReservationId({ id: rawId })
     const decision = sanitizeDecision(await req.json().catch(() => ({})))

@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
-import { createSupabaseServer } from '@/lib/supabaseServer'
+import { requireAuthAPI } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -9,7 +9,12 @@ export async function DELETE (
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const supabase = await createSupabaseServer()
+  const auth = await requireAuthAPI(['admin'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase } = auth
   const { error } = await supabase.from('users').delete().eq('uid', id)
   if (error) return NextResponse.json({ error: error.message }, { status: 400 })
   revalidatePath('/admin/usuarios')

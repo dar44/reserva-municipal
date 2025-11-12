@@ -1,9 +1,12 @@
 import { ReactNode } from 'react'
+import { requireAuthRSC } from '@/lib/auth/guard'
 import OrganizerNavBar from '@/components/OrganizerNavBar'
 
 export const dynamic = 'force-dynamic'
 
-export default function OrganizerLayout({ children }: { children: ReactNode }) {
+export default async function OrganizerLayout({ children }: { children: ReactNode }) {
+  await requireAuthRSC(['admin', 'organizer'])
+
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
       <OrganizerNavBar />

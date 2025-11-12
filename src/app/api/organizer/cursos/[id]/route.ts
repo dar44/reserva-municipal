@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServer } from '@/lib/supabaseServer'
-import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
-import type { CourseInput, Curso } from '@/lib/models/cursos' 
+import { AuthorizationError, assertRole, isRole } from '@/lib/auth/roles'
+import { requireAuthAPI } from '@/lib/auth/guard'
+import type { CourseInput, Curso } from '@/lib/models/cursos'
 
 export const dynamic = 'force-dynamic'
 
@@ -34,9 +34,14 @@ export async function GET (
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuthAPI(['admin', 'organizer', 'worker'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
+
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
     const { id: rawId } = await params
     const id = parseCourseId({ id: rawId })
 
@@ -73,9 +78,14 @@ export async function PATCH (
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuthAPI(['admin', 'organizer'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
+
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
     const { id: rawId } = await params
     const id = parseCourseId({ id: rawId })
 
@@ -112,9 +122,14 @@ export async function DELETE (
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuthAPI(['admin', 'organizer'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
+
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
     const { id: rawId } = await params
     const id = parseCourseId({ id: rawId })
 

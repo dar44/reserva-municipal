@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServer } from '@/lib/supabaseServer'
-import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
+import { AuthorizationError, isRole } from '@/lib/auth/roles'
 import type { CourseReservation, CourseReservationRequestInput } from '@/lib/models/cursos'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
+import { requireAuthAPI } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -131,13 +131,13 @@ function parseFilters (url: URL): ReservationFilters {
 }
 
 export async function GET (req: Request) {
-  try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
+  const auth = await requireAuthAPI(['admin', 'organizer', 'worker'])
+  if ('error' in auth) {
+    return auth.error
+  }
+  const { supabase, profile } = auth
 
-    if (!isRole(profile, 'organizer', 'admin', 'worker')) {
-      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
-    }
+  try {
 
     const filters = parseFilters(new URL(req.url))
 
@@ -172,11 +172,13 @@ export async function GET (req: Request) {
 }
 
 export async function POST (req: Request) {
-  try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
-    assertRole(profile, ['organizer', 'admin'])
+  const auth = await requireAuthAPI(['organizer', 'admin'])
+  if ('error' in auth) {
+    return auth.error
+  }
 
+  const { supabase, profile } = auth
+  try {
     const payload = await req.json().catch(() => ({}))
     const sanitized = sanitizeReservationPayload(payload)
 

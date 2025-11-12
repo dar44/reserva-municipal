@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServer } from '@/lib/supabaseServer'
-import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
+import { AuthorizationError, assertRole, isRole } from '@/lib/auth/roles'
 import type { CourseReservation } from '@/lib/models/cursos'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
+import { requireAuthAPI } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,9 +59,13 @@ export async function PATCH (
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuthAPI(['admin', 'organizer'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
     const { id: rawId } = await params
     const id = parseReservationId({ id: rawId })
 
@@ -140,9 +144,13 @@ export async function DELETE (
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
+  const auth = await requireAuthAPI(['admin', 'organizer'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
     const { id: rawId } = await params
     const id = parseReservationId({ id: rawId })
 

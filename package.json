@@ -11,7 +11,7 @@
   "dependencies": {
     "@react-email/components": "^0.5.3",
     "@supabase/auth-helpers-nextjs": "^0.10.0",
-    "@supabase/ssr": "^0.6.1",
+    "@supabase/ssr": "^0.7.0",
     "@supabase/supabase-js": "^2.53.0",
     "leaflet": "^1.9.4",
     "ngrok": "^5.0.0-beta.2",

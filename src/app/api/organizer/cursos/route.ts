@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
-import { createSupabaseServer } from '@/lib/supabaseServer'
-import { AuthorizationError, assertRole, getSessionProfile, isRole } from '@/lib/auth/roles'
+import { AuthorizationError, isRole } from '@/lib/auth/roles'
+import { requireAuthAPI } from '@/lib/auth/guard'
 import type { CourseInput, Curso } from '@/lib/models/cursos'
 
 export const dynamic = 'force-dynamic'
@@ -27,12 +27,14 @@ function sanitizeCoursePayload (body: Partial<CourseInput>): CourseInput {
 }
 
 export async function GET (req: Request) {
+  const auth = await requireAuthAPI(['admin', 'organizer', 'worker'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
+
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
-    if (!isRole(profile, 'organizer', 'admin', 'worker')) {
-      return NextResponse.json({ error: 'Acceso denegado' }, { status: 403 })
-    }
 
     const { searchParams } = new URL(req.url)
     const organizerParam = searchParams.get('organizer_uid') ?? undefined
@@ -61,10 +63,14 @@ export async function GET (req: Request) {
 }
 
 export async function POST (req: Request) {
+  const auth = await requireAuthAPI(['organizer', 'admin'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
+  const { supabase, profile } = auth
+
   try {
-    const supabase = await createSupabaseServer()
-    const profile = await getSessionProfile(supabase)
-    assertRole(profile, ['organizer', 'admin'])
 
     const payload = await req.json().catch(() => ({}))
     const sanitized = sanitizeCoursePayload(payload)
