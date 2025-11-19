@@ -1,11 +1,10 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
 import DeleteButton from './DeleteButton'
 import { Fragment } from "react";
 import OpenStreetMapView from "@/components/OpenStreetMapView";
 import Link from "next/link";
 import { getConfiguredCurrency } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
+import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
@@ -20,23 +19,7 @@ interface Reserva {
 }
 
 export default async function ReservasPage () {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set({ name, value, ...options })
-          );
-        }
-      }
-    }
-  );
+  const supabase = await createSupabaseServerReadOnly();
   const { data: { user } } = await supabase.auth.getUser();
 
   //ESTO YA NO HACE FALTA PORQUE LA PÁGINA ESTÁ PROTEGIDA

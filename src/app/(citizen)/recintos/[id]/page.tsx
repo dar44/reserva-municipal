@@ -1,12 +1,11 @@
-import { createServerClient } from "@supabase/ssr";
 import Image from "next/image";
-import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import ReservationForm from "./ReservationForm";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
+import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
 
 export const dynamic = "force-dynamic";
 
@@ -16,23 +15,8 @@ export default async function RecintoDetail({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params;
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll();
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) =>
-            cookieStore.set({ name, value, ...options })
-          );
-        }
-      }
-    }
-  );
+  const supabase = await createSupabaseServerReadOnly();
+
   const { data: recinto } = await supabase
     .from("recintos")
     .select("id,name,description,ubication,state,image,image_bucket")
