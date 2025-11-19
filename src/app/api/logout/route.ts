@@ -5,7 +5,7 @@ import { createServerClient } from '@supabase/ssr'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST() {
+export async function POST(request: Request) {
   const cookieStore = await cookies()
 
   const supabase = createServerClient(

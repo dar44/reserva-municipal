@@ -228,7 +228,7 @@ export async function POST(req: Request) {
     await supabaseAdmin.from('inscripciones').update({ paid }).eq('id', inscripcionId)
   }
 
-  console.log('[WEBHOOK] pago', { id: pago.id, previousEstado, nextEstado: estado, reservaId, inscripcionId })
+  //console.log('[WEBHOOK] pago', { id: pago.id, previousEstado, nextEstado: estado, reservaId, inscripcionId })
 
   await notifyPagoConfirmado({
     previousEstado,
