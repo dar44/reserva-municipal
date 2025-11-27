@@ -57,7 +57,6 @@ export async function GET (req: Request) {
 
     return NextResponse.json({ cursos: data as Curso[] })
   } catch (error) {
-    console.error('GET /api/organizer/cursos', error)
     return NextResponse.json({ error: 'Error al consultar cursos' }, { status: 500 })
   }
 }
@@ -102,7 +101,6 @@ export async function POST (req: Request) {
 
     return NextResponse.json({ curso: data as Curso }, { status: 201 })
   } catch (error) {
-    console.error('POST /api/organizer/cursos', error)
     const message = error instanceof Error ? error.message : 'Error al crear curso'
     const status = error instanceof AuthorizationError ? error.status : 400
     return NextResponse.json({ error: message }, { status })
