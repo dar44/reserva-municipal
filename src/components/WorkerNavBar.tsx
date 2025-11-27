@@ -43,6 +43,7 @@ export default function WorkerNavBar() {
           <Link href="/worker/panel" className={linkClass("/worker/panel")}>Panel</Link>
           <Link href="/worker/recintos" className={linkClass("/worker/recintos")}>Recintos</Link>
           <Link href="/worker/cursos" className={linkClass("/worker/cursos")}>Cursos</Link>
+          <Link href="/worker/solicitudes" className={linkClass("/worker/solicitudes")}>Solicitudes</Link>
           <Link href="/worker/reservas" className={linkClass("/worker/reservas")}>Reservas</Link>
         </div>
         <div className="relative">

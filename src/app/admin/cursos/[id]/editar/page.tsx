@@ -1,8 +1,16 @@
 import Link from 'next/link'
 import { notFound, redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
+import Image from 'next/image'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
+import CourseImagePicker from '@/components/CursoImagePicker'
+import {
+  COURSE_DEFAULTS_FOLDER,
+  COURSE_IMAGE_BUCKET,
+  processCourseImageInput,
+} from '@/lib/cursoImages'
+import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
@@ -25,6 +33,13 @@ export default async function EditarCursoPage({
   if (fetchError) console.error('FETCH curso error:', fetchError)
   if (!curso) return notFound()
 
+  const imageUrl = getPublicStorageUrl(supabase, curso.image, curso.image_bucket)
+  const defaultImages = await listBucketPrefix(
+    supabase,
+    COURSE_IMAGE_BUCKET,
+    COURSE_DEFAULTS_FOLDER,
+  )
+
   const actualizarCurso = async (formData: FormData) => {
     'use server'
     try {
@@ -32,8 +47,18 @@ export default async function EditarCursoPage({
 
       const begining_date = (formData.get('begining_date') as string) || null
       const end_date      = (formData.get('end_date') as string) || null
-      const imageRaw      = (formData.get('image') as string) || ''
-      const image         = imageRaw.trim() === '' ? null : imageRaw
+
+      const {
+        image,
+        image_bucket,
+        uploadedPath: uploadedImagePath,
+        previousImageToRemove,
+      } = await processCourseImageInput({
+        supabase,
+        formData,
+        currentImage: curso.image,
+        currentBucket: curso.image_bucket,
+      })
 
       const data = {
         name:        String(formData.get('name') || ''),
@@ -45,6 +70,7 @@ export default async function EditarCursoPage({
         state:       String(formData.get('state') || 'Disponible'),
         capacity:    Number(formData.get('capacity') || 0),
         image,
+        image_bucket,
         updated_at:  new Date().toISOString(),
       }
 
@@ -54,12 +80,33 @@ export default async function EditarCursoPage({
         .eq('id', id)
 
       if (error) {
+        if (uploadedImagePath) {
+          const { error: cleanupError } = await supabase.storage
+            .from('cursos')
+            .remove([uploadedImagePath])
+          if (cleanupError) {
+            console.error('CLEANUP curso image error:', cleanupError)
+          }
+        }
         console.error('UPDATE cursos error:', error)
         throw new Error(error.message)
       }
 
+      if (previousImageToRemove) {
+        const { error: removeError } = await supabase.storage
+          .from(previousImageToRemove.bucket)
+          .remove([previousImageToRemove.path])
+        if (removeError) {
+          console.error('REMOVE curso image error:', removeError)
+        }
+      }
+
       revalidatePath(`/admin/cursos/${id}`)
       revalidatePath('/admin/cursos')
+      revalidatePath('/cursos')
+      revalidatePath(`/cursos/${id}`)
+      revalidatePath('/worker/cursos')
+      revalidatePath(`/worker/cursos/${id}`)
       redirect(`/admin/cursos/${id}`)
     } catch (e: unknown) {
       if ((e as { digest?: string })?.digest?.startsWith('NEXT_REDIRECT')) {
@@ -93,7 +140,7 @@ export default async function EditarCursoPage({
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
 
-       <LocationPicker
+        <LocationPicker
           valueNames={{
             address: 'location',
             postalCode: 'postal_code',
@@ -148,13 +195,27 @@ export default async function EditarCursoPage({
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
 
-        <input
-          type="text"
-          name="image"
-          defaultValue={curso.image ?? ''}
-          placeholder="URL de la imagen"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Imagen del curso</label>
+          <div className="relative h-40 bg-gray-800 rounded flex items-center justify-center text-xs text-gray-400 overflow-hidden">
+            {imageUrl ? (
+              <Image
+                src={imageUrl}
+                alt={curso.name}
+                fill
+                className="object-cover"
+                sizes="(min-width: 768px) 320px, 100vw"
+              />
+            ) : (
+              <span>Sin imagen personalizada</span>
+            )}
+          </div>
+          <CourseImagePicker
+            defaultImages={defaultImages}
+            initialImage={curso.image}
+            initialBucket={curso.image_bucket}
+          />
+        </div>
 
         <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Guardar</button>
       </form>

@@ -1,38 +1,13 @@
-'use client'
-import { useState } from 'react'
-import { supabase } from '@/lib/supabaseClient'
-import { useToast } from '@/components/Toast'
-import { useRouter } from 'next/navigation'
+import { Suspense } from 'react'
+import UpdatePasswordClient from './UpdatePasswordClient'
 
-export default function UpdatePasswordPage() {
-  const [password, setPassword] = useState('')
-  const toast = useToast()
-  const router = useRouter()
+/** Evita el prerender/SSG: esta página debe renderizarse en runtime */
+export const dynamic = 'force-dynamic'
 
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    const { error } = await supabase.auth.updateUser({ password })
-    if (error) {
-      toast({ type: 'error', message: 'No se pudo actualizar' })
-    } else {
-      toast({ type: 'success', message: 'Contraseña actualizada' })
-      router.replace('/login')
-    }
-  }
-
+export default function Page() {
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm mx-auto p-6 space-y-3">
-      <input
-        type="password"
-        placeholder="Nueva contraseña"
-        required
-        className="w-full border p-2"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-      />
-      <button className="w-full bg-green-600 text-white py-2 rounded">
-        Actualizar contraseña
-      </button>
-    </form>
+    <Suspense fallback={<p className="p-6 text-center">Cargando…</p>}>
+      <UpdatePasswordClient />
+    </Suspense>
   )
 }

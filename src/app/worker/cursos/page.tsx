@@ -1,30 +1,37 @@
 import { createSupabaseServer } from "@/lib/supabaseServer";
 import Image from 'next/image'
 import CursoActions from "./CursoActions";
+import { getPublicStorageUrl } from '@/lib/storage'
 
 export const dynamic = "force-dynamic";
 
 interface Curso {
-  id: number;
-  image: string | null;
-  name: string;
-  description: string | null;
-  begining_date: string | null;
-  capacity: number | null;
-  state: string;
-  inscripciones: { count: number }[];
+  id: number
+  image: string | null
+  image_bucket: string | null
+  name: string
+  description: string | null
+  begining_date: string | null
+  capacity: number | null
+  state: string
+  inscripciones: { count: number }[]
 }
 
 export default async function WorkerCursosPage() {
-  const supabase = await createSupabaseServer();
+  const supabase = await createSupabaseServer()
   const { data: cursos } = await supabase
     .from("cursos")
     .select(
-      "id,image,name,description,begining_date,capacity,state,inscripciones(count)"
+      "id,image,image_bucket,name,description,begining_date,capacity,state,inscripciones(count)"
     )
     .eq("inscripciones.status", "activa")
     .order("name")
-    .returns<Curso[]>();
+    .returns<Curso[]>()
+
+  const cursosWithImages = cursos?.map(curso => ({
+    ...curso,
+    imageUrl: getPublicStorageUrl(supabase, curso.image, curso.image_bucket),
+  }))
 
   return (
     <div>
@@ -42,21 +49,23 @@ export default async function WorkerCursosPage() {
           </tr>
         </thead>
         <tbody>
-          {cursos?.map(c => {
+          {cursosWithImages?.map(c => {
             const ocupadas = c.inscripciones?.[0]?.count ?? 0;
             return (
               <tr key={c.id} className="border-t border-gray-700">
                 <td className="px-4 py-2">
-                  {c.image ? (
+                  {c.imageUrl ? (
                     <Image
-                      src={c.image}
+                      src={c.imageUrl}
                       alt={c.name}
                       width={40}
                       height={40}
                       className="h-10 w-10 object-cover rounded"
                     />
                   ) : (
-                    <div className="h-10 w-10 bg-gray-700 rounded" />
+                    <div className="h-10 w-10 bg-gray-700 rounded flex items-center justify-center text-sm text-gray-400 font-semibold">
+                      {c.name.charAt(0).toUpperCase()}
+                    </div>
                   )}
                 </td>
                 <td className="px-4 py-2">{c.name}</td>

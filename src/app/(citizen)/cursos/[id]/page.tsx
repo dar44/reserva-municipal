@@ -5,6 +5,8 @@ import InscripcionActions from './InscripcionActions'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { getConfiguredCurrency } from '@/lib/config'
 import { formatCurrency } from '@/lib/currency'
+import { getPublicStorageUrl } from '@/lib/storage'
+import OpenStreetMapView from '@/components/OpenStreetMapView'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,6 +20,8 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
     .eq('id', id)
     .single()
   if (!curso) return notFound()
+
+  const imageUrl = getPublicStorageUrl(supabase, curso.image, curso.image_bucket)
 
   const { count } = await supabase
     .from('inscripciones')
@@ -47,10 +51,10 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
     <div className="space-y-6">
       <Link href="/cursos" className="text-sm underline">← Volver</Link>
       <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
-         <div className="relative h-64 bg-gray-700 flex items-center justify-center text-gray-400">
-          {curso.image ? (
+        <div className="relative h-64 bg-gray-700 flex items-center justify-center text-gray-400">
+          {imageUrl ? (
             <Image
-              src={curso.image}
+              src={imageUrl}
               alt={curso.name}
               fill
               className="object-cover"
@@ -58,7 +62,7 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
               priority
             />
           ) : (
-            'Imagen'
+            <span className="text-sm">Sin imagen disponible</span>
           )}
         </div>
         <div className="space-y-4">
@@ -82,6 +86,13 @@ export default async function CursoDetail ({ params }: { params: Promise<{ id: s
           </div>
           <p><strong>Precio:</strong> {priceLabel}</p>
           <InscripcionActions cursoId={curso.id} email={user?.email} inscripcionId={inscripcionId} />
+          {inscripcionId && curso.location && (
+            <OpenStreetMapView
+              className="mt-4"
+              address={curso.location}
+              title="Cómo llegar al curso"
+            />
+          )}
           <p className="text-xs text-gray-400">
             Te enviaremos al checkout de Lemon Squeezy para realizar el pago y confirmar la inscripción.
           </p>

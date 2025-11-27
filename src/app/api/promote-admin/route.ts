@@ -1,7 +1,13 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { requireAuthAPI } from '@/lib/auth/guard'
 
 export async function POST(req: Request) {
+  const auth = await requireAuthAPI(['admin'])
+  if ('error' in auth) {
+    return auth.error
+  }
+
   const { email } = await req.json()
 
   // 1) Obtener uid del usuario en Auth

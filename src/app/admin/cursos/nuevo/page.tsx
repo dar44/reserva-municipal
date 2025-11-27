@@ -3,30 +3,81 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
+import CourseImagePicker from '@/components/CursoImagePicker'
+import {
+  COURSE_DEFAULTS_FOLDER,
+  COURSE_IMAGE_BUCKET,
+  processCourseImageInput,
+} from '@/lib/cursoImages'
+import { listBucketPrefix } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
 
-export default function NuevoCursoPage () {
+export default async function NuevoCursoPage () {
+  const supabase = await createSupabaseServer()
+  const defaultImages = await listBucketPrefix(
+    supabase,
+    COURSE_IMAGE_BUCKET,
+    COURSE_DEFAULTS_FOLDER,
+  )
+
   const crearCurso = async (formData: FormData) => {
     'use server'
     const supabase = await createSupabaseServer()
+
+    const begining_date = (formData.get('begining_date') as string) || null
+    const end_date = (formData.get('end_date') as string) || null
+
+    const {
+      image,
+      image_bucket,
+      uploadedPath: uploadedImagePath,
+    } = await processCourseImageInput({
+      supabase,
+      formData,
+    })
+
     const data = {
-      name: formData.get('name') as string,
-      description: formData.get('description') as string,
-      location: formData.get('location') as string,
-      begining_date: formData.get('begining_date') || null,
-      end_date: formData.get('end_date') || null,
+      name: String(formData.get('name') || ''),
+      description: ((formData.get('description') as string) || '').trim() || null,
+      location: ((formData.get('location') as string) || '').trim() || null,
+      begining_date,
+      end_date,
       price: Number(formData.get('price') || 0),
-      state: formData.get('state') as string || 'Disponible',
+      state: (formData.get('state') as string) || 'Disponible',
       capacity: Number(formData.get('capacity') || 0),
-      image: formData.get('image') as string || null,
+      image,
+      image_bucket,
     }
-    const { error } = await supabase.from('cursos').insert(data)
+
+    const { data: inserted, error } = await supabase
+      .from('cursos')
+      .insert(data)
+      .select('id')
+      .single()
+
     if (error) {
+      if (uploadedImagePath) {
+        const { error: cleanupError } = await supabase.storage
+          .from('cursos')
+          .remove([uploadedImagePath])
+        if (cleanupError) {
+          console.error('CLEANUP curso image error:', cleanupError)
+        }
+      }
       console.error('Error al crear curso:', error)
       throw new Error(error.message)
     }
+
     revalidatePath('/admin/cursos')
+    revalidatePath('/cursos')
+    revalidatePath('/worker/cursos')
+    if (inserted?.id) {
+      revalidatePath(`/cursos/${inserted.id}`)
+      revalidatePath(`/admin/cursos/${inserted.id}`)
+      revalidatePath(`/worker/cursos/${inserted.id}`)
+    }
+
     redirect('/admin/cursos')
   }
 
@@ -47,7 +98,7 @@ export default function NuevoCursoPage () {
           placeholder="Descripción"
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
-       <LocationPicker
+        <LocationPicker
           valueNames={{
             address: 'location',
             postalCode: 'postal_code',
@@ -88,12 +139,7 @@ export default function NuevoCursoPage () {
           placeholder="Capacidad"
           className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
         />
-        <input
-          type="text"
-          name="image"
-          placeholder="URL de la imagen"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+       <CourseImagePicker defaultImages={defaultImages} />
         <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Crear</button>
       </form>
     </div>

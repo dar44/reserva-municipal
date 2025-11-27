@@ -17,47 +17,65 @@ interface Reserva {
 
 export default async function WorkerReservasPage() {
   const supabase = await createSupabaseServer();
-  const { data: reservas } = await supabase
+  const { data: reservas, error } = await supabase
     .from("reservas")
     .select("id,start_at,end_at,price,paid,users(email),recintos(name)")
     .order("start_at", { ascending: true })
-    .returns<Reserva[]>(); //uso interfaz reserva para que VSCode no me de como error
+    .returns<Reserva[]>();
 
   const formatDate = (dateStr: string) => new Date(dateStr).toLocaleString("es-ES", { dateStyle: "short", timeStyle: "short" });
   const currency = getConfiguredCurrency();
   const formatPrice = (amount: number) => formatCurrency(amount, currency);
 
+  if (error) {
+    console.error("Error fetching citizen reservations", error);
+  }
+
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Listado de Reservas</h1>
-      <table className="min-w-full bg-gray-800 text-sm rounded overflow-hidden">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">ID</th>
-            <th className="px-4 py-2 text-left">Usuario</th>
-            <th className="px-4 py-2 text-left">Recinto</th>
-            <th className="px-4 py-2 text-left">Fecha y Hora</th>
-            <th className="px-4 py-2 text-left">Precio</th>
-            <th className="px-4 py-2 text-left">Pago</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {reservas?.map(r => (
-            <tr key={r.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">{r.id}</td>
-              <td className="px-4 py-2">{r.users?.email ?? ''}</td>
-              <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
-              <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
-              <td className="px-4 py-2">{formatPrice(Number(r.price ?? 0))}</td>
-              <td className="px-4 py-2">{r.paid ? 'Pagado' : 'Pendiente'}</td>
-              <td className="px-4 py-2">
-                <DeleteButton id={r.id} />
-              </td>
+    <section className="space-y-4">
+      <header>
+        <h1 className="text-2xl font-bold">Listado de Reservas de Ciudadanos</h1>
+        <p className="text-sm text-gray-300">
+          Administra las reservas realizadas por los ciudadanos y controla su estado de pago.
+        </p>
+      </header>
+      <div className="overflow-x-auto">
+        <table className="min-w-full overflow-hidden rounded bg-gray-800 text-sm">
+          <thead className="bg-gray-700">
+            <tr>
+              <th className="px-4 py-2 text-left">ID</th>
+              <th className="px-4 py-2 text-left">Usuario</th>
+              <th className="px-4 py-2 text-left">Recinto</th>
+              <th className="px-4 py-2 text-left">Fecha y Hora</th>
+              <th className="px-4 py-2 text-left">Precio</th>
+              <th className="px-4 py-2 text-left">Pago</th>
+              <th className="px-4 py-2 text-left">Acciones</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          </thead>
+          <tbody>
+            {(reservas ?? []).map(r => (
+              <tr key={r.id} className="border-t border-gray-700">
+                <td className="px-4 py-2">{r.id}</td>
+                <td className="px-4 py-2">{r.users?.email ?? ''}</td>
+                <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
+                <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
+                <td className="px-4 py-2">{formatPrice(Number(r.price ?? 0))}</td>
+                <td className="px-4 py-2">{r.paid ? 'Pagado' : 'Pendiente'}</td>
+                <td className="px-4 py-2">
+                  <DeleteButton id={r.id} />
+                </td>
+              </tr>
+            ))}
+            {(!reservas || reservas.length === 0) && (
+              <tr>
+                <td colSpan={7} className="px-4 py-6 text-center text-sm text-gray-400">
+                  No hay reservas registradas.
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }

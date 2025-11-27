@@ -1,6 +1,7 @@
 import { createSupabaseServer } from "@/lib/supabaseServer";
 import Image from "next/image";
 import RecintoActions from "./RecintoActions";
+import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
 
 export const dynamic = "force-dynamic";
 
@@ -8,8 +9,10 @@ export default async function WorkerRecintosPage() {
   const supabase = await createSupabaseServer();
   const { data: recintos } = await supabase
     .from("recintos")
-    .select("id,name,ubication,state,image")
+    .select("id,name,ubication,state,image,image_bucket")
     .order("name");
+
+  const defaultImageUrl = getRecintoDefaultPublicUrl(supabase);
 
   return (
     <div>
@@ -25,36 +28,39 @@ export default async function WorkerRecintosPage() {
           </tr>
         </thead>
         <tbody>
-          {recintos?.map(r => (
-            <tr key={r.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">
-                {r.image ? (
-                  <Image
-                    src={r.image}
-                    alt={r.name}
-                    width={40}
-                    height={40}
-                    className="h-10 w-10 rounded object-cover"
-                  />
-                ) : (
-                  <div className="h-10 w-10 bg-gray-700 rounded" />
-                )}
-              </td>
-              <td className="px-4 py-2">{r.name}</td>
-              <td className="px-4 py-2">{r.ubication}</td>
-              <td className="px-4 py-2">
-                <div className="flex items-center gap-2">
-                  <span className={`px-2 py-0.5 rounded text-xs ${r.state === 'Disponible' ? 'bg-green-700' : 'bg-gray-600'}`}>{r.state}</span>
-                  <div className="w-24 h-2 bg-gray-600 rounded">
-                    <div className={`h-2 ${r.state === 'Disponible' ? 'bg-green-500 w-full' : 'bg-gray-400 w-full'}`}></div>
+          {recintos?.map(r => {
+            const imageUrl = getRecintoImageUrl(supabase, r.image, r.image_bucket, defaultImageUrl);
+            return (
+              <tr key={r.id} className="border-t border-gray-700">
+                <td className="px-4 py-2">
+                  {imageUrl ? (
+                    <Image
+                      src={imageUrl}
+                      alt={r.name}
+                      width={40}
+                      height={40}
+                      className="h-10 w-10 rounded object-cover"
+                    />
+                  ) : (
+                    <div className="h-10 w-10 bg-gray-700 rounded" />
+                  )}
+                </td>
+                <td className="px-4 py-2">{r.name}</td>
+                <td className="px-4 py-2">{r.ubication}</td>
+                <td className="px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2 py-0.5 rounded text-xs ${r.state === 'Disponible' ? 'bg-green-700' : 'bg-gray-600'}`}>{r.state}</span>
+                    <div className="w-24 h-2 bg-gray-600 rounded">
+                      <div className={`h-2 ${r.state === 'Disponible' ? 'bg-green-500 w-full' : 'bg-gray-400 w-full'}`}></div>
+                    </div>
                   </div>
-                </div>
-              </td>
-              <td className="px-4 py-2">
-                <RecintoActions id={r.id} state={r.state} />
-              </td>
-            </tr>
-          ))}
+                </td>
+                <td className="px-4 py-2">
+                  <RecintoActions id={r.id} state={r.state} />
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

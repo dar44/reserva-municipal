@@ -1,6 +1,8 @@
 import Link from 'next/link'
 import Image from 'next/image'
 import { redirect } from 'next/navigation'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { buildStorageUrl } from '@/lib/storage'
 
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import DeleteButton from './DeleteButton'
@@ -16,13 +18,17 @@ export default async function UsuarioDetailPage ({ params }: Props) {
   const supabase = await createSupabaseServer()
   const { data: usuario } = await supabase
     .from('users')
-    .select('uid,image,name,surname,email,phone,dni,role')
+    .select('uid,image,image_bucket,name,surname,email,phone,dni,role')
     .eq('uid', id)
     .single()
 
   if (!usuario) redirect('/admin/usuarios')
 
-
+  const avatarUrl = await buildStorageUrl(
+    supabaseAdmin,
+    usuario.image_bucket,
+    usuario.image
+  )
   return (
     <div className="space-y-4">
       <div className="flex items-center space-x-2">
@@ -32,7 +38,7 @@ export default async function UsuarioDetailPage ({ params }: Props) {
 
       <div className="bg-gray-800 p-4 rounded space-y-2 text-sm">
         {usuario.image && (
-          <Image src={usuario.image} alt={usuario.name} width={80} height={80} className="w-20 h-20 object-cover rounded" />
+          <Image src={avatarUrl ?? '/defaults/avatar-1.png'} alt={avatarUrl ?? 'Avatar'} width={80} height={80} className="w-20 h-20 object-cover rounded" />
         )}
         <p><strong>Nombre:</strong> {usuario.name}</p>
         <p><strong>Apellido:</strong> {usuario.surname}</p>

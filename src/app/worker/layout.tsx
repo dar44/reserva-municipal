@@ -1,10 +1,11 @@
 import { ReactNode } from 'react'
 import WorkerNavBar from '@/components/WorkerNavBar'
-
+import { requireAuthRSC } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
 export default async function WorkerLayout({ children }: { children: ReactNode }) {
+  await requireAuthRSC(['admin', 'worker'])
 
   return (
     <div className="min-h-screen flex flex-col bg-black text-white">
@@ -13,4 +14,3 @@ export default async function WorkerLayout({ children }: { children: ReactNode }
     </div>
   )
 }
- 

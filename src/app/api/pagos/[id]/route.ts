@@ -10,6 +10,7 @@ import {
   normalizePagoEstado,
   type PagoEstado
 } from "@/lib/pagos";
+import { notifyPagoConfirmado } from "@/lib/emailNotifications";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ type PagoRecord = {
 async function applyEstadoUpdate(
   pago: PagoRecord,
   estado: PagoEstado,
+  previousEstado: PagoEstado,
   orderId: string | null,
   extraUpdates: Record<string, unknown> = {}
 ): Promise<void> {
@@ -54,6 +56,12 @@ async function applyEstadoUpdate(
       .update({ paid })
       .eq("id", pago.inscripcion_id);
   }
+  await notifyPagoConfirmado({
+    previousEstado,
+    nextEstado: estado,
+    reservaId: pago.reserva_id,
+    inscripcionId: pago.inscripcion_id
+  });
 }
 
 export async function GET(
@@ -151,7 +159,7 @@ export async function GET(
       Object.keys(extraUpdates).length > 0;
 
     if (shouldUpdate) {
-      await applyEstadoUpdate(pago, estado, orderId, extraUpdates);
+      await applyEstadoUpdate(pago, estado, currentEstado, orderId, extraUpdates);
       basePayload.synced = true;
     } else {
       basePayload.synced = false;
