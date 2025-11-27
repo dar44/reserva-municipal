@@ -56,6 +56,7 @@ describe('POST /api/reservas (JSON)', () => {
   let hasRecintoConflictsMock: jest.Mock
   let createCheckoutMock: jest.Mock
   let getLemonStoreIdMock: jest.Mock
+  let createSupabaseServerMock: jest.Mock
   let getReservaVariantIdMock: jest.Mock
   let toMinorUnitsMock: jest.Mock
   let getConfiguredCurrencyMock: jest.Mock
@@ -122,6 +123,9 @@ describe('POST /api/reservas (JSON)', () => {
       getLemonStoreId: jest.fn(),
       getReservaVariantId: jest.fn(),
     }))
+    jest.doMock('@/lib/supabaseServer', () => ({
+      createSupabaseServer: jest.fn(),
+    }))
     jest.doMock('@/lib/currency', () => ({ toMinorUnits: jest.fn() }))
     jest.doMock('@/lib/config', () => ({
       getConfiguredCurrency: jest.fn(),
@@ -139,6 +143,9 @@ describe('POST /api/reservas (JSON)', () => {
     createCheckoutMock = lemon.createCheckout as jest.Mock
     getLemonStoreIdMock = lemon.getLemonStoreId as jest.Mock
     getReservaVariantIdMock = lemon.getReservaVariantId as jest.Mock
+
+    const supabaseServer = await import('@/lib/supabaseServer')
+    createSupabaseServerMock = supabaseServer.createSupabaseServer as jest.Mock
 
     const currency = await import('@/lib/currency')
     toMinorUnitsMock = currency.toMinorUnits as jest.Mock
@@ -467,5 +474,98 @@ describe('POST /api/reservas (JSON)', () => {
     expect(pagosTable.update).not.toHaveBeenCalled()
     expect(jsonSpy).toHaveBeenCalledWith({ error: 'lemon_fail' }, { status: 500 })
     expect(response).toEqual({ body: { error: 'lemon_fail' }, init: { status: 500 } })
+  })
+  it('rechaza peticiones form-data sin sesión iniciada', async () => {
+    createSupabaseServerMock.mockResolvedValue({
+      auth: { getUser: jest.fn().mockResolvedValue({ data: { user: null } }) },
+    })
+
+    const form = new FormData()
+    form.set('recinto_id', '44')
+    form.set('date', '2025-06-01')
+    form.set('slot', '12:00-13:00')
+
+    const response = await POST(new Request('https://example.com/api/reservas', { method: 'POST', body: form }))
+
+    expect(createSupabaseServerMock).toHaveBeenCalled()
+    expect(jsonSpy).toHaveBeenCalledWith({ error: 'not_authenticated' }, { status: 401 })
+    expect(response).toEqual({ body: { error: 'not_authenticated' }, init: { status: 401 } })
+  })
+
+  it('crea reservas desde form-data con usuario autenticado', async () => {
+    hasRecintoConflictsMock.mockResolvedValue({ conflict: false })
+    createSupabaseServerMock.mockResolvedValue({
+      auth: { getUser: jest.fn().mockResolvedValue({ data: { user: { id: 'auth-1', email: 'auth@example.com' } } }) },
+    })
+
+    const reservasTable = createReservasTable({ data: { id: 333 }, error: null })
+    const pagosTable = createPagosTable({ data: { id: 444 }, error: null })
+
+    supabaseAdminMock.registerTable('reservas', { insert: reservasTable.insert, delete: reservasTable.delete })
+    supabaseAdminMock.registerTable('pagos', { insert: pagosTable.insert, delete: pagosTable.delete, update: pagosTable.update })
+
+    createCheckoutMock.mockResolvedValue({ id: 'chk-form', url: 'https://checkout/form' })
+
+    const form = new FormData()
+    form.set('recinto_id', '44')
+    form.set('date', '2025-06-01')
+    form.set('slot', '12:30-13:30')
+
+    const response = await POST(new Request('https://example.com/api/reservas', { method: 'POST', body: form }))
+
+    expect(reservasTable.insert).toHaveBeenCalledWith({
+      user_uid: 'auth-1',
+      recinto_id: 44,
+      price: 75,
+      start_at: '2025-06-01T12:30:00.000Z',
+      end_at: '2025-06-01T13:30:00.000Z',
+    })
+    expect(pagosTable.insert).toHaveBeenCalledWith({
+      user_uid: 'auth-1',
+      reserva_id: 333,
+      monto_centavos: 7500,
+      moneda: 'CLP',
+      estado: 'pendiente',
+      gateway: 'lemon_squeezy',
+    })
+    expect(createCheckoutMock).toHaveBeenCalledWith({
+      variantId: 202,
+      storeId: 101,
+      customPrice: 7500,
+      customerEmail: 'auth@example.com',
+      successUrl: 'https://example.com/pagos/exito?pago=444&tipo=reserva',
+      cancelUrl: 'https://example.com/pagos/cancelado?pago=444&tipo=reserva',
+      metadata: { pago_id: 444, tipo: 'reserva', reserva_id: 333 },
+    })
+    expect(pagosTable.update).toHaveBeenCalledWith({ checkout_id: 'chk-form' })
+    expect(jsonSpy).toHaveBeenCalledWith({ checkoutUrl: 'https://checkout/form', pagoId: 444 })
+    expect(response).toEqual({ body: { checkoutUrl: 'https://checkout/form', pagoId: 444 }, init: undefined })
+  })
+
+  it('hace rollback de reservas y pagos en form-data cuando el checkout falla', async () => {
+    hasRecintoConflictsMock.mockResolvedValue({ conflict: false })
+    createSupabaseServerMock.mockResolvedValue({
+      auth: { getUser: jest.fn().mockResolvedValue({ data: { user: { id: 'auth-2', email: 'citizen@example.com' } } }) },
+    })
+
+    const reservasTable = createReservasTable({ data: { id: 501 }, error: null })
+    const pagosTable = createPagosTable({ data: { id: 502 }, error: null })
+
+    supabaseAdminMock.registerTable('reservas', { insert: reservasTable.insert, delete: reservasTable.delete })
+    supabaseAdminMock.registerTable('pagos', { insert: pagosTable.insert, delete: pagosTable.delete, update: pagosTable.update })
+
+    createCheckoutMock.mockRejectedValue(new Error('lemon_down'))
+
+    const form = new FormData()
+    form.set('recinto_id', '22')
+    form.set('date', '2025-06-02')
+    form.set('slot', '09:00-10:00')
+
+    const response = await POST(new Request('https://example.com/api/reservas', { method: 'POST', body: form }))
+
+    expect(pagosTable.deleteEqMock).toHaveBeenCalledWith('id', 502)
+    expect(reservasTable.deleteEqMock).toHaveBeenCalledWith('id', 501)
+    expect(jsonSpy).toHaveBeenCalledWith({ error: 'lemon_down' }, { status: 500 })
+    expect(response).toEqual({ body: { error: 'lemon_down' }, init: { status: 500 } })
   })
 })
