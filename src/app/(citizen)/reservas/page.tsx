@@ -20,6 +20,7 @@ interface Reserva {
 
 export default async function ReservasPage () {
   const supabase = await createSupabaseServerReadOnly();
+  
   const { data: { user } } = await supabase.auth.getUser();
 
   //ESTO YA NO HACE FALTA PORQUE LA PÁGINA ESTÁ PROTEGIDA
