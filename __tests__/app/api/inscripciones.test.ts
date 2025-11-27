@@ -150,4 +150,174 @@ describe('API inscripciones', () => {
     expect(jsonSpy).toHaveBeenCalledWith({ error: 'failed' }, { status: 400 })
     expect(response).toEqual({ body: { error: 'failed' }, init: { status: 400 } })
   })
+
+  it('crea usuario nuevo, asigna redirect y personaliza successUrl para workers', async () => {
+    process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL = 'https://app.example.com/reset'
+
+    const usersMaybeSingle = jest.fn().mockResolvedValue({ data: null, error: null })
+    const usersSelect = jest.fn().mockReturnValue({ eq: jest.fn().mockReturnValue({ maybeSingle: usersMaybeSingle }) })
+
+    const cursosSelect = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({ maybeSingle: jest.fn().mockResolvedValue({ data: { price: 15 }, error: null }) }),
+    })
+
+    const inscripcionesInsert = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ single: jest.fn().mockResolvedValue({ data: { id: 77 }, error: null }) }),
+    })
+    const pagosInsert = jest.fn().mockReturnValue({
+      select: jest.fn().mockReturnValue({ single: jest.fn().mockResolvedValue({ data: { id: 88 }, error: null }) }),
+    })
+    const pagosUpdate = jest.fn().mockReturnValue({ eq: jest.fn() })
+
+    supabaseAdmin.auth.admin.createUser.mockResolvedValue({ data: { user: { id: 'uid-new-ins' } }, error: null })
+
+    supabaseAdmin.from.mockImplementation((table: string) => {
+      if (table === 'users') return { select: usersSelect }
+      if (table === 'cursos') return { select: cursosSelect }
+      if (table === 'inscripciones') return { insert: inscripcionesInsert }
+      if (table === 'pagos') return { insert: pagosInsert, update: pagosUpdate }
+      return {}
+    })
+
+    createCheckout.mockResolvedValue({ id: 'chk-worker', url: 'https://checkout.worker' })
+
+    const request = new Request('https://example.com/api/inscripciones', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        curso_id: 500,
+        email: 'new@example.com',
+        newUser: true,
+        fromWorker: true,
+        name: 'Worker',
+      }),
+    })
+
+    const response = await POST(request)
+
+    expect(supabaseAdmin.auth.admin.createUser).toHaveBeenCalledWith(expect.objectContaining({ email: 'new@example.com' }))
+    expect(supabaseAdmin.auth.resetPasswordForEmail).toHaveBeenCalledWith('new@example.com', {
+      redirectTo: 'https://app.example.com/reset',
+    })
+    expect(createCheckout).toHaveBeenCalledWith({
+      variantId: 99,
+      storeId: 1,
+      customPrice: 1500,
+      customerEmail: 'new@example.com',
+      successUrl: 'https://example.com/pagos/exito/worker?pago=88&tipo=inscripcion&curso=500',
+      cancelUrl: 'https://example.com/pagos/cancelado?pago=88&tipo=inscripcion',
+      metadata: { pago_id: 88, tipo: 'inscripcion', inscripcion_id: 77, curso_id: 500 },
+    })
+    expect(jsonSpy).toHaveBeenCalledWith({ checkoutUrl: 'https://checkout.worker', pagoId: 88 })
+    expect(response).toEqual({ body: { checkoutUrl: 'https://checkout.worker', pagoId: 88 }, init: undefined })
+  })
+
+  it('revierte inscripcion cuando la inserción de pagos falla', async () => {
+    const usersMaybeSingle = jest.fn().mockResolvedValue({ data: { uid: 'u-200' }, error: null })
+    const usersSelect = jest.fn().mockReturnValue({ eq: jest.fn().mockReturnValue({ maybeSingle: usersMaybeSingle }) })
+
+    const cursosSelect = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({
+        maybeSingle: jest.fn().mockResolvedValue({ data: { price: 12 }, error: null }),
+      }),
+    })
+
+    const deleteEqMock = jest.fn().mockResolvedValue({})
+    const inscripcionesDelete = jest.fn().mockReturnValue({ eq: deleteEqMock })
+
+    const inscripcionesInsertSelect = jest.fn().mockReturnValue({
+      single: jest.fn().mockResolvedValue({ data: { id: 300 }, error: null }),
+    })
+    const inscripcionesInsert = jest.fn().mockReturnValue({ select: inscripcionesInsertSelect })
+
+    const pagosInsertSelect = jest.fn().mockReturnValue({
+      single: jest.fn().mockResolvedValue({
+        data: null,
+        error: { message: 'insert_failed' },
+      }),
+    })
+    const pagosInsert = jest.fn().mockReturnValue({ select: pagosInsertSelect })
+
+    supabaseAdmin.from.mockImplementation((table: string) => {
+      if (table === 'users') return { select: usersSelect }
+      if (table === 'cursos') return { select: cursosSelect }
+      if (table === 'inscripciones') return {
+        insert: inscripcionesInsert,
+        delete: inscripcionesDelete,        // <- delete cuelga de from('inscripciones')
+      }
+      if (table === 'pagos') return { insert: pagosInsert }
+      return {}
+    })
+
+    const request = new Request('https://example.com/api/inscripciones', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ curso_id: 12, email: 'existing@example.com', newUser: false }),
+    })
+
+    const response = await POST(request)
+
+    expect(deleteEqMock).toHaveBeenCalledWith('id', 300)
+    expect(jsonSpy).toHaveBeenCalledWith({ error: 'insert_failed' }, { status: 400 })
+    expect(response).toEqual({ body: { error: 'insert_failed' }, init: { status: 400 } })
+  })
+
+    it('elimina pago e inscripcion cuando el checkout falla', async () => {
+    const usersMaybeSingle = jest.fn().mockResolvedValue({ data: { uid: 'u-400' }, error: null })
+    const usersSelect = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({ maybeSingle: usersMaybeSingle }),
+    })
+
+    const cursosSelect = jest.fn().mockReturnValue({
+      eq: jest.fn().mockReturnValue({
+        maybeSingle: jest.fn().mockResolvedValue({ data: { price: 8 }, error: null }),
+      }),
+    })
+
+    const inscripcionesDeleteEq = jest.fn().mockResolvedValue({})
+    const pagosDeleteEq = jest.fn().mockResolvedValue({})
+
+    const inscripcionesDelete = jest.fn().mockReturnValue({ eq: inscripcionesDeleteEq })
+    const pagosDelete = jest.fn().mockReturnValue({ eq: pagosDeleteEq })
+
+    const inscripcionesInsertSelect = jest.fn().mockReturnValue({
+      single: jest.fn().mockResolvedValue({ data: { id: 700 }, error: null }),
+    })
+    const inscripcionesInsert = jest.fn().mockReturnValue({ select: inscripcionesInsertSelect })
+
+    const pagosInsertSelect = jest.fn().mockReturnValue({
+      single: jest.fn().mockResolvedValue({ data: { id: 701 }, error: null }),
+    })
+    const pagosInsert = jest.fn().mockReturnValue({ select: pagosInsertSelect })
+
+    supabaseAdmin.from.mockImplementation((table: string) => {
+      if (table === 'users') return { select: usersSelect }
+      if (table === 'cursos') return { select: cursosSelect }
+      if (table === 'inscripciones') return {
+        insert: inscripcionesInsert,
+        delete: inscripcionesDelete,            
+      }
+      if (table === 'pagos') return {
+        insert: pagosInsert,
+        delete: pagosDelete,                    
+      }
+      return {}
+    })
+
+    createCheckout.mockRejectedValue(new Error('lemon_down'))
+
+    const request = new Request('https://example.com/api/inscripciones', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ curso_id: 41, email: 'existing@example.com', newUser: false }),
+    })
+
+    const response = await POST(request)
+
+    expect(pagosDeleteEq).toHaveBeenCalledWith('id', 701)
+    expect(inscripcionesDeleteEq).toHaveBeenCalledWith('id', 700)
+    expect(jsonSpy).toHaveBeenCalledWith({ error: 'lemon_down' }, { status: 500 })
+    expect(response).toEqual({ body: { error: 'lemon_down' }, init: { status: 500 } })
+  })
+
 })
