@@ -64,7 +64,7 @@ describe('POST /api/reservas (JSON)', () => {
   let jsonSpy: jest.Mock
   let POST: (req: Request) => Promise<any>
 
-  // ----- cada test arranca con módulos limpios y mocks dinámicos -----
+
   beforeEach(async () => {
     jest.resetModules()
 
@@ -73,7 +73,6 @@ describe('POST /api/reservas (JSON)', () => {
     process.env.SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? 'service-role-key'
     process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL ?? 'https://app.example.com/reset'
 
-    // next/server -> espiamos json()
     jest.doMock('next/server', () => {
       const actual = jest.requireActual('next/server')
       return {
@@ -82,7 +81,6 @@ describe('POST /api/reservas (JSON)', () => {
       }
     })
 
-    // supabaseAdmin con registro de tablas
     jest.doMock('@/lib/supabaseAdmin', () => {
       const tables: Record<string, any> = {}
       const createUser = jest.fn()
