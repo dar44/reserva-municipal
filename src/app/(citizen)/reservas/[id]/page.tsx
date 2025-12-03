@@ -84,7 +84,7 @@ export default async function ReservaDetailPage({ params }: PageProps) {
               {new Date(reserva.end_at).toLocaleString()}
             </p>
           </div>
-          {reserva.status === "activa" && <DeleteButton id={reserva.id} />}
+          {reserva.status === "activa" && <DeleteButton id={reserva.id} type="Recinto" />}
         </div>
 
         <dl className="grid sm:grid-cols-2 gap-4 text-sm">

@@ -29,8 +29,8 @@ function createQueryBuilder (response: QueryResponse): QueryBuilder {
 describe('hasRecintoConflicts', () => {
   const baseOptions = {
     recintoId: 77,
-    startAt: '2024-05-01T10:00:00Z',
-    endAt: '2024-05-01T11:00:00Z',
+    startAt: '2026-05-01T10:00:00Z',
+    endAt: '2026-05-01T11:00:00Z',
   }
 
   it('detecta conflictos ciudadanos y excluye canceladas por defecto', async () => {
