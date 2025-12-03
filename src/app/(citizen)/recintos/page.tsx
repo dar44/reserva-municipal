@@ -31,6 +31,13 @@ export default async function RecintosPage({
 
   const defaultImageUrl = getRecintoDefaultPublicUrl(supabase);
 
+  const currency = new Intl.NumberFormat("es-CL", {
+    style: "currency",
+    currency: "CLP"
+  });
+
+  const pricePerHour = 500;
+
   return (
     <div>
       <h1 className="text-3xl font-bold mb-6">Recintos Disponibles</h1>
@@ -87,6 +94,9 @@ export default async function RecintosPage({
                 <h2 className="text-lg font-semibold">{r.name}</h2>
                 <p className="text-sm text-gray-300 line-clamp-2">{r.description}</p>
                 <p className="text-xs text-gray-500">{r.ubication}</p>
+                <div className="mt-2 flex items-center justify-end">
+                  <span className="text-sm font-semibold text-blue-400">{currency.format(pricePerHour)}/hora</span>
+                </div>
                 <button className="mt-2 w-full border border-blue-600 text-blue-400 rounded py-1 text-sm">Ver más</button>
               </div>
             </Link>
