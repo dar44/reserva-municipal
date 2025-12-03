@@ -8,6 +8,7 @@ export const dynamic = "force-dynamic";
 type SearchParams = {
   from?: string;
   to?: string;
+  search?: string;
 };
 
 export default async function CursosPage({
@@ -33,6 +34,9 @@ export default async function CursosPage({
   if (params.to) {
     query = query.lte("end_date", params.to);
   }
+  if (params.search) {
+    query = query.ilike("name", `%${params.search}%`);
+  }
 
   const { data: cursos } = await query
 
@@ -54,6 +58,13 @@ export default async function CursosPage({
         className="flex gap-2 mb-6 items-end"
         action="/cursos"
       >
+        <input
+          type="text"
+          name="search"
+          placeholder="Buscar por nombre..."
+          defaultValue={params.search}
+          className="bg-gray-800 border border-gray-700 rounded p-2 text-sm flex-1"
+        />
         <input
           type="date"
           name="from"

@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabaseClient'
 import ProfileDropdown from './ProfileDropdown'
 import ProfileModal from './ProfileModal'
 
-export default function AdminNavBar () {
+export default function AdminNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) => `px-3 py-2 rounded-md text-sm font-medium ${pathname.startsWith(href) ? 'bg-blue-600 text-white' : 'text-gray-200 hover:bg-gray-700'}`
 
@@ -33,30 +33,35 @@ export default function AdminNavBar () {
   }, [])
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-700">
-      <div className="container mx-auto flex items-center justify-between h-12 px-4">
-        <Link href="/admin/panel" className="text-lg font-semibold">ServiMunicipal</Link>
-        <div className="space-x-2">
-          <Link href="/admin/panel" className={linkClass('/admin')}>Panel</Link>
+    <>
+      <nav className="bg-gray-900 border-b border-gray-700">
+        <div className="container mx-auto flex items-center justify-between h-12 px-4">
+          <Link href="/admin/panel" className="text-lg font-semibold">ServiMunicipal</Link>
+          <div className="space-x-2">
+            <Link href="/admin/panel" className={linkClass('/admin/panel')}>Panel</Link>
+            <Link href="/admin/recintos" className={linkClass('/admin/recintos')}>Recintos</Link>
+            <Link href="/admin/usuarios" className={linkClass('/admin/usuarios')}>Usuarios</Link>
+            <Link href="/admin/reservas" className={linkClass('/admin/reservas')}>Reservas</Link>
+          </div>
+          <div className="relative">
+            <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="text-sm">
+              {profileName || ''} ▾
+            </button>
+            {menuOpen && (
+              <ProfileDropdown
+                onClose={() => setMenuOpen(false)}
+                onViewProfile={() => setProfileOpen(true)}
+              />
+            )}
+          </div>
         </div>
-        <div className="relative">
-          <button onClick={() => setMenuOpen(!menuOpen)} className="text-sm">
-            {profileName || ''} ▾
-          </button>
-          {menuOpen && (
-            <ProfileDropdown
-              onClose={() => setMenuOpen(false)}
-              onViewProfile={() => setProfileOpen(true)}
-            />
-          )}
-        </div>
-        {profileOpen && (
-          <ProfileModal
-            onClose={() => setProfileOpen(false)}
-            onUpdated={setProfileName}
-          />
-        )}
-      </div>
-    </nav>
+      </nav>
+      {profileOpen && (
+        <ProfileModal
+          onClose={() => setProfileOpen(false)}
+          onUpdated={setProfileName}
+        />
+      )}
+    </>
   )
 }

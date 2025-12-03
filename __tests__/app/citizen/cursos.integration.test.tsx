@@ -32,13 +32,14 @@ const sampleCourses = [
   }
 ]
 
-function createCursosQuery (data: any[]) {
+function createCursosQuery(data: any[]) {
   const builder: any = {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     gte: jest.fn().mockReturnThis(),
     lte: jest.fn().mockReturnThis(),
+    ilike: jest.fn().mockReturnThis(),
     then: (resolve: any) => Promise.resolve({ data }).then(resolve)
   }
   return builder
@@ -74,12 +75,33 @@ describe('CursosPage (ciudadanía)', () => {
     expect(screen.getByText('Yoga en plaza')).toBeInTheDocument()
   })
 
+  it('muestra el campo de búsqueda por nombre', async () => {
+    const ui = await CursosPage({ searchParams: Promise.resolve({}) })
+
+    render(ui)
+
+    const searchInput = screen.getByPlaceholderText(/buscar por nombre/i)
+    expect(searchInput).toBeInTheDocument()
+    expect(searchInput).toHaveAttribute('name', 'search')
+
+    expect(screen.getByRole('button', { name: /filtrar/i })).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: /limpiar/i })).toBeInTheDocument()
+  })
+
+  it('mantiene el valor de búsqueda en el input', async () => {
+    const ui = await CursosPage({ searchParams: Promise.resolve({ search: 'Yoga' }) })
+
+    render(ui)
+
+    expect(screen.getByDisplayValue('Yoga')).toHaveAttribute('name', 'search')
+  })
+
   it('muestra un mensaje vacío cuando no hay resultados', async () => {
     const emptyQuery = createCursosQuery([])
     const { createSupabaseServerReadOnly } = await import('@/lib/supabaseServer') as any
-    ;(createSupabaseServerReadOnly as jest.Mock).mockReturnValueOnce({
-      from: jest.fn(() => emptyQuery)
-    })
+      ; (createSupabaseServerReadOnly as jest.Mock).mockReturnValueOnce({
+        from: jest.fn(() => emptyQuery)
+      })
 
     const ui = await CursosPage({ searchParams: Promise.resolve({}) })
     render(ui)
