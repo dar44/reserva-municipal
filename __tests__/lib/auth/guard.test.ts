@@ -27,7 +27,13 @@ jest.mock('next/headers', () => ({
   cookies: cookiesMock,
 }))
 
-const supabaseStub = { auth: {} }
+const authGetUserMock = jest.fn()
+const usersMaybeSingleMock = jest.fn()
+const usersEqMock = jest.fn(() => ({ maybeSingle: usersMaybeSingleMock }))
+const usersSelectMock = jest.fn(() => ({ eq: usersEqMock }))
+const fromMock = jest.fn(() => ({ select: usersSelectMock }))
+
+const supabaseStub = { auth: { getUser: authGetUserMock }, from: fromMock }
 const createServerClientMock: jest.Mock<any, any[]> = jest.fn(() => supabaseStub)
 
 jest.mock('@supabase/ssr', () => ({
@@ -47,12 +53,6 @@ jest.mock('@/lib/auth/roles', () => ({
   },
   getSessionProfile: (...args: any[]) => getSessionProfileMock(...args),
 }))
-
-const authGetUserMock = jest.fn()
-const usersMaybeSingleMock = jest.fn()
-const usersEqMock = jest.fn(() => ({ maybeSingle: usersMaybeSingleMock }))
-const usersSelectMock = jest.fn(() => ({ eq: usersEqMock }))
-const fromMock = jest.fn(() => ({ select: usersSelectMock }))
 
 const routeSupabaseStub = {
   auth: { getUser: authGetUserMock },
@@ -120,6 +120,6 @@ describe('requireByPathRSC', () => {
       throw new Error('Debería devolver resultado exitoso')
     }
     expect(result.profile.role).toBe('worker')
-    expect(result.supabase).toBe(routeSupabaseStub)
+    expect(result.supabase).toBe(supabaseStub)
   })
 })

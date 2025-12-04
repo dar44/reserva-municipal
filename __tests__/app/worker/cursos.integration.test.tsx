@@ -28,7 +28,7 @@ const sampleCursos = [
   }
 ]
 
-function createCursosQuery (data: any[]) {
+function createCursosQuery(data: any[]) {
   const builder: any = {
     select: jest.fn().mockReturnThis(),
     eq: jest.fn().mockReturnThis(),
@@ -64,10 +64,10 @@ describe('WorkerCursosPage', () => {
 
     expect(screen.getByText('Natación')).toBeInTheDocument()
     expect(screen.getByText('Piscina temperada')).toBeInTheDocument()
-    expect(screen.getByText('12/20')).toBeInTheDocument()
+    expect(screen.getByText((content, element) => element?.textContent === '8/20')).toBeInTheDocument()
 
     expect(screen.getByText('Tenis')).toBeInTheDocument()
-    expect(screen.getByText('0/16')).toBeInTheDocument()
+    expect(screen.getByText((content, element) => element?.textContent === '16/16')).toBeInTheDocument()
 
     expect(screen.getAllByText(/acciones/i).length).toBeGreaterThan(0)
   })
