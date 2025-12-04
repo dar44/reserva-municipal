@@ -50,9 +50,6 @@ export default async function WorkerRecintosPage() {
                 <td className="px-4 py-2">
                   <div className="flex items-center gap-2">
                     <span className={`px-2 py-0.5 rounded text-xs ${r.state === 'Disponible' ? 'bg-green-700' : 'bg-gray-600'}`}>{r.state}</span>
-                    <div className="w-24 h-2 bg-gray-600 rounded">
-                      <div className={`h-2 ${r.state === 'Disponible' ? 'bg-green-500 w-full' : 'bg-gray-400 w-full'}`}></div>
-                    </div>
                   </div>
                 </td>
                 <td className="px-4 py-2">

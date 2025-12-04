@@ -4,7 +4,6 @@ import { createServerClient } from '@supabase/ssr'
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { AppRole, SessionProfile } from './roles'
 import { AuthorizationError, getSessionProfile } from './roles'
-import { createRouteHandlerClient } from '@supabase/auth-helpers-nextjs'
 
 type SupabaseAnyClient = SupabaseClient<any, any, any>
 
@@ -87,7 +86,18 @@ async function fetchProfile(
 }
 
 export async function requireAuthAPI(allowed?: AppRole[]): Promise<RequireAuthAPIResult> {
-  const supabase = createRouteHandlerClient({ cookies })
+  const cookieStore = cookies()
+  const supabase = createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    {
+      cookies: {
+        get: async (name: string) => (await cookieStore).get(name)?.value,
+        set: () => undefined,
+        remove: () => undefined,
+      },
+    },
+  )
   const profileResult = await fetchProfile(supabase)
   if ('error' in profileResult) {
     return { error: profileResult.error as Response }

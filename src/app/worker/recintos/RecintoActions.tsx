@@ -5,7 +5,7 @@ import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
 import { useToast } from '@/components/Toast'
 
-export default function RecintoActions ({ id, state }: { id: number; state: string }) {
+export default function RecintoActions({ id, state }: { id: number; state: string }) {
   const [open, setOpen] = useState(false)
   const toast = useToast()
 
@@ -22,7 +22,11 @@ export default function RecintoActions ({ id, state }: { id: number; state: stri
 
   return (
     <div className="space-x-2">
-      <Link href={`/worker/recintos/${id}/reservar`} className="bg-green-600 px-2 py-1 rounded text-xs">Detalles</Link>
+      {state === 'Disponible' ? (
+        <Link href={`/worker/recintos/${id}/reservar`} className="bg-green-600 px-2 py-1 rounded text-xs">Reservar</Link>
+      ) : (
+        <button disabled className="bg-gray-500 px-2 py-1 rounded text-xs cursor-not-allowed opacity-50">Reservar</button>
+      )}
       <button onClick={() => setOpen(true)} className="bg-yellow-600 px-2 py-1 rounded text-xs">
         {state === 'Disponible' ? 'No disponible' : 'Disponible'}
       </button>
