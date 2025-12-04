@@ -43,7 +43,7 @@ export default async function WorkerCursosPage() {
             <th className="px-4 py-2 text-left">Nombre</th>
             <th className="px-4 py-2 text-left">Descripción</th>
             <th className="px-4 py-2 text-left">Fecha</th>
-            <th className="px-4 py-2 text-left">Plazas</th>
+            <th className="px-4 py-2 text-left">Plazas disponibles</th>
             <th className="px-4 py-2 text-left">Estado</th>
             <th className="px-4 py-2 text-left">Acciones</th>
           </tr>
