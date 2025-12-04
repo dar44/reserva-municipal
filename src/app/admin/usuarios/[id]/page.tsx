@@ -12,7 +12,7 @@ export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ id: string }> }
 
-export default async function UsuarioDetailPage ({ params }: Props) {
+export default async function UsuarioDetailPage({ params }: Props) {
   const { id } = await params
 
   const supabase = await createSupabaseServer()
@@ -37,9 +37,9 @@ export default async function UsuarioDetailPage ({ params }: Props) {
       </div>
 
       <div className="bg-gray-800 p-4 rounded space-y-2 text-sm">
-        {usuario.image && (
-          <Image src={avatarUrl ?? '/defaults/avatar-1.png'} alt={avatarUrl ?? 'Avatar'} width={80} height={80} className="w-20 h-20 object-cover rounded" />
-        )}
+        <div className="flex justify-center">
+          <Image src={avatarUrl ?? '/defaults/avatar-1.png'} alt={usuario.name} width={240} height={160} className="h-40 w-full max-w-md rounded object-cover" />
+        </div>
         <p><strong>Nombre:</strong> {usuario.name}</p>
         <p><strong>Apellido:</strong> {usuario.surname}</p>
         <p><strong>Email:</strong> {usuario.email}</p>
