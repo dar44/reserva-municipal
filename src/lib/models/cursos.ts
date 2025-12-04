@@ -1,4 +1,4 @@
-import type { AppRole } from '@/lib/auth/roles' 
+import type { AppRole } from '@/lib/auth/roles'
 
 export type CursoState = 'Disponible' | 'No disponible' | 'Cancelado'
 
@@ -28,6 +28,7 @@ export interface CourseReservation {
   start_at: string
   end_at: string
   status: CourseReservationStatus
+  request_reason: string | null
   worker_uid: string | null
   reviewed_at: string | null
   observations: string | null
