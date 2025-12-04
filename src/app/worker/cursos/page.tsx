@@ -76,13 +76,12 @@ export default async function WorkerCursosPage() {
                     : ""}
                 </td>
                 <td className="px-4 py-2">
-                  {ocupadas}/{c.capacity ?? 0}
+                  {(c.capacity ?? 0) - ocupadas}/{c.capacity ?? 0}
                 </td>
                 <td className="px-4 py-2">
                   <span
-                    className={`px-2 py-0.5 rounded text-xs ${
-                      c.state === "Disponible" ? "bg-green-700" : "bg-gray-600"
-                    }`}
+                    className={`px-2 py-0.5 rounded text-xs ${c.state === "Disponible" ? "bg-green-700" : "bg-gray-600"
+                      }`}
                   >
                     {c.state}
                   </span>
