@@ -22,7 +22,7 @@ type SanitizedReservationPayload = {
   blocks: ReservationBlock[]
 }
 
-function parseTime (value: string | undefined, label: string) {
+function parseTime(value: string | undefined, label: string) {
   if (!value) throw new AuthorizationError(`${label} es obligatorio`, 400)
   const match = value.match(/^(\d{2}):(\d{2})$/)
   if (!match) {
@@ -36,13 +36,13 @@ function parseTime (value: string | undefined, label: string) {
   return { hours, minutes }
 }
 
-function combineDateAndTime (date: Date, time: { hours: number; minutes: number }) {
+function combineDateAndTime(date: Date, time: { hours: number; minutes: number }) {
   const result = new Date(date)
   result.setHours(time.hours, time.minutes, 0, 0)
   return result
 }
 
-function sanitizeReservationPayload (body: Partial<CourseReservationRequestInput>): SanitizedReservationPayload {
+function sanitizeReservationPayload(body: Partial<CourseReservationRequestInput>): SanitizedReservationPayload {
   if (body.curso_id === undefined) throw new AuthorizationError('curso_id es obligatorio', 400)
   if (body.recinto_id === undefined) throw new AuthorizationError('recinto_id es obligatorio', 400)
 
@@ -123,14 +123,14 @@ function sanitizeReservationPayload (body: Partial<CourseReservationRequestInput
   }
 }
 
-function parseFilters (url: URL): ReservationFilters {
+function parseFilters(url: URL): ReservationFilters {
   const status = url.searchParams.get('status') || undefined
   const cursoIdParam = url.searchParams.get('curso_id')
   const curso_id = cursoIdParam ? Number(cursoIdParam) : undefined
   return { status, curso_id }
 }
 
-export async function GET (req: Request) {
+export async function GET(req: Request) {
   const auth = await requireAuthAPI(['admin', 'organizer', 'worker'])
   if ('error' in auth) {
     return auth.error
@@ -171,7 +171,7 @@ export async function GET (req: Request) {
   }
 }
 
-export async function POST (req: Request) {
+export async function POST(req: Request) {
   const auth = await requireAuthAPI(['organizer', 'admin'])
   if ('error' in auth) {
     return auth.error
@@ -207,7 +207,7 @@ export async function POST (req: Request) {
     const firstBlockStart = sanitized.blocks[0].start_at
     const lastBlockEnd = sanitized.blocks[sanitized.blocks.length - 1].end_at
 
-   const availability = await hasRecintoConflicts({
+    const availability = await hasRecintoConflicts({
       supabase: supabaseAdmin,
       recintoId: sanitized.recinto_id,
       startAt: firstBlockStart,
@@ -229,7 +229,7 @@ export async function POST (req: Request) {
       recinto_id: sanitized.recinto_id,
       start_at: block.start_at,
       end_at: block.end_at,
-      observations: sanitized.observations,
+      request_reason: sanitized.observations,
     }))
 
     const { data, error } = await supabase

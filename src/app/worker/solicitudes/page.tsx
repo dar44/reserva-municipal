@@ -23,7 +23,7 @@ interface CourseReservationRecord {
 export default async function WorkerSolicitudesPage() {
   const supabase = await createSupabaseServer()
 
-  // Fetch all course reservations
+  // Obtener todas las reservas de cursos
   const { data: courseReservations, error: courseReservationsError } = await supabase
     .from('curso_reservas')
     .select('id,curso_id,recinto_id,organizer_uid,start_at,end_at,status,request_reason,observations,reviewed_at,worker_uid,created_at')
@@ -36,7 +36,7 @@ export default async function WorkerSolicitudesPage() {
 
   const reservations = courseReservations ?? []
 
-  // Get unique IDs for batch fetching
+  // Obtener IDs únicos para consulta por lotes
   const recintoIds = Array.from(new Set(reservations.map(r => r.recinto_id)))
   const organizerUids = Array.from(new Set(reservations.map(r => r.organizer_uid)))
 
@@ -46,7 +46,7 @@ export default async function WorkerSolicitudesPage() {
   let recintoNameMap = new Map<number, string>()
   let organizerNameMap = new Map<string, string>()
 
-  // Fetch recinto names
+  // Obtener nombres de recintos
   if (recintoIds.length > 0) {
     const recintoNamesResult = await supabase
       .from('recintos')
@@ -61,7 +61,7 @@ export default async function WorkerSolicitudesPage() {
     }
   }
 
-  // Fetch organizer names from users table
+  // Obtener nombres de organizadores desde la tabla users
   if (organizerUids.length > 0) {
     const organizerNamesResult = await supabase
       .from('users')
@@ -76,7 +76,7 @@ export default async function WorkerSolicitudesPage() {
     }
   }
 
-  // Split into pending and history
+  // Dividir en pendientes e historial
   const pendingRequests = reservations
     .filter(r => r.status === 'pendiente')
     .map(r => ({
@@ -104,7 +104,7 @@ export default async function WorkerSolicitudesPage() {
       observations: r.observations,
     }))
 
-  // Calculate statistics
+  // Calcular estadísticas
   const totalRequests = reservations.length
   const pendingCount = reservations.filter(r => r.status === 'pendiente').length
   const approvedCount = reservations.filter(r => r.status === 'aprobada').length

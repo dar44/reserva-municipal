@@ -109,12 +109,12 @@ export default function PendingRequestsTable({ requests }: Props) {
             }
 
             if (data.reserva) {
-                // Remove from pending list
+                // Eliminar de la lista de pendientes
                 setRows(prev => prev.filter(row => row.id !== id))
                 toast({ type: 'success', message: decisionCopy[status].success })
                 setDecisionTarget(null)
                 setDecisionNote('')
-                // Reload page to update stats
+                // Recargar página para actualizar estadísticas
                 setTimeout(() => location.reload(), 1000)
             }
         } catch (error) {

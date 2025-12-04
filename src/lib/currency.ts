@@ -1,6 +1,6 @@
 export type CurrencyCode = 'CLP'
 
-export function toMinorUnits (amount: number, currency: CurrencyCode = 'CLP'): number {
+export function toMinorUnits(amount: number, currency: CurrencyCode = 'CLP'): number {
   if (!Number.isFinite(amount)) {
     throw new Error('Cantidad inválida')
   }
@@ -12,7 +12,7 @@ export function toMinorUnits (amount: number, currency: CurrencyCode = 'CLP'): n
   return Math.round(amount * 100)
 }
 
-export function formatCurrency (amount: number, currency: CurrencyCode = 'CLP'): string {
+export function formatCurrency(amount: number, currency: CurrencyCode = 'CLP'): string {
   if (currency !== 'CLP') {
     throw new Error('Moneda no soportada')
   }
@@ -23,7 +23,7 @@ export function formatCurrency (amount: number, currency: CurrencyCode = 'CLP'):
       currency
     }).format(amount)
   } catch {
-    // fallback simple format
+    // formato simple de respaldo
     return `${Math.round(amount).toString()} CLP`
   }
 }
