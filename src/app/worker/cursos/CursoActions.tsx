@@ -5,7 +5,7 @@ import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
 import { useToast } from '@/components/Toast'
 
-export default function CursoActions ({ id, state }: { id: number; state: string }) {
+export default function CursoActions({ id, state }: { id: number; state: string }) {
   const [open, setOpen] = useState(false)
   const toast = useToast()
 
@@ -22,7 +22,11 @@ export default function CursoActions ({ id, state }: { id: number; state: string
 
   return (
     <div className="space-x-2">
-      <Link href={`/worker/cursos/${id}/inscripcion`} className="bg-green-600 px-2 py-1 rounded text-xs">Inscribir</Link>
+      {state === 'Disponible' ? (
+        <Link href={`/worker/cursos/${id}/inscripcion`} className="bg-green-600 px-2 py-1 rounded text-xs">Inscribir</Link>
+      ) : (
+        <button disabled className="bg-gray-500 px-2 py-1 rounded text-xs cursor-not-allowed opacity-50">Inscribir</button>
+      )}
       <Link href={`/worker/cursos/${id}`} className="bg-blue-600 px-2 py-1 rounded text-xs">Ver detalles</Link>
       <button
         onClick={() => setOpen(true)}
