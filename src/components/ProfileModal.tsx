@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 import { supabase } from '@/lib/supabaseClient'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 import {
   USER_DEFAULTS_FOLDER,
   USER_STORAGE_BUCKET,
@@ -60,8 +60,6 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
   const [imageDefault, setImageDefault] = useState('')
   const [imagePreviewUrl, setImagePreviewUrl] = useState<string | null>(null)
   const [defaultImages, setDefaultImages] = useState<StorageObject[]>([])
-  const toast = useToast()
-
   const loadProfile = async () => {
     const {
       data: { user }
@@ -168,7 +166,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       data: { [field]: value }
     })
     if (authError) {
-      toast({ type: 'error', message: 'No se pudo actualizar' })
+      toast.error()
       return
     }
     const { error } = await supabase
@@ -181,7 +179,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       if (field === 'name') onUpdated(value)
       cancelFieldEdit()
     } else {
-      toast({ type: 'error', message: 'No se pudo actualizar' })
+      toast.error()
     }
   }
 
@@ -211,7 +209,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
     if (imageMode === 'upload') {
       if (!imageFile || imageFile.size === 0) {
-        toast({ type: 'error', message: 'Selecciona un archivo de imagen' })
+        toast.error()
         return
       }
       const uploadPath = buildUserProfilePath(userUid, imageFile.name)
@@ -222,14 +220,14 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
           upsert: true
         })
       if (uploadError) {
-        toast({ type: 'error', message: 'No se pudo subir la imagen' })
+        toast.error()
         return
       }
       newImagePath = uploadPath
       newBucket = USER_STORAGE_BUCKET
     } else if (imageMode === 'default') {
       if (!imageDefault) {
-        toast({ type: 'error', message: 'Selecciona una imagen predeterminada' })
+        toast.error()
         return
       }
       newImagePath = imageDefault
@@ -246,7 +244,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       }
     })
     if (authError) {
-      toast({ type: 'error', message: 'No se pudo actualizar' })
+      toast.error()
       return
     }
 
@@ -260,7 +258,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       .eq('uid', userUid)
 
     if (error) {
-      toast({ type: 'error', message: 'No se pudo actualizar' })
+      toast.error()
       return
     }
 

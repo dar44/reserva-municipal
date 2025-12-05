@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 type ReservationStatus = 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
 
@@ -42,8 +42,6 @@ export default function PendingRequestsTable({ requests }: Props) {
     const [loadingId, setLoadingId] = useState<number | null>(null)
     const [decisionTarget, setDecisionTarget] = useState<{ id: number; status: DecisionStatus } | null>(null)
     const [decisionNote, setDecisionNote] = useState('')
-    const toast = useToast()
-
     const formatDate = (value: string) => {
         const date = new Date(value)
         if (Number.isNaN(date.getTime())) return value
@@ -104,14 +102,14 @@ export default function PendingRequestsTable({ requests }: Props) {
             const data = await response.json().catch(() => ({}))
 
             if (!response.ok) {
-                toast({ type: 'error', message: data.error || 'No se pudo actualizar la reserva' })
+                toast.error()
                 return
             }
 
             if (data.reserva) {
                 // Eliminar de la lista de pendientes
                 setRows(prev => prev.filter(row => row.id !== id))
-                toast({ type: 'success', message: decisionCopy[status].success })
+                toast.success()
                 setDecisionTarget(null)
                 setDecisionNote('')
                 // Recargar página para actualizar estadísticas
@@ -119,7 +117,7 @@ export default function PendingRequestsTable({ requests }: Props) {
             }
         } catch (error) {
             console.error('Error updating course reservation', error)
-            toast({ type: 'error', message: 'Error al actualizar la reserva' })
+            toast.error()
         } finally {
             setLoadingId(null)
         }

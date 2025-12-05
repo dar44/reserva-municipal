@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 type OrganizerCourse = {
   id: number
@@ -43,8 +43,6 @@ const DAY_OPTIONS = [
 export default function OrganizerReservationsClient ({ courses, recintos, reservations }: Props) {
   const [reservationList, setReservationList] = useState(reservations)
   const [submittingReservation, setSubmittingReservation] = useState(false)
-  const toast = useToast()
-
   const availableRecintos = useMemo(
     () => recintos.filter(r => r.state === 'Disponible'),
     [recintos],
@@ -98,12 +96,12 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const observationsRaw = (formData.get('observations') as string) || ''
 
     if (!cursoId || !recintoId || !startDateRaw || !endDateRaw || !startTimeRaw || !endTimeRaw) {
-      toast({ type: 'error', message: 'Todos los campos son obligatorios' })
+      toast.error()
       return
     }
 
     if (daysSelected.length === 0) {
-      toast({ type: 'error', message: 'Debes seleccionar al menos un día para la reserva' })
+      toast.error()
       return
     }
 
@@ -111,12 +109,12 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const endDate = new Date(`${endDateRaw}T00:00:00`)
 
     if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-      toast({ type: 'error', message: 'Fechas inválidas' })
+      toast.error()
       return
     }
 
     if (endDate < startDate) {
-      toast({ type: 'error', message: 'La fecha de término debe ser posterior o igual a la de inicio' })
+      toast.error()
       return
     }
 
@@ -124,7 +122,7 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const parsedEndTime = endTimeRaw ? parseTime(endTimeRaw) : null
 
     if (!parsedStartTime || !parsedEndTime) {
-      toast({ type: 'error', message: 'Horarios inválidos' })
+      toast.error()
       return
     }
 
@@ -132,14 +130,14 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const endMinutes = parsedEndTime.hours * 60 + parsedEndTime.minutes
 
     if (endMinutes <= startMinutes) {
-      toast({ type: 'error', message: 'La hora de fin debe ser posterior a la de inicio' })
+      toast.error()
       return
     }
 
     const daysOfWeek = Array.from(new Set(daysSelected.map(value => Number(value)).filter(value => !Number.isNaN(value))))
 
     if (daysOfWeek.length === 0) {
-      toast({ type: 'error', message: 'Selecciona al menos un día válido de la semana' })
+      toast.error()
       return
     }
 
@@ -165,7 +163,7 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo enviar la solicitud' })
+        toast.error()
         return
       }
 
@@ -183,12 +181,12 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
         })
         form.reset()
       } else {
-        toast({ type: 'success', message: 'Solicitud registrada' })
+        toast.success()
         form.reset()
       }
     } catch (error) {
       console.error('Error creating reservation request', error)
-      toast({ type: 'error', message: 'Error al enviar la solicitud' })
+      toast.error()
     } finally {
       setSubmittingReservation(false)
     }

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 type ReservationStatus = 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
 
@@ -58,8 +58,6 @@ export default function CourseReservationsTable ({ reservations }: Props) {
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [decisionTarget, setDecisionTarget] = useState<{ id: number; status: DecisionStatus } | null>(null)
   const [decisionNote, setDecisionNote] = useState('')
-  const toast = useToast()
-
   const formatDateTime = (value: string) => {
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return value
@@ -108,7 +106,7 @@ export default function CourseReservationsTable ({ reservations }: Props) {
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo actualizar la reserva' })
+        toast.error()
         return
       }
 
@@ -118,13 +116,13 @@ export default function CourseReservationsTable ({ reservations }: Props) {
             ? { ...row, ...data.reserva }
             : row
         )))
-        toast({ type: 'success', message: decisionCopy[status].success })
+        toast.success()
         setDecisionTarget(null)
         setDecisionNote('')
       }
     } catch (error) {
       console.error('Error updating course reservation', error)
-      toast({ type: 'error', message: 'Error al actualizar la reserva' })
+      toast.error()
     } finally {
       setLoadingId(null)
     }

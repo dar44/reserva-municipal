@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { toast } from 'react-toastify'
 
 type Props = {
     id: number
@@ -22,14 +23,15 @@ export default function DeleteReservaButton({ id, tipo }: Props) {
             })
 
             if (res.ok) {
+                toast.success(tipo === 'Recinto' ? 'Reserva eliminada' : 'Inscripción eliminada')
                 router.refresh()
             } else {
                 const data = await res.json().catch(() => ({}))
-                alert(data.error || 'Error al eliminar')
+                toast.error(data.error || 'Error al eliminar')
             }
         } catch (error) {
             console.error('Error al eliminar:', error)
-            alert('Error al eliminar')
+            toast.error('Error al eliminar')
         } finally {
             setIsDeleting(false)
             setShowConfirm(false)

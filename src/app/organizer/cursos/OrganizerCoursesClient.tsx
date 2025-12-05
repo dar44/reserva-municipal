@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { getConfiguredCurrency } from '@/lib/config'
 import { formatCurrency } from '@/lib/currency'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 type OrganizerCourse = {
   id: number
@@ -36,7 +36,6 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
   const [courseList, setCourseList] = useState(courses)
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
-  const toast = useToast()
   const currency = getConfiguredCurrency()
 
   const formatDate = (value: string | null) => {
@@ -64,7 +63,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
     }
 
     if (!payload.name) {
-      toast({ type: 'error', message: 'El nombre del curso es obligatorio' })
+      toast.error()
       return
     }
 
@@ -79,18 +78,18 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo crear el curso' })
+        toast.error()
         return
       }
 
       if (data.curso) {
         setCourseList(prev => [data.curso, ...prev])
-        toast({ type: 'success', message: 'Curso creado correctamente' })
+        toast.success()
         form.reset()
       }
     } catch (error) {
       console.error('Error creating course', error)
-      toast({ type: 'error', message: 'Error al crear el curso' })
+      toast.error()
     } finally {
       setCreatingCourse(false)
     }
@@ -116,7 +115,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
     }
 
     if (!payload.name) {
-      toast({ type: 'error', message: 'El nombre del curso es obligatorio' })
+      toast.error()
       return
     }
 
@@ -129,7 +128,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
 
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo actualizar el curso' })
+        toast.error()
         return
       }
 
@@ -137,12 +136,12 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
         setCourseList(prev => prev.map(course => (
           course.id === id ? data.curso : course
         )))
-        toast({ type: 'success', message: 'Curso actualizado correctamente' })
+        toast.success()
         setEditingCourseId(null)
       }
     } catch (error) {
       console.error('Error updating course', error)
-      toast({ type: 'error', message: 'Error al actualizar el curso' })
+      toast.error()
     }
   }
 
@@ -155,15 +154,15 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
       })
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        toast({ type: 'error', message: data.error || 'No se pudo eliminar el curso' })
+        toast.error()
         return
       }
 
       setCourseList(prev => prev.filter(course => course.id !== id))
-      toast({ type: 'success', message: 'Curso eliminado correctamente' })
+      toast.success()
     } catch (error) {
       console.error('Error deleting course', error)
-      toast({ type: 'error', message: 'Error al eliminar el curso' })
+      toast.error()
     }
   }
 

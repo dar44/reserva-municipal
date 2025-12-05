@@ -1,11 +1,10 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 export default function SignupPage () {
   const router = useRouter()
-  const toast = useToast()
   const [form, setForm] = useState({
     email: '', password: '', name: '', surname: '', dni: '', phone: ''
   })
@@ -18,7 +17,7 @@ export default function SignupPage () {
       body: JSON.stringify(form)
     })
     if (res.ok) router.push('/login')
-    else toast({ type: 'error', message: 'No se pudo crear la cuenta' })
+    else toast.error()
   }
 
   return (

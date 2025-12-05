@@ -3,20 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 export default function RecintoActions ({ id }: { id: number }) {
   const [open, setOpen] = useState(false)
-  const toast = useToast()
-
   const remove = async () => {
     const res = await fetch(`/api/recintos/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ type: 'success', message: 'Recinto eliminado' })
+      toast.success()
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast({ type: 'error', message: data.error || 'Error al eliminar' })
+      toast.error()
     }
   }
 

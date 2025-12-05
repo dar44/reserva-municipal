@@ -1,20 +1,15 @@
 'use client'
 import { useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
-  const toast = useToast()
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
     if (!redirectUrl) {
-      toast({
-        type: 'error',
-        message: 'Error de configuración: NEXT_PUBLIC_AUTH_REDIRECT_URL no está definida'
-      })
+      toast.error()
       return
     }
 
@@ -22,9 +17,9 @@ export default function ResetPasswordPage() {
       redirectTo: redirectUrl,
     })
     if (error) {
-      toast({ type: 'error', message: 'No se pudo enviar el correo' })
+      toast.error()
     } else {
-      toast({ type: 'success', message: 'Correo enviado' })
+      toast.success()
     }
   }
 

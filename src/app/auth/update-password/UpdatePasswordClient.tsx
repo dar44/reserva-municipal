@@ -3,11 +3,10 @@
 import { useEffect, useRef, useState } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 export default function UpdatePasswordClient() {
   const sp = useSearchParams()
-  const toast = useToast()
   const router = useRouter()
 
   const [password, setPassword] = useState('')
@@ -48,11 +47,11 @@ export default function UpdatePasswordClient() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!ready) {
-      toast({ type: 'error', message: 'Abre esta página desde el enlace del correo.' })
+      toast.error()
       return
     }
     if (password.length < 8) {
-      toast({ type: 'error', message: 'La contraseña debe tener al menos 8 caracteres.' })
+      toast.error()
       return
     }
 
@@ -60,7 +59,7 @@ export default function UpdatePasswordClient() {
     if (error) {
       toast({ type: 'error', message: `No se pudo actualizar: ${error.message}` })
     } else {
-      toast({ type: 'success', message: 'Contraseña actualizada' })
+      toast.success()
       router.replace('/login')
     }
   }

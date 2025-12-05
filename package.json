@@ -26,6 +26,7 @@
     "react": "^19.2.0",
     "react-dom": "19.2.0",
     "react-leaflet": "^5.0.0",
+    "react-toastify": "^11.0.5",
     "resend": "^6.0.3",
     "tailwind-merge": "^3.4.0",
     "update": "^0.7.4"

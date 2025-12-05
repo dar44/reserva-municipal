@@ -3,20 +3,18 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
 
 export default function CursoActions({ id, state }: { id: number; state: string }) {
   const [open, setOpen] = useState(false)
-  const toast = useToast()
-
   const toggle = async () => {
     const res = await fetch(`/api/cursos/${id}/toggle`, { method: 'POST' })
     if (res.ok) {
-      toast({ type: 'success', message: 'Estado actualizado' })
+      toast.success()
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast({ type: 'error', message: data.error || 'Error al actualizar' })
+      toast.error()
     }
   }
 
