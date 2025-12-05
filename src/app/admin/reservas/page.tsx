@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { createSupabaseServer } from '@/lib/supabaseServer'
+import DeleteReservaButton from './DeleteReservaButton'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,17 +22,13 @@ type Reserva = {
 }
 
 type Inscripcion = {
+  users: any
+  cursos: any
   id: number
   user_uid: string
   status: string
   paid: boolean
-  users: { name: string; surname: string } | null
-  cursos: {
-    name: string
-    begining_date: string | null
-    end_date: string | null
-    price: number
-  } | null
+  price: number
 }
 
 type UnifiedItem = {
@@ -55,7 +52,7 @@ export default async function AdminReservasPage({
   searchParams: Promise<SearchParams>
 }) {
   const { search, status } = await searchParams
-  const supabase = await createSupabaseServer()
+  const supabase = supabaseAdmin
 
   // Fetch reservas de recintos
   const { data: reservasData } = await supabase
@@ -65,16 +62,14 @@ export default async function AdminReservasPage({
     .returns<Reserva[]>()
 
   // Fetch inscripciones a cursos
-  const { data: inscripcionesData, error: inscripcionesError } = await supabase
+  const { data: inscripcionesData } = await supabase
     .from('inscripciones')
     .select(
-      'id,user_uid,status,paid,users(name,surname),cursos(name,begining_date,end_date,price)'
+      'id,user_uid,status,paid,users!inscripciones_user_uid_fkey(name,surname),cursos(name,begining_date,end_date,price,start_time,end_time,days_of_week)'
     )
     .returns<Inscripcion[]>()
 
-  console.log('Inscripciones data:', inscripcionesData)
-  console.log('Inscripciones error:', inscripcionesError)
-  console.log('Cantidad de inscripciones:', inscripcionesData?.length || 0)
+  const safeInscripciones = inscripcionesData ?? []
 
   // Unify data
   const unifiedItems: UnifiedItem[] = []
@@ -84,6 +79,12 @@ export default async function AdminReservasPage({
       const startDate = new Date(r.start_at)
       const endDate = new Date(r.end_at)
       const usuario = r.users ? `${r.users.name} ${r.users.surname}` : 'Desconocido'
+      const estadoReserva =
+        (r.status?.toLowerCase() || '') === 'cancelada'
+          ? 'Cancelada'
+          : r.paid
+            ? 'Confirmada'
+            : 'Pendiente'
 
       unifiedItems.push({
         id: `recinto-${r.id}`,
@@ -96,30 +97,47 @@ export default async function AdminReservasPage({
         horaInicio: startDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
         horario: `${startDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}-${endDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`,
         total: Number(r.price),
-        estado: r.paid ? 'Confirmada' : 'Pendiente',
+        estado: estadoReserva,
         paid: r.paid
       })
     })
   }
 
-  if (inscripcionesData) {
-    inscripcionesData.forEach((i) => {
+  if (safeInscripciones.length > 0) {
+    safeInscripciones.forEach((i) => {
       const usuario = i.users ? `${i.users.name} ${i.users.surname}` : 'Desconocido'
       const beginDate = i.cursos?.begining_date ? new Date(i.cursos.begining_date) : null
       const endDate = i.cursos?.end_date ? new Date(i.cursos.end_date) : null
+      const estadoInscripcion =
+        (i.status?.toLowerCase() || '') === 'cancelada'
+          ? 'Cancelada'
+          : i.paid
+            ? 'Confirmada'
+            : 'Pendiente'
 
-      // Construir el horario basado en las fechas de inicio y fin del curso
+      // Construir el horario basado en los campos start_time, end_time y days_of_week
       let horario = '-'
-      if (beginDate && endDate) {
-        const daysOfWeek = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-        const dayStart = daysOfWeek[beginDate.getDay() === 0 ? 6 : beginDate.getDay() - 1]
-        const dayEnd = daysOfWeek[endDate.getDay() === 0 ? 6 : endDate.getDay() - 1]
 
-        if (dayStart === dayEnd) {
-          horario = `${dayStart} 18:00-19:30`
-        } else {
-          horario = `${dayStart} y ${dayEnd} 18:00-19:30`
-        }
+      const startTime = i.cursos?.start_time
+      const endTime = i.cursos?.end_time
+      const daysOfWeek = i.cursos?.days_of_week
+
+      if (startTime && endTime && daysOfWeek && Array.isArray(daysOfWeek) && daysOfWeek.length > 0) {
+        const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
+        const dayLabels = daysOfWeek.map(d => dayNames[d - 1]).filter(Boolean)
+
+        const daysText = dayLabels.length === 1
+          ? dayLabels[0]
+          : dayLabels.length === 2
+            ? `${dayLabels[0]} y ${dayLabels[1]}`
+            : dayLabels.slice(0, -1).join(', ') + ' y ' + dayLabels[dayLabels.length - 1]
+
+        horario = `${daysText} ${startTime.slice(0, 5)}-${endTime.slice(0, 5)}`
+      } else if (beginDate && endDate) {
+        // Fallback: mostrar rango de fechas si no hay horarios
+        const formatDate = (date: Date) =>
+          date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
+        horario = `${formatDate(beginDate)} - ${formatDate(endDate)}`
       }
 
       unifiedItems.push({
@@ -130,10 +148,10 @@ export default async function AdminReservasPage({
         usuarioDNI: beginDate ? beginDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
         item: i.cursos?.name || 'Curso desconocido',
         fechaInicio: beginDate ? beginDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
-        horaInicio: beginDate ? beginDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }) : null,
+        horaInicio: null,
         horario,
         total: Number(i.cursos?.price || 0),
-        estado: i.paid ? 'Confirmada' : 'Pendiente',
+        estado: estadoInscripcion,
         paid: i.paid
       })
     })
@@ -187,7 +205,6 @@ export default async function AdminReservasPage({
           <option value="all">Todos los estados</option>
           <option value="confirmada">Confirmada</option>
           <option value="pendiente">Pendiente</option>
-          <option value="activa">Activa</option>
           <option value="cancelada">Cancelada</option>
         </select>
         <button type="submit" className="bg-blue-600 px-4 py-2 rounded text-sm hover:bg-blue-700">
@@ -238,7 +255,7 @@ export default async function AdminReservasPage({
                   <td className="px-4 py-3">$ {item.total}</td>
                   <td className="px-4 py-3">
                     <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${item.estado.toLowerCase() === 'confirmada' || item.estado.toLowerCase() === 'activa'
+                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${item.estado.toLowerCase() === 'confirmada'
                         ? 'bg-green-900 text-green-300'
                         : item.estado.toLowerCase() === 'pendiente'
                           ? 'bg-yellow-900 text-yellow-300'
@@ -255,17 +272,15 @@ export default async function AdminReservasPage({
                       <Link
                         href={
                           item.tipo === 'Recinto'
-                            ? `/admin/reservas/${item.originalId}`
-                            : `/admin/cursos/${item.originalId}`
+                            ? `/admin/reservas/${item.originalId}/editar`
+                            : `/admin/inscripciones/${item.originalId}/editar`
                         }
                         className="text-blue-400 hover:text-blue-300"
                         title="Editar"
                       >
                         ✏️
                       </Link>
-                      <button className="text-red-400 hover:text-red-300" title="Eliminar">
-                        🗑️
-                      </button>
+                      <DeleteReservaButton id={item.originalId} tipo={item.tipo} />
                     </div>
                   </td>
                 </tr>
