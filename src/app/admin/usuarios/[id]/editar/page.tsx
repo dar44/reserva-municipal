@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic'
 
 type Props = { params: Promise<{ id: string }> }
 
-export default async function EditUsuarioPage ({ params }: Props) {
+export default async function EditUsuarioPage({ params }: Props) {
   const { id } = await params
 
   const supabase = await createSupabaseServer()
@@ -36,12 +36,12 @@ export default async function EditUsuarioPage ({ params }: Props) {
 
   const defaultSelection =
     usuario.image_bucket === USER_STORAGE_BUCKET &&
-    typeof usuario.image === 'string' &&
-    usuario.image.startsWith(`${USER_DEFAULTS_FOLDER}/`)
+      typeof usuario.image === 'string' &&
+      usuario.image.startsWith(`${USER_DEFAULTS_FOLDER}/`)
       ? usuario.image
       : ''
 
-  async function updateUsuario (formData: FormData) {
+  async function updateUsuario(formData: FormData) {
     'use server'
     const supabase = await createSupabaseServer()
     const payload = {
@@ -113,6 +113,12 @@ export default async function EditUsuarioPage ({ params }: Props) {
         <input name="email" defaultValue={usuario.email} className="w-full p-2 rounded bg-gray-700" placeholder="Email" required />
         <input name="phone" defaultValue={usuario.phone} className="w-full p-2 rounded bg-gray-700" placeholder="Teléfono" required />
         <input name="dni" defaultValue={usuario.dni} className="w-full p-2 rounded bg-gray-700" placeholder="DNI" required />
+        <select name="role" defaultValue={usuario.role} className="w-full p-2 rounded bg-gray-700">
+          <option value="citizen">citizen</option>
+          <option value="worker">worker</option>
+          <option value="admin">admin</option>
+        </select>
+        <input name="password" type="password" className="w-full p-2 rounded bg-gray-700" placeholder="Nuevo password (opcional)" />
         <div className="space-y-2 text-xs text-gray-300">
           <p className="break-all">
             Actual: {usuario.image_bucket ? `${usuario.image_bucket}/${usuario.image ?? ''}` : 'Sin imagen'}
@@ -124,12 +130,6 @@ export default async function EditUsuarioPage ({ params }: Props) {
             initialDefault={defaultSelection}
           />
         </div>
-        <select name="role" defaultValue={usuario.role} className="w-full p-2 rounded bg-gray-700">
-          <option value="citizen">citizen</option>
-          <option value="worker">worker</option>
-          <option value="admin">admin</option>
-        </select>
-        <input name="password" type="password" className="w-full p-2 rounded bg-gray-700" placeholder="Nuevo password (opcional)" />
         <div className="space-x-2">
           <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Guardar</button>
           <Link href={`/admin/usuarios/${id}`} className="text-gray-300">Cancelar</Link>
