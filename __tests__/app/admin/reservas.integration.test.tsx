@@ -1,88 +1,95 @@
 import { render, screen } from '@testing-library/react'
 import AdminReservasPage from '@/app/admin/reservas/page'
 
-const sampleReservas = [
-  {
-    id: 1,
-    start_at: '2026-10-01T18:00:00Z',
-    status: 'confirmada',
-    users: { email: 'ana@example.com' },
-    recintos: { name: 'Biblioteca' },
-  },
-]
+// Mock useRouter
+jest.mock('next/navigation', () => ({
+  useRouter: () => ({
+    refresh: jest.fn()
+  })
+}))
 
-const sampleUsuarios = [
-  { uid: 'u1', name: 'Ana' },
-  { uid: 'u2', name: 'Luis' },
-]
-
-const sampleRecintos = [
-  { id: 3, name: 'Biblioteca' },
-  { id: 4, name: 'Piscina' },
-]
-
-function createQuery (data: any[]) {
-  const builder: any = {
-    select: jest.fn().mockReturnThis(),
-    order: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    gte: jest.fn().mockReturnThis(),
-    lte: jest.fn().mockReturnThis(),
-    returns: jest.fn().mockReturnValue(Promise.resolve({ data })),
+// Mock de supabaseAdmin
+jest.mock('@/lib/supabaseAdmin', () => ({
+  supabaseAdmin: {
+    from: jest.fn((table: string) => {
+      if (table === 'reservas') {
+        return {
+          select: jest.fn(() => ({
+            order: jest.fn(() => Promise.resolve({
+              data: [
+                {
+                  id: 1,
+                  user_uid: 'u1',
+                  start_at: '2026-10-01T18:00:00Z',
+                  end_at: '2026-10-01T20:00:00Z',
+                  price: 500,
+                  status: 'activa',
+                  paid: true,
+                  users: { name: 'Ana', surname: 'García' },
+                  recintos: { name: 'Biblioteca' }
+                }
+              ]
+            }))
+          }))
+        }
+      }
+      if (table === 'inscripciones') {
+        return {
+          select: jest.fn(() => Promise.resolve({ data: [] }))
+        }
+      }
+      return { select: jest.fn() }
+    })
   }
-  return builder
-}
-
-jest.mock('@/lib/supabaseServer', () => ({
-  createSupabaseServer: jest.fn(() => {
-    const reservasQuery = createQuery(sampleReservas)
-    const usuariosQuery = createQuery(sampleUsuarios)
-    const recintosQuery = createQuery(sampleRecintos)
-
-    return {
-      from: jest.fn((table: string) => {
-        if (table === 'reservas') return reservasQuery
-        if (table === 'users') return usuariosQuery
-        if (table === 'recintos') return recintosQuery
-        throw new Error('Unexpected table ' + table)
-      }),
-    }
-  }),
 }))
 
 describe('AdminReservasPage', () => {
-  it('muestra filtros con valores iniciales y renderiza la tabla', async () => {
+  it('muestra filtros de búsqueda y estado, y renderiza la tabla unificada', async () => {
     const searchParams = Promise.resolve({
-      user: 'u1',
-      recinto: '3',
-      from: '2026-09-01',
-      to: '2026-10-30',
+      search: '',
+      status: 'all'
     })
 
     const ui = await AdminReservasPage({ searchParams })
     render(ui)
 
+    // Verifica el encabezado
     expect(
       screen.getByRole('heading', { name: /reservas/i })
     ).toBeInTheDocument()
 
-    const [userSelect, recintoSelect] = screen.getAllByRole('combobox')
-    expect(userSelect).toBeInTheDocument()
-    expect(recintoSelect).toBeInTheDocument()
-    expect(userSelect).toHaveDisplayValue('Usuario')
-    expect(recintoSelect).toHaveDisplayValue('Recinto')
+    // Verifica los nuevos filtros (búsqueda y estado)
+    const searchInput = screen.getByPlaceholderText(/buscar por usuario o ítem/i)
+    expect(searchInput).toBeInTheDocument()
+    expect(searchInput).toHaveAttribute('name', 'search')
 
-    // Filtros 
-    expect(
-      (screen.getByDisplayValue('2026-09-01') as HTMLInputElement).name
-    ).toBe('from')
-    expect(
-      (screen.getByDisplayValue('2026-10-30') as HTMLInputElement).name
-    ).toBe('to')
+    const statusSelect = screen.getByRole('combobox')
+    expect(statusSelect).toBeInTheDocument()
+    expect(statusSelect).toHaveAttribute('name', 'status')
 
-    // Tabla con las reservas
-    expect(screen.getByText('ana@example.com')).toBeInTheDocument()
+    // Verifica el botón de filtrar
+    expect(screen.getByRole('button', { name: /filtrar/i })).toBeInTheDocument()
+
+    // Verifica la tabla con datos
+    expect(screen.getByText('Ana García')).toBeInTheDocument()
     expect(screen.getByText('Biblioteca')).toBeInTheDocument()
-    expect(screen.getByText(/confirmada/i)).toBeInTheDocument()
+    expect(screen.getAllByText(/confirmada/i).length).toBeGreaterThan(0)
+  })
+
+  it('muestra la tabla con columnas correctas para tipo Recinto y Curso', async () => {
+    const searchParams = Promise.resolve({})
+
+    const ui = await AdminReservasPage({ searchParams })
+    render(ui)
+
+    // Verifica las columnas de la tabla
+    expect(screen.getByText('Usuario')).toBeInTheDocument()
+    expect(screen.getByText('Tipo')).toBeInTheDocument()
+    expect(screen.getByText('Ítem')).toBeInTheDocument()
+    expect(screen.getByText(/fecha y hora/i)).toBeInTheDocument()
+    expect(screen.getByText('Horario')).toBeInTheDocument()
+    expect(screen.getByText('Total')).toBeInTheDocument()
+    expect(screen.getByText('Estado')).toBeInTheDocument()
+    expect(screen.getByText('Acciones')).toBeInTheDocument()
   })
 })

@@ -1,8 +1,17 @@
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { toast } from 'react-toastify'
 
 import OrganizerReservationsClient from '@/app/organizer/reservas/OrganizerReservationsClient'
-import { ToastProvider } from '@/components/Toast'
+
+// Mock react-toastify
+jest.mock('react-toastify', () => {
+  const mockToast = jest.fn()
+  mockToast.success = jest.fn()
+  mockToast.error = jest.fn()
+  mockToast.info = jest.fn()
+  return { toast: mockToast }
+})
 
 describe('OrganizerReservationsClient', () => {
   const baseProps = {
@@ -37,16 +46,16 @@ describe('OrganizerReservationsClient', () => {
 
   const originalFetch = global.fetch
 
+  beforeEach(() => {
+    jest.clearAllMocks()
+  })
+
   afterEach(() => {
     global.fetch = originalFetch as any
   })
 
   it('muestra recintos disponibles e historial ordenado', () => {
-    render(
-      <ToastProvider>
-        <OrganizerReservationsClient {...baseProps} />
-      </ToastProvider>
-    )
+    render(<OrganizerReservationsClient {...baseProps} />)
 
     expect(
       screen.getByRole('heading', { name: 'Sala multiuso' })
@@ -66,11 +75,7 @@ describe('OrganizerReservationsClient', () => {
     const fetchMock = jest.fn()
     global.fetch = fetchMock as any
 
-    render(
-      <ToastProvider>
-        <OrganizerReservationsClient {...baseProps} />
-      </ToastProvider>
-    )
+    render(<OrganizerReservationsClient {...baseProps} />)
 
     await user.click(screen.getByRole('button', { name: /enviar solicitud/i }))
 
@@ -79,7 +84,7 @@ describe('OrganizerReservationsClient', () => {
     })
   })
 
-  it('envía la solicitud y agrega bloques nuevos', async () => {
+  it('envía la solicitud y agrega bloques nuevos usando toastify', async () => {
     const user = userEvent.setup()
 
     const fetchMock = jest.fn().mockResolvedValue({
@@ -102,11 +107,7 @@ describe('OrganizerReservationsClient', () => {
 
     global.fetch = fetchMock as any
 
-    render(
-      <ToastProvider>
-        <OrganizerReservationsClient {...baseProps} />
-      </ToastProvider>
-    )
+    render(<OrganizerReservationsClient {...baseProps} />)
 
     await user.selectOptions(screen.getByLabelText('Curso'), '10')
     await user.selectOptions(screen.getByLabelText('Recinto'), '5')
@@ -123,9 +124,13 @@ describe('OrganizerReservationsClient', () => {
         '/api/organizer/reservas',
         expect.any(Object)
       )
-      expect(
-        screen.getByText(/se generó 1 bloque/i)
-      ).toBeInTheDocument()
+      // Verifica que se llamó a toast con el mensaje correcto
+      expect(toast).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'success',
+          message: expect.stringMatching(/se generó 1 bloque/i)
+        })
+      )
     })
 
     const rows = screen.getAllByRole('row')

@@ -22,13 +22,21 @@ type Reserva = {
 }
 
 type Inscripcion = {
-  users: any
-  cursos: any
   id: number
   user_uid: string
   status: string
   paid: boolean
   price: number
+  users: { name: string; surname: string } | null
+  cursos: {
+    name: string
+    begining_date: string
+    end_date: string
+    price: number
+    start_time: string | null
+    end_time: string | null
+    days_of_week: number[] | null
+  } | null
 }
 
 type UnifiedItem = {
@@ -58,16 +66,14 @@ export default async function AdminReservasPage({
   const { data: reservasData } = await supabase
     .from('reservas')
     .select('id,user_uid,start_at,end_at,price,status,paid,users(name,surname),recintos(name)')
-    .order('start_at', { ascending: false })
-    .returns<Reserva[]>()
+    .order('start_at', { ascending: false }) as { data: Reserva[] | null }
 
   // Fetch inscripciones a cursos
   const { data: inscripcionesData } = await supabase
     .from('inscripciones')
     .select(
       'id,user_uid,status,paid,users!inscripciones_user_uid_fkey(name,surname),cursos(name,begining_date,end_date,price,start_time,end_time,days_of_week)'
-    )
-    .returns<Inscripcion[]>()
+    ) as { data: Inscripcion[] | null }
 
   const safeInscripciones = inscripcionesData ?? []
 
