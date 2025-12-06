@@ -21,11 +21,11 @@ export default function DeleteButton({ id, type }: DeleteButtonProps) {
     const res = await fetch(endpoint, { method: 'DELETE' })
 
     if (res.ok) {
-      toast({ type: 'success', message: `${type} eliminada correctamente` })
+      toast.success(`${type} eliminada correctamente`)
       router.refresh()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast.error()
+      toast.error(data?.error || `Error al eliminar ${type.toLowerCase()}`)
     }
   }
 
