@@ -41,7 +41,7 @@ const fieldLabels: Record<EditableField, string> = {
 
 const editableFields: EditableField[] = ['name', 'surname', 'dni', 'phone']
 
-export default function ProfileModal ({ onClose, onUpdated }: Props) {
+export default function ProfileModal({ onClose, onUpdated }: Props) {
   const [profile, setProfile] = useState<ProfileData>({
     name: '',
     surname: '',
@@ -166,7 +166,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       data: { [field]: value }
     })
     if (authError) {
-      toast.error()
+      toast.error('Error al actualizar el perfil en autenticación')
       return
     }
     const { error } = await supabase
@@ -179,7 +179,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       if (field === 'name') onUpdated(value)
       cancelFieldEdit()
     } else {
-      toast.error()
+      toast.error('Error al actualizar el perfil')
     }
   }
 
@@ -209,7 +209,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
 
     if (imageMode === 'upload') {
       if (!imageFile || imageFile.size === 0) {
-        toast.error()
+        toast.error('Por favor selecciona un archivo válido')
         return
       }
       const uploadPath = buildUserProfilePath(userUid, imageFile.name)
@@ -220,14 +220,14 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
           upsert: true
         })
       if (uploadError) {
-        toast.error()
+        toast.error('Error al subir la imagen')
         return
       }
       newImagePath = uploadPath
       newBucket = USER_STORAGE_BUCKET
     } else if (imageMode === 'default') {
       if (!imageDefault) {
-        toast.error()
+        toast.error('Por favor selecciona una imagen predeterminada')
         return
       }
       newImagePath = imageDefault
@@ -244,7 +244,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       }
     })
     if (authError) {
-      toast.error()
+      toast.error('Error al actualizar la imagen en autenticación')
       return
     }
 
@@ -258,7 +258,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       .eq('uid', userUid)
 
     if (error) {
-      toast.error()
+      toast.error('Error al actualizar la imagen en la base de datos')
       return
     }
 
@@ -271,7 +271,7 @@ export default function ProfileModal ({ onClose, onUpdated }: Props) {
       await supabase.storage
         .from(profile.image_bucket)
         .remove([profile.image])
-        .catch(() => {})
+        .catch(() => { })
     }
 
     const newUrl = await buildStorageUrl(supabase, newBucket, newImagePath)

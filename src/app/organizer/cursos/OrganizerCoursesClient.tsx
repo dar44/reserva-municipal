@@ -19,7 +19,7 @@ type OrganizerCourse = {
 
 type Props = {
   courses: OrganizerCourse[]
-  
+
 }
 
 type CoursePayload = {
@@ -32,7 +32,7 @@ type CoursePayload = {
   capacity: number | null
 }
 
-export default function OrganizerCoursesClient ({ courses }: Props) {
+export default function OrganizerCoursesClient({ courses }: Props) {
   const [courseList, setCourseList] = useState(courses)
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
@@ -63,7 +63,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
     }
 
     if (!payload.name) {
-      toast.error()
+      toast.error('El nombre del curso es obligatorio')
       return
     }
 
@@ -78,18 +78,18 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast.error()
+        toast.error(data?.error || 'Error al crear el curso')
         return
       }
 
       if (data.curso) {
         setCourseList(prev => [data.curso, ...prev])
-        toast.success()
+        toast.success('Curso creado correctamente')
         form.reset()
       }
     } catch (error) {
       console.error('Error creating course', error)
-      toast.error()
+      toast.error('Error al crear el curso')
     } finally {
       setCreatingCourse(false)
     }
@@ -115,7 +115,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
     }
 
     if (!payload.name) {
-      toast.error()
+      toast.error('El nombre del curso es obligatorio')
       return
     }
 
@@ -128,7 +128,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
 
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        toast.error()
+        toast.error(data?.error || 'Error al actualizar el curso')
         return
       }
 
@@ -136,12 +136,12 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
         setCourseList(prev => prev.map(course => (
           course.id === id ? data.curso : course
         )))
-        toast.success()
+        toast.success('Curso actualizado correctamente')
         setEditingCourseId(null)
       }
     } catch (error) {
       console.error('Error updating course', error)
-      toast.error()
+      toast.error('Error al actualizar el curso')
     }
   }
 
@@ -154,15 +154,15 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
       })
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        toast.error()
+        toast.error(data?.error || 'Error al eliminar el curso')
         return
       }
 
       setCourseList(prev => prev.filter(course => course.id !== id))
-      toast.success()
+      toast.success('Curso eliminado correctamente')
     } catch (error) {
       console.error('Error deleting course', error)
-      toast.error()
+      toast.error('Error al eliminar el curso')
     }
   }
 
@@ -175,7 +175,7 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
         </header>
 
         <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-           <p>Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
+          <p>Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
         </article>
       </section>
 
@@ -373,13 +373,12 @@ export default function OrganizerCoursesClient ({ courses }: Props) {
                         <h3 className="text-lg font-semibold">{course.name}</h3>
                         <p className="text-sm text-gray-400">{course.location ?? 'Ubicación no especificada'}</p>
                       </div>
-                      <span className={`self-start rounded px-2 py-0.5 text-xs uppercase ${
-                        course.state === 'Disponible'
+                      <span className={`self-start rounded px-2 py-0.5 text-xs uppercase ${course.state === 'Disponible'
                           ? 'bg-green-700 text-white'
                           : course.state === 'No disponible'
                             ? 'bg-yellow-700 text-white'
                             : 'bg-red-700 text-white'
-                      }`}>
+                        }`}>
                         {course.state}
                       </span>
                     </div>

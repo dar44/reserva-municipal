@@ -5,16 +5,16 @@ import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
 import { toast } from 'react-toastify'
 
-export default function UsuarioActions ({ id }: { id: string }) {
+export default function UsuarioActions({ id }: { id: string }) {
   const [open, setOpen] = useState(false)
   const remove = async () => {
     const res = await fetch(`/api/usuarios/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast.success()
+      toast.success('Usuario eliminado correctamente')
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast.error()
+      toast.error(data?.error || 'Error al eliminar el usuario')
     }
   }
 

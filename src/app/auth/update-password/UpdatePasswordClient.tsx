@@ -18,48 +18,48 @@ export default function UpdatePasswordClient() {
     if (alreadyRan.current) return
     alreadyRan.current = true
 
-    ;(async () => {
-      try {
-        const type = sp.get('type')
-        const token_hash = sp.get('token_hash')
+      ; (async () => {
+        try {
+          const type = sp.get('type')
+          const token_hash = sp.get('token_hash')
 
-        if (type === 'recovery' && token_hash) {
-          const { error } = await supabase.auth.verifyOtp({
-            type: 'recovery',
-            token_hash,
-          })
-          if (error) throw error
-          setReady(true)
-        } else {
-          throw new Error('Enlace inválido: falta token de recuperación.')
+          if (type === 'recovery' && token_hash) {
+            const { error } = await supabase.auth.verifyOtp({
+              type: 'recovery',
+              token_hash,
+            })
+            if (error) throw error
+            setReady(true)
+          } else {
+            throw new Error('Enlace inválido: falta token de recuperación.')
+          }
+        } catch (e: unknown) {
+          const msg =
+            e instanceof Error ? e.message : typeof e === 'string' ? e : 'Error desconocido'
+          toast.error(`No se pudo iniciar la recuperación: ${msg}`)
+        } finally {
+          setLoading(false)
         }
-      } catch (e: unknown) {
-        const msg =
-          e instanceof Error ? e.message : typeof e === 'string' ? e : 'Error desconocido'
-        toast({ type: 'error', message: `No se pudo iniciar la recuperación: ${msg}` })
-      } finally {
-        setLoading(false)
-      }
-    })()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+      })()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sp]) // OK usar sp como dependencia
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!ready) {
-      toast.error()
+      toast.error('Sesión no válida. Por favor, usa el enlace del correo')
       return
     }
     if (password.length < 8) {
-      toast.error()
+      toast.error('La contraseña debe tener al menos 8 caracteres')
       return
     }
 
     const { error } = await supabase.auth.updateUser({ password })
     if (error) {
-      toast({ type: 'error', message: `No se pudo actualizar: ${error.message}` })
+      toast.error(`No se pudo actualizar: ${error.message}`)
     } else {
-      toast.success()
+      toast.success('Contraseña actualizada correctamente')
       router.replace('/login')
     }
   }

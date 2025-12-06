@@ -40,7 +40,7 @@ const DAY_OPTIONS = [
   { value: 0, label: 'Domingo' },
 ]
 
-export default function OrganizerReservationsClient ({ courses, recintos, reservations }: Props) {
+export default function OrganizerReservationsClient({ courses, recintos, reservations }: Props) {
   const [reservationList, setReservationList] = useState(reservations)
   const [submittingReservation, setSubmittingReservation] = useState(false)
   const availableRecintos = useMemo(
@@ -96,12 +96,12 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const observationsRaw = (formData.get('observations') as string) || ''
 
     if (!cursoId || !recintoId || !startDateRaw || !endDateRaw || !startTimeRaw || !endTimeRaw) {
-      toast.error()
+      toast.error('Por favor completa todos los campos obligatorios')
       return
     }
 
     if (daysSelected.length === 0) {
-      toast.error()
+      toast.error('Selecciona al menos un día de la semana')
       return
     }
 
@@ -109,12 +109,12 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const endDate = new Date(`${endDateRaw}T00:00:00`)
 
     if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
-      toast.error()
+      toast.error('Las fechas seleccionadas no son válidas')
       return
     }
 
     if (endDate < startDate) {
-      toast.error()
+      toast.error('La fecha de término debe ser posterior a la fecha de inicio')
       return
     }
 
@@ -122,7 +122,7 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const parsedEndTime = endTimeRaw ? parseTime(endTimeRaw) : null
 
     if (!parsedStartTime || !parsedEndTime) {
-      toast.error()
+      toast.error('Las horas seleccionadas no son válidas')
       return
     }
 
@@ -130,14 +130,14 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
     const endMinutes = parsedEndTime.hours * 60 + parsedEndTime.minutes
 
     if (endMinutes <= startMinutes) {
-      toast.error()
+      toast.error('La hora de término debe ser posterior a la hora de inicio')
       return
     }
 
     const daysOfWeek = Array.from(new Set(daysSelected.map(value => Number(value)).filter(value => !Number.isNaN(value))))
 
     if (daysOfWeek.length === 0) {
-      toast.error()
+      toast.error('Selecciona al menos un día de la semana válido')
       return
     }
 
@@ -163,7 +163,7 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast.error()
+        toast.error(data?.error || 'Error al crear la solicitud de reserva')
         return
       }
 
@@ -173,20 +173,19 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
           return next.sort((a, b) => new Date(b.start_at).getTime() - new Date(a.start_at).getTime())
         })
         const count = data.reservas.length
-        toast({
-          type: 'success',
-          message: count === 1
+        toast.success(
+          count === 1
             ? 'Se generó 1 bloque de reserva'
-            : `Se generaron ${count} bloques de reserva`,
-        })
+            : `Se generaron ${count} bloques de reserva`
+        )
         form.reset()
       } else {
-        toast.success()
+        toast.success('Solicitud creada correctamente')
         form.reset()
       }
     } catch (error) {
       console.error('Error creating reservation request', error)
-      toast.error()
+      toast.error('Error al crear la solicitud de reserva')
     } finally {
       setSubmittingReservation(false)
     }
@@ -384,15 +383,14 @@ export default function OrganizerReservationsClient ({ courses, recintos, reserv
                     <td className="px-4 py-2">{formatDateTime(reservation.start_at)}</td>
                     <td className="px-4 py-2">{formatDateTime(reservation.end_at)}</td>
                     <td className="px-4 py-2">
-                      <span className={`rounded px-2 py-0.5 text-xs uppercase ${
-                        reservation.status === 'pendiente'
+                      <span className={`rounded px-2 py-0.5 text-xs uppercase ${reservation.status === 'pendiente'
                           ? 'bg-yellow-600 text-black'
                           : reservation.status === 'aprobada'
                             ? 'bg-green-700 text-white'
                             : reservation.status === 'rechazada'
                               ? 'bg-red-700 text-white'
                               : 'bg-gray-700 text-white'
-                      }`}>
+                        }`}>
                         {reservation.status}
                       </span>
                     </td>

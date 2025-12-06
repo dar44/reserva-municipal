@@ -9,7 +9,7 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
     if (!redirectUrl) {
-      toast.error()
+      toast.error('Error de configuración: URL de redirección no disponible')
       return
     }
 
@@ -17,9 +17,9 @@ export default function ResetPasswordPage() {
       redirectTo: redirectUrl,
     })
     if (error) {
-      toast.error()
+      toast.error(error.message || 'Error al enviar el enlace de recuperación')
     } else {
-      toast.success()
+      toast.success('Enlace enviado. Revisa tu correo electrónico')
     }
   }
 

@@ -19,7 +19,7 @@ export default function LoginPage() {
     })
 
     if (!res.ok) {
-      toast.error()
+      toast.error('Error al iniciar sesión. Verifica tus credenciales')
       return
     }
 

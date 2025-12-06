@@ -102,14 +102,14 @@ export default function PendingRequestsTable({ requests }: Props) {
             const data = await response.json().catch(() => ({}))
 
             if (!response.ok) {
-                toast.error()
+                toast.error(data?.error || 'Error al procesar la solicitud')
                 return
             }
 
             if (data.reserva) {
                 // Eliminar de la lista de pendientes
                 setRows(prev => prev.filter(row => row.id !== id))
-                toast.success()
+                toast.success(decisionCopy[status].success)
                 setDecisionTarget(null)
                 setDecisionNote('')
                 // Recargar página para actualizar estadísticas
@@ -117,7 +117,7 @@ export default function PendingRequestsTable({ requests }: Props) {
             }
         } catch (error) {
             console.error('Error updating course reservation', error)
-            toast.error()
+            toast.error('Error al procesar la solicitud')
         } finally {
             setLoadingId(null)
         }

@@ -10,11 +10,11 @@ export default function CursoActions({ id, state }: { id: number; state: string 
   const toggle = async () => {
     const res = await fetch(`/api/cursos/${id}/toggle`, { method: 'POST' })
     if (res.ok) {
-      toast.success()
+      toast.success('Estado del curso cambiado correctamente')
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast.error()
+      toast.error(data?.error || 'Error al cambiar el estado del curso')
     }
   }
 

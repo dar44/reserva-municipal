@@ -53,7 +53,7 @@ const decisionCopy: Record<DecisionStatus, { title: string; confirm: string; hel
   },
 }
 
-export default function CourseReservationsTable ({ reservations }: Props) {
+export default function CourseReservationsTable({ reservations }: Props) {
   const [rows, setRows] = useState(reservations)
   const [loadingId, setLoadingId] = useState<number | null>(null)
   const [decisionTarget, setDecisionTarget] = useState<{ id: number; status: DecisionStatus } | null>(null)
@@ -106,7 +106,7 @@ export default function CourseReservationsTable ({ reservations }: Props) {
       const data = await response.json().catch(() => ({}))
 
       if (!response.ok) {
-        toast.error()
+        toast.error(data?.error || 'Error al procesar la solicitud')
         return
       }
 
@@ -116,13 +116,13 @@ export default function CourseReservationsTable ({ reservations }: Props) {
             ? { ...row, ...data.reserva }
             : row
         )))
-        toast.success()
+        toast.success(decisionCopy[status].success)
         setDecisionTarget(null)
         setDecisionNote('')
       }
     } catch (error) {
       console.error('Error updating course reservation', error)
-      toast.error()
+      toast.error('Error al procesar la solicitud')
     } finally {
       setLoadingId(null)
     }
@@ -136,51 +136,60 @@ export default function CourseReservationsTable ({ reservations }: Props) {
     <>
       <div className="overflow-x-auto">
         <table className="min-w-full overflow-hidden rounded bg-gray-900 text-sm">
-        <thead className="bg-gray-800 text-xs uppercase text-gray-300">
-          <tr>
-            <th className="px-4 py-2 text-left">Curso</th>
-            <th className="px-4 py-2 text-left">Recinto</th>
-            <th className="px-4 py-2 text-left">Inicio</th>
-            <th className="px-4 py-2 text-left">Fin</th>
-            <th className="px-4 py-2 text-left">Estado</th>
-            <th className="px-4 py-2 text-left">Observaciones</th>
-            <th className="px-4 py-2 text-left">Revisado</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map(row => (
-            <tr key={row.id} className="border-t border-gray-800">
-              <td className="px-4 py-2">{row.curso_name}</td>
-              <td className="px-4 py-2">{row.recinto_name}</td>
-              <td className="px-4 py-2">{formatDateTime(row.start_at)}</td>
-              <td className="px-4 py-2">{formatDateTime(row.end_at)}</td>
-              <td className="px-4 py-2">
-                <span className={`rounded px-2 py-0.5 text-xs uppercase ${statusStyles[row.status]}`}>
-                  {row.status}
-                </span>
-              </td>
-              <td className="px-4 py-2 text-xs text-gray-300">{row.observations ?? '—'}</td>
-              <td className="px-4 py-2 text-xs text-gray-400">
-                {row.reviewed_at ? formatDateTime(row.reviewed_at) : 'Pendiente'}
-              </td>
-              <td className="px-4 py-2">
-                {row.status === 'pendiente' ? (
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      onClick={() => openDecisionModal(row.id, 'aprobada')}
-                      className="rounded bg-emerald-600 px-3 py-1 text-xs text-white disabled:opacity-60"
-                      disabled={loadingId === row.id}
-                    >
-                      Aprobar
-                    </button>
-                    <button
-                      onClick={() => openDecisionModal(row.id, 'rechazada')}
-                      className="rounded bg-red-600 px-3 py-1 text-xs text-white disabled:opacity-60"
-                      disabled={loadingId === row.id}
-                    >
-                      Rechazar
-                    </button>
+          <thead className="bg-gray-800 text-xs uppercase text-gray-300">
+            <tr>
+              <th className="px-4 py-2 text-left">Curso</th>
+              <th className="px-4 py-2 text-left">Recinto</th>
+              <th className="px-4 py-2 text-left">Inicio</th>
+              <th className="px-4 py-2 text-left">Fin</th>
+              <th className="px-4 py-2 text-left">Estado</th>
+              <th className="px-4 py-2 text-left">Observaciones</th>
+              <th className="px-4 py-2 text-left">Revisado</th>
+              <th className="px-4 py-2 text-left">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map(row => (
+              <tr key={row.id} className="border-t border-gray-800">
+                <td className="px-4 py-2">{row.curso_name}</td>
+                <td className="px-4 py-2">{row.recinto_name}</td>
+                <td className="px-4 py-2">{formatDateTime(row.start_at)}</td>
+                <td className="px-4 py-2">{formatDateTime(row.end_at)}</td>
+                <td className="px-4 py-2">
+                  <span className={`rounded px-2 py-0.5 text-xs uppercase ${statusStyles[row.status]}`}>
+                    {row.status}
+                  </span>
+                </td>
+                <td className="px-4 py-2 text-xs text-gray-300">{row.observations ?? '—'}</td>
+                <td className="px-4 py-2 text-xs text-gray-400">
+                  {row.reviewed_at ? formatDateTime(row.reviewed_at) : 'Pendiente'}
+                </td>
+                <td className="px-4 py-2">
+                  {row.status === 'pendiente' ? (
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => openDecisionModal(row.id, 'aprobada')}
+                        className="rounded bg-emerald-600 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        disabled={loadingId === row.id}
+                      >
+                        Aprobar
+                      </button>
+                      <button
+                        onClick={() => openDecisionModal(row.id, 'rechazada')}
+                        className="rounded bg-red-600 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        disabled={loadingId === row.id}
+                      >
+                        Rechazar
+                      </button>
+                      <button
+                        onClick={() => openDecisionModal(row.id, 'cancelada')}
+                        className="rounded bg-gray-700 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        disabled={loadingId === row.id}
+                      >
+                        Cancelar
+                      </button>
+                    </div>
+                  ) : row.status === 'aprobada' ? (
                     <button
                       onClick={() => openDecisionModal(row.id, 'cancelada')}
                       className="rounded bg-gray-700 px-3 py-1 text-xs text-white disabled:opacity-60"
@@ -188,65 +197,56 @@ export default function CourseReservationsTable ({ reservations }: Props) {
                     >
                       Cancelar
                     </button>
-                  </div>
-                ) : row.status === 'aprobada' ? (
-                  <button
-                    onClick={() => openDecisionModal(row.id, 'cancelada')}
-                    className="rounded bg-gray-700 px-3 py-1 text-xs text-white disabled:opacity-60"
-                    disabled={loadingId === row.id}
-                  >
-                    Cancelar
-                  </button>
-                ) : (
-                  <span className="text-xs text-gray-500">—</span>
-                )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-    {decisionTarget && (
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
-        onClick={closeDecisionModal}
-        role="dialog"
-        aria-modal="true"
-      >
+                  ) : (
+                    <span className="text-xs text-gray-500">—</span>
+                  )}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {decisionTarget && (
         <div
-          className="w-full max-w-md rounded border border-gray-700 bg-gray-900 p-6 shadow-lg"
-          onClick={event => event.stopPropagation()}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+          onClick={closeDecisionModal}
+          role="dialog"
+          aria-modal="true"
         >
-          <h3 className="text-lg font-semibold text-gray-100">{decisionCopy[decisionTarget.status].title}</h3>
-          <p className="mt-2 text-sm text-gray-400">{decisionCopy[decisionTarget.status].helper}</p>
-          <textarea
-            className="mt-4 w-full rounded border border-gray-700 bg-gray-900 p-2 text-sm"
-            rows={4}
-            placeholder="Observaciones (opcional)"
-            value={decisionNote}
-            onChange={event => setDecisionNote(event.target.value)}
-          />
-          <div className="mt-4 flex justify-end gap-2 text-sm">
-            <button
-              type="button"
-              onClick={closeDecisionModal}
-              className="rounded border border-gray-600 px-4 py-2 text-gray-200 transition hover:bg-gray-800"
-              disabled={isModalProcessing}
-            >
-              Cerrar
-            </button>
-            <button
-              type="button"
-              onClick={confirmDecision}
-              className="rounded bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500 disabled:opacity-60"
-              disabled={isModalProcessing}
-            >
-              {isModalProcessing ? 'Guardando…' : decisionCopy[decisionTarget.status].confirm}
-            </button>
+          <div
+            className="w-full max-w-md rounded border border-gray-700 bg-gray-900 p-6 shadow-lg"
+            onClick={event => event.stopPropagation()}
+          >
+            <h3 className="text-lg font-semibold text-gray-100">{decisionCopy[decisionTarget.status].title}</h3>
+            <p className="mt-2 text-sm text-gray-400">{decisionCopy[decisionTarget.status].helper}</p>
+            <textarea
+              className="mt-4 w-full rounded border border-gray-700 bg-gray-900 p-2 text-sm"
+              rows={4}
+              placeholder="Observaciones (opcional)"
+              value={decisionNote}
+              onChange={event => setDecisionNote(event.target.value)}
+            />
+            <div className="mt-4 flex justify-end gap-2 text-sm">
+              <button
+                type="button"
+                onClick={closeDecisionModal}
+                className="rounded border border-gray-600 px-4 py-2 text-gray-200 transition hover:bg-gray-800"
+                disabled={isModalProcessing}
+              >
+                Cerrar
+              </button>
+              <button
+                type="button"
+                onClick={confirmDecision}
+                className="rounded bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500 disabled:opacity-60"
+                disabled={isModalProcessing}
+              >
+                {isModalProcessing ? 'Guardando…' : decisionCopy[decisionTarget.status].confirm}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    )}
+      )}
     </>
   )
 }

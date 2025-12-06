@@ -3,13 +3,13 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
 
-export default function SignupPage () {
+export default function SignupPage() {
   const router = useRouter()
   const [form, setForm] = useState({
     email: '', password: '', name: '', surname: '', dni: '', phone: ''
   })
 
-  async function handleSubmit (e: React.FormEvent) {
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     const res = await fetch('/api/signup', {
       method: 'POST',
@@ -17,7 +17,7 @@ export default function SignupPage () {
       body: JSON.stringify(form)
     })
     if (res.ok) router.push('/login')
-    else toast.error()
+    else toast.error('Error al crear la cuenta. Intenta de nuevo')
   }
 
   return (
