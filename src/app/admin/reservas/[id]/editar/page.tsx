@@ -19,16 +19,6 @@ type ReservaDetail = {
     recintos: { name: string } | null
 }
 
-function formatDateInput(value: string) {
-    const date = new Date(value)
-    return date.toISOString().slice(0, 10)
-}
-
-function formatTimeInput(value: string) {
-    const date = new Date(value)
-    return date.toISOString().slice(11, 16)
-}
-
 export default async function EditReservaPage({ params }: Props) {
     const { id } = await params
 
@@ -43,21 +33,12 @@ export default async function EditReservaPage({ params }: Props) {
     async function updateReserva(formData: FormData) {
         'use server'
 
-        const date = String(formData.get('date') || '')
-        const startTime = String(formData.get('startTime') || '')
-        const endTime = String(formData.get('endTime') || '')
-        const price = Number(formData.get('price') || 0)
-        const paid = formData.get('paid') === 'on'
-
-        const start_at = new Date(`${date}T${startTime}`)
-        const end_at = new Date(`${date}T${endTime}`)
+        const nuevoEstado = String(formData.get('estado') || 'Pendiente')
+        const paid = nuevoEstado === 'Confirmada'
 
         await supabaseAdmin
             .from('reservas')
             .update({
-                start_at: start_at.toISOString(),
-                end_at: end_at.toISOString(),
-                price,
                 status: paid ? 'activa' : 'pendiente',
                 paid,
                 updated_at: new Date().toISOString()
@@ -69,84 +50,60 @@ export default async function EditReservaPage({ params }: Props) {
         redirect('/admin/reservas')
     }
 
-    const startDateValue = formatDateInput(reserva.start_at)
-    const startTimeValue = formatTimeInput(reserva.start_at)
-    const endTimeValue = formatTimeInput(reserva.end_at)
+    const startDate = new Date(reserva.start_at)
+    const endDate = new Date(reserva.end_at)
+    const fechaFormateada = `${startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${startDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
+
+    const estadoActual = reserva.paid ? 'Confirmada' : 'Pendiente'
 
     return (
         <div className="space-y-4">
             <Link href="/admin/reservas" className="text-sm underline">← Volver</Link>
-            <div className="flex items-center gap-2">
-                <h1 className="text-2xl font-bold">Editar reserva #{reserva.id}</h1>
-                <span className="px-2 py-1 rounded bg-gray-800 text-xs">
-                    {reserva.recintos?.name ?? 'Recinto sin nombre'}
-                </span>
-            </div>
+            <h1 className="text-2xl font-bold">Editar reserva #{reserva.id}</h1>
 
-            <div className="bg-gray-800 p-4 rounded text-sm space-y-4">
+            <div className="bg-gray-800 p-6 rounded space-y-4">
+                {/* Usuario */}
                 <div className="flex flex-col gap-1">
                     <span className="text-xs text-gray-400">Usuario</span>
                     <span className="font-medium">{reserva.users ? `${reserva.users.name} ${reserva.users.surname}` : 'Desconocido'}</span>
                 </div>
 
-                <form action={updateReserva} className="space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                        <label className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400">Fecha</span>
-                            <input
-                                name="date"
-                                type="date"
-                                defaultValue={startDateValue}
-                                className="rounded bg-gray-700 px-3 py-2"
-                                required
-                            />
-                        </label>
-                        <label className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400">Precio (€)</span>
-                            <input
-                                name="price"
-                                type="number"
-                                min="0"
-                                step="0.01"
-                                defaultValue={reserva.price}
-                                className="rounded bg-gray-700 px-3 py-2"
-                                required
-                            />
-                        </label>
-                        <label className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400">Hora de inicio</span>
-                            <input
-                                name="startTime"
-                                type="time"
-                                defaultValue={startTimeValue}
-                                className="rounded bg-gray-700 px-3 py-2"
-                                required
-                            />
-                        </label>
-                        <label className="flex flex-col gap-1">
-                            <span className="text-xs text-gray-400">Hora de fin</span>
-                            <input
-                                name="endTime"
-                                type="time"
-                                defaultValue={endTimeValue}
-                                className="rounded bg-gray-700 px-3 py-2"
-                                required
-                            />
-                        </label>
-                        <label className="flex items-center gap-2 text-sm col-span-full">
-                            <input
-                                name="paid"
-                                type="checkbox"
-                                defaultChecked={reserva.paid}
-                                className="h-4 w-4 accent-blue-600"
-                            />
-                            <span>Marcar como pagado (cambiará el estado a confirmada)</span>
-                        </label>
-                    </div>
+                {/* Nombre (Recinto) */}
+                <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-400">Nombre</span>
+                    <span className="font-medium">{reserva.recintos?.name ?? 'Recinto sin nombre'}</span>
+                </div>
+
+                {/* Fecha */}
+                <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-400">Fecha</span>
+                    <span className="font-medium">{fechaFormateada}</span>
+                </div>
+
+                {/* Total */}
+                <div className="flex flex-col gap-1">
+                    <span className="text-xs text-gray-400">Total</span>
+                    <span className="font-medium">$ {reserva.price}</span>
+                </div>
+
+                {/* Form con dropdown de estado */}
+                <form action={updateReserva} className="space-y-4 pt-4 border-t border-gray-700">
+                    <label className="flex flex-col gap-1">
+                        <span className="text-xs text-gray-400">Nuevo estado</span>
+                        <select
+                            name="estado"
+                            defaultValue={estadoActual}
+                            className="rounded bg-gray-700 px-3 py-2"
+                            required
+                        >
+                            <option value="Confirmada">Confirmada</option>
+                            <option value="Pendiente">Pendiente</option>
+                        </select>
+                    </label>
 
                     <div className="flex gap-2">
-                        <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Guardar cambios</button>
-                        <Link href="/admin/reservas" className="px-4 py-2 rounded bg-gray-700">Cancelar</Link>
+                        <button type="submit" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
+                        <Link href="/admin/reservas" className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">Cancelar</Link>
                     </div>
                 </form>
             </div>
