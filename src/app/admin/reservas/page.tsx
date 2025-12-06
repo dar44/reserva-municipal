@@ -266,7 +266,7 @@ export default async function AdminReservasPage({
                         : item.estado.toLowerCase() === 'pendiente'
                           ? 'bg-yellow-900 text-yellow-300'
                           : item.estado.toLowerCase() === 'cancelada'
-                            ? 'bg-red-900 text-red-300'
+                            ? 'bg-gray-700 text-gray-300'
                             : 'bg-gray-700 text-gray-300'
                         }`}
                     >

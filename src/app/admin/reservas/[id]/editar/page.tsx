@@ -36,10 +36,17 @@ export default async function EditReservaPage({ params }: Props) {
         const nuevoEstado = String(formData.get('estado') || 'Pendiente')
         const paid = nuevoEstado === 'Confirmada'
 
+        let status = 'pendiente'
+        if (nuevoEstado === 'Confirmada') {
+            status = 'activa'
+        } else if (nuevoEstado === 'Cancelada') {
+            status = 'cancelada'
+        }
+
         await supabaseAdmin
             .from('reservas')
             .update({
-                status: paid ? 'activa' : 'pendiente',
+                status,
                 paid,
                 updated_at: new Date().toISOString()
             })
@@ -54,7 +61,11 @@ export default async function EditReservaPage({ params }: Props) {
     const endDate = new Date(reserva.end_at)
     const fechaFormateada = `${startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} ${startDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })} - ${endDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}`
 
-    const estadoActual = reserva.paid ? 'Confirmada' : 'Pendiente'
+    const estadoActual = (reserva.status?.toLowerCase() === 'cancelada')
+        ? 'Cancelada'
+        : reserva.paid
+            ? 'Confirmada'
+            : 'Pendiente'
 
     return (
         <div className="space-y-4">
@@ -98,6 +109,7 @@ export default async function EditReservaPage({ params }: Props) {
                         >
                             <option value="Confirmada">Confirmada</option>
                             <option value="Pendiente">Pendiente</option>
+                            <option value="Cancelada">Cancelada</option>
                         </select>
                     </label>
 

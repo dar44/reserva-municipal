@@ -44,10 +44,17 @@ export default async function EditInscripcionPage({ params }: Props) {
         const nuevoEstado = String(formData.get('estado') || 'Pendiente')
         const paid = nuevoEstado === 'Confirmada'
 
+        let status = 'pendiente'
+        if (nuevoEstado === 'Confirmada') {
+            status = 'activa'
+        } else if (nuevoEstado === 'Cancelada') {
+            status = 'cancelada'
+        }
+
         await supabaseAdmin
             .from('inscripciones')
             .update({
-                status: paid ? 'activa' : 'pendiente',
+                status,
                 paid,
                 updated_at: new Date().toISOString()
             })
@@ -64,7 +71,11 @@ export default async function EditInscripcionPage({ params }: Props) {
         ? `${beginDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })} - ${endDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })}`
         : '-'
 
-    const estadoActual = inscripcion.paid ? 'Confirmada' : 'Pendiente'
+    const estadoActual = (inscripcion.status?.toLowerCase() === 'cancelada')
+        ? 'Cancelada'
+        : inscripcion.paid
+            ? 'Confirmada'
+            : 'Pendiente'
 
     return (
         <div className="space-y-4">
@@ -108,6 +119,7 @@ export default async function EditInscripcionPage({ params }: Props) {
                         >
                             <option value="Confirmada">Confirmada</option>
                             <option value="Pendiente">Pendiente</option>
+                            <option value="Cancelada">Cancelada</option>
                         </select>
                     </label>
 
