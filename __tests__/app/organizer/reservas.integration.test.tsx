@@ -124,12 +124,9 @@ describe('OrganizerReservationsClient', () => {
         '/api/organizer/reservas',
         expect.any(Object)
       )
-      // Verifica que se llamó a toast con el mensaje correcto
-      expect(toast).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'success',
-          message: expect.stringMatching(/se generó 1 bloque/i)
-        })
+      // Verifica que se llamó a toast.success con el mensaje correcto
+      expect(toast.success).toHaveBeenCalledWith(
+        expect.stringMatching(/se generó 1 bloque/i)
       )
     })
 
