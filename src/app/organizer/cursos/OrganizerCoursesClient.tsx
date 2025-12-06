@@ -36,6 +36,7 @@ export default function OrganizerCoursesClient({ courses }: Props) {
   const [courseList, setCourseList] = useState(courses)
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
+  const [deletingCourseId, setDeletingCourseId] = useState<number | null>(null)
   const currency = getConfiguredCurrency()
 
   const formatDate = (value: string | null) => {
@@ -146,8 +147,6 @@ export default function OrganizerCoursesClient({ courses }: Props) {
   }
 
   const handleDeleteCourse = async (id: number) => {
-    if (!window.confirm('¿Seguro que deseas eliminar este curso?')) return
-
     try {
       const response = await fetch(`/api/organizer/cursos/${id}`, {
         method: 'DELETE',
@@ -163,6 +162,8 @@ export default function OrganizerCoursesClient({ courses }: Props) {
     } catch (error) {
       console.error('Error deleting course', error)
       toast.error('Error al eliminar el curso')
+    } finally {
+      setDeletingCourseId(null)
     }
   }
 
@@ -374,10 +375,10 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                         <p className="text-sm text-gray-400">{course.location ?? 'Ubicación no especificada'}</p>
                       </div>
                       <span className={`self-start rounded px-2 py-0.5 text-xs uppercase ${course.state === 'Disponible'
-                          ? 'bg-green-700 text-white'
-                          : course.state === 'No disponible'
-                            ? 'bg-yellow-700 text-white'
-                            : 'bg-red-700 text-white'
+                        ? 'bg-green-700 text-white'
+                        : course.state === 'No disponible'
+                          ? 'bg-yellow-700 text-white'
+                          : 'bg-red-700 text-white'
                         }`}>
                         {course.state}
                       </span>
@@ -411,7 +412,7 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                       </button>
                       <button
                         type="button"
-                        onClick={() => handleDeleteCourse(course.id)}
+                        onClick={() => setDeletingCourseId(course.id)}
                         className="rounded bg-red-600 px-3 py-1 text-sm"
                       >
                         Eliminar
@@ -424,6 +425,31 @@ export default function OrganizerCoursesClient({ courses }: Props) {
           </ul>
         )}
       </section>
+
+      {deletingCourseId !== null && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md">
+            <h3 className="text-lg font-bold mb-4">Confirmar eliminación</h3>
+            <p className="text-gray-300 mb-6">
+              ¿Estás seguro de que quieres eliminar este curso?
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setDeletingCourseId(null)}
+                className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={() => handleDeleteCourse(deletingCourseId)}
+                className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+              >
+                Eliminar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
