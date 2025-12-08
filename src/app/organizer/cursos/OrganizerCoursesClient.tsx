@@ -1,9 +1,13 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import { getConfiguredCurrency } from '@/lib/config'
 import { formatCurrency } from '@/lib/currency'
 import { toast } from 'react-toastify'
+import type { StorageObject } from '@/lib/storage'
+import { COURSE_IMAGE_BUCKET } from '@/lib/cursoImages'
+import OrganizerCourseImagePicker from '@/components/OrganizerCourseImagePicker'
 
 type OrganizerCourse = {
   id: number
@@ -12,14 +16,19 @@ type OrganizerCourse = {
   location: string | null
   begining_date: string | null
   end_date: string | null
+  start_time: string | null
+  end_time: string | null
+  days_of_week: number[] | null
   price: number | null
   capacity: number | null
   state: string
+  image: string | null
+  image_bucket: string | null
 }
 
 type Props = {
   courses: OrganizerCourse[]
-
+  defaultImages: StorageObject[]
 }
 
 type CoursePayload = {
@@ -28,16 +37,43 @@ type CoursePayload = {
   location: string | null
   begining_date: string | null
   end_date: string | null
+  start_time: string | null
+  end_time: string | null
+  days_of_week: number[] | null
   price: number | null
   capacity: number | null
+  image: string | null
+  image_bucket: string | null
 }
 
-export default function OrganizerCoursesClient({ courses }: Props) {
+export default function OrganizerCoursesClient({ courses, defaultImages }: Props) {
   const [courseList, setCourseList] = useState(courses)
   const [creatingCourse, setCreatingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState<number | null>(null)
   const [deletingCourseId, setDeletingCourseId] = useState<number | null>(null)
   const currency = getConfiguredCurrency()
+
+  // Estado para manejar imágenes en el formulario de creación
+  const [createImageData, setCreateImageData] = useState<{
+    image: string | null
+    bucket: string | null
+    file: File | null
+  }>({ image: null, bucket: null, file: null })
+
+  // Estado para manejar imágenes en el formulario de edición  
+  const [editImageData, setEditImageData] = useState<Record<number, {
+    image: string | null
+    bucket: string | null
+    file: File | null
+  }>>({})
+
+  const getImageUrl = (image: string | null, imageBucket: string | null): string | null => {
+    if (!image || !imageBucket) return null
+    // Construct Supabase public URL
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+    if (!supabaseUrl) return null
+    return `${supabaseUrl}/storage/v1/object/public/${imageBucket}/${image}`
+  }
 
   const formatDate = (value: string | null) => {
     if (!value) return '—'
@@ -53,23 +89,54 @@ export default function OrganizerCoursesClient({ courses }: Props) {
     const form = event.currentTarget
     const formData = new FormData(form)
 
-    const payload: CoursePayload = {
-      name: (formData.get('name') as string).trim(),
-      description: ((formData.get('description') as string) || '').trim() || null,
-      location: ((formData.get('location') as string) || '').trim() || null,
-      begining_date: (formData.get('begining_date') as string) || null,
-      end_date: (formData.get('end_date') as string) || null,
-      price: formData.get('price') ? Number(formData.get('price')) : null,
-      capacity: formData.get('capacity') ? Number(formData.get('capacity')) : null,
-    }
-
-    if (!payload.name) {
-      toast.error('El nombre del curso es obligatorio')
-      return
+    // Procesar days_of_week de los checkboxes
+    const days_of_week: number[] = []
+    for (let i = 1; i <= 7; i++) {
+      if (formData.get(`day_${i}`) === 'on') {
+        days_of_week.push(i)
+      }
     }
 
     setCreatingCourse(true)
     try {
+      // Manejar subida de imagen si hay un archivo
+      let imageData = { image: createImageData.image, bucket: createImageData.bucket }
+      if (createImageData.file) {
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', createImageData.file)
+        const uploadResponse = await fetch('/api/organizer/cursos/upload-image', {
+          method: 'POST',
+          body: uploadFormData,
+        })
+        if (!uploadResponse.ok) {
+          const uploadError = await uploadResponse.json().catch(() => ({}))
+          toast.error(uploadError?.error || 'Error al subir la imagen')
+          return
+        }
+        const uploadData = await uploadResponse.json()
+        imageData = { image: uploadData.image, bucket: uploadData.image_bucket }
+      }
+
+      const payload: CoursePayload = {
+        name: (formData.get('name') as string).trim(),
+        description: ((formData.get('description') as string) || '').trim() || null,
+        location: ((formData.get('location') as string) || '').trim() || null,
+        begining_date: (formData.get('begining_date') as string) || null,
+        end_date: (formData.get('end_date') as string) || null,
+        start_time: (formData.get('start_time') as string) || null,
+        end_time: (formData.get('end_time') as string) || null,
+        days_of_week: days_of_week.length > 0 ? days_of_week : null,
+        price: formData.get('price') ? Number(formData.get('price')) : null,
+        capacity: formData.get('capacity') ? Number(formData.get('capacity')) : null,
+        image: imageData.image,
+        image_bucket: imageData.bucket,
+      }
+
+      if (!payload.name) {
+        toast.error('El nombre del curso es obligatorio')
+        return
+      }
+
       const response = await fetch('/api/organizer/cursos', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -87,6 +154,7 @@ export default function OrganizerCoursesClient({ courses }: Props) {
         setCourseList(prev => [data.curso, ...prev])
         toast.success('Curso creado correctamente')
         form.reset()
+        setCreateImageData({ image: null, bucket: null, file: null })
       }
     } catch (error) {
       console.error('Error creating course', error)
@@ -104,23 +172,54 @@ export default function OrganizerCoursesClient({ courses }: Props) {
     const form = event.currentTarget
     const formData = new FormData(form)
 
-    const payload: CoursePayload & { state: string } = {
-      name: (formData.get('name') as string).trim(),
-      description: ((formData.get('description') as string) || '').trim() || null,
-      location: ((formData.get('location') as string) || '').trim() || null,
-      begining_date: (formData.get('begining_date') as string) || null,
-      end_date: (formData.get('end_date') as string) || null,
-      price: formData.get('price') ? Number(formData.get('price')) : null,
-      capacity: formData.get('capacity') ? Number(formData.get('capacity')) : null,
-      state: (formData.get('state') as string) || 'Disponible',
-    }
-
-    if (!payload.name) {
-      toast.error('El nombre del curso es obligatorio')
-      return
+    // Procesar days_of_week de los checkboxes
+    const days_of_week: number[] = []
+    for (let i = 1; i <= 7; i++) {
+      if (formData.get(`day_${i}`) === 'on') {
+        days_of_week.push(i)
+      }
     }
 
     try {
+      // Manejar subida de imagen si hay un archivo
+      let imageData = editImageData[id] || { image: null, bucket: null, file: null }
+      if (imageData.file) {
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', imageData.file)
+        const uploadResponse = await fetch('/api/organizer/cursos/upload-image', {
+          method: 'POST',
+          body: uploadFormData,
+        })
+        if (!uploadResponse.ok) {
+          const uploadError = await uploadResponse.json().catch(() => ({}))
+          toast.error(uploadError?.error || 'Error al subir la imagen')
+          return
+        }
+        const uploadData = await uploadResponse.json()
+        imageData = { image: uploadData.image, bucket: uploadData.image_bucket, file: null }
+      }
+
+      const payload: CoursePayload & { state: string } = {
+        name: (formData.get('name') as string).trim(),
+        description: ((formData.get('description') as string) || '').trim() || null,
+        location: ((formData.get('location') as string) || '').trim() || null,
+        begining_date: (formData.get('begining_date') as string) || null,
+        end_date: (formData.get('end_date') as string) || null,
+        start_time: (formData.get('start_time') as string) || null,
+        end_time: (formData.get('end_time') as string) || null,
+        days_of_week: days_of_week.length > 0 ? days_of_week : null,
+        price: formData.get('price') ? Number(formData.get('price')) : null,
+        capacity: formData.get('capacity') ? Number(formData.get('capacity')) : null,
+        state: (formData.get('state') as string) || 'Disponible',
+        image: imageData.image,
+        image_bucket: imageData.bucket,
+      }
+
+      if (!payload.name) {
+        toast.error('El nombre del curso es obligatorio')
+        return
+      }
+
       const response = await fetch(`/api/organizer/cursos/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -139,6 +238,12 @@ export default function OrganizerCoursesClient({ courses }: Props) {
         )))
         toast.success('Curso actualizado correctamente')
         setEditingCourseId(null)
+        // Limpiar imageData del curso editado
+        setEditImageData(prev => {
+          const newData = { ...prev }
+          delete newData[id]
+          return newData
+        })
       }
     } catch (error) {
       console.error('Error updating course', error)
@@ -234,6 +339,52 @@ export default function OrganizerCoursesClient({ courses }: Props) {
             />
           </label>
 
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium">Horario del curso</label>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+                <input
+                  type="time"
+                  name="start_time"
+                  className="w-full rounded border border-gray-700 bg-gray-900 p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+                <input
+                  type="time"
+                  name="end_time"
+                  className="w-full rounded border border-gray-700 bg-gray-900 p-2"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label className="block text-sm font-medium">Días de la semana</label>
+            <div className="grid grid-cols-4 gap-2">
+              {[
+                { value: 1, label: 'Lun' },
+                { value: 2, label: 'Mar' },
+                { value: 3, label: 'Mié' },
+                { value: 4, label: 'Jue' },
+                { value: 5, label: 'Vie' },
+                { value: 6, label: 'Sáb' },
+                { value: 7, label: 'Dom' },
+              ].map(day => (
+                <label key={day.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                  <input
+                    type="checkbox"
+                    name={`day_${day.value}`}
+                    className="h-4 w-4 accent-emerald-600"
+                  />
+                  {day.label}
+                </label>
+              ))}
+            </div>
+          </div>
+
           <label className="text-sm">
             Precio (CLP)
             <input
@@ -252,6 +403,13 @@ export default function OrganizerCoursesClient({ courses }: Props) {
               className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
             />
           </label>
+
+          <OrganizerCourseImagePicker
+            defaultImages={defaultImages}
+            onChange={(image, bucket, file) => {
+              setCreateImageData({ image, bucket, file })
+            }}
+          />
 
           <div className="md:col-span-2">
             <button
@@ -325,6 +483,56 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                         className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
                       />
                     </label>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="block text-sm font-medium">Horario del curso</label>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+                          <input
+                            type="time"
+                            name="start_time"
+                            defaultValue={course.start_time || ''}
+                            className="w-full rounded border border-gray-700 bg-gray-950 p-2"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+                          <input
+                            type="time"
+                            name="end_time"
+                            defaultValue={course.end_time || ''}
+                            className="w-full rounded border border-gray-700 bg-gray-950 p-2"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2 md:col-span-2">
+                      <label className="block text-sm font-medium">Días de la semana</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {[
+                          { value: 1, label: 'Lun' },
+                          { value: 2, label: 'Mar' },
+                          { value: 3, label: 'Mié' },
+                          { value: 4, label: 'Jue' },
+                          { value: 5, label: 'Vie' },
+                          { value: 6, label: 'Sáb' },
+                          { value: 7, label: 'Dom' },
+                        ].map(day => (
+                          <label key={day.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                            <input
+                              type="checkbox"
+                              name={`day_${day.value}`}
+                              defaultChecked={course.days_of_week?.includes(day.value)}
+                              className="h-4 w-4 accent-blue-600"
+                            />
+                            {day.label}
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+
                     <label className="text-sm">
                       Precio (CLP)
                       <input
@@ -344,6 +552,19 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                         className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
                       />
                     </label>
+
+                    <OrganizerCourseImagePicker
+                      defaultImages={defaultImages}
+                      currentImage={course.image}
+                      currentBucket={course.image_bucket}
+                      onChange={(image, bucket, file) => {
+                        setEditImageData(prev => ({
+                          ...prev,
+                          [course.id]: { image, bucket, file }
+                        }))
+                      }}
+                    />
+
                     <label className="text-sm">
                       Estado
                       <select
@@ -383,6 +604,19 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                         {course.state}
                       </span>
                     </div>
+
+                    {course.image && course.image_bucket && (
+                      <div className="relative h-48 w-full rounded overflow-hidden bg-gray-800">
+                        <Image
+                          src={getImageUrl(course.image, course.image_bucket) || ''}
+                          alt={course.name}
+                          fill
+                          className="object-cover"
+                          sizes="(min-width: 768px) 640px, 100vw"
+                        />
+                      </div>
+                    )}
+
                     <p className="text-sm text-gray-300">{course.description ?? 'Sin descripción'}</p>
                     <dl className="grid grid-cols-2 gap-2 text-xs text-gray-400 md:grid-cols-4">
                       <div>
@@ -392,6 +626,24 @@ export default function OrganizerCoursesClient({ courses }: Props) {
                       <div>
                         <dt className="uppercase tracking-wide">Fin</dt>
                         <dd>{formatDate(course.end_date)}</dd>
+                      </div>
+                      <div>
+                        <dt className="uppercase tracking-wide">Horario</dt>
+                        <dd>
+                          {course.start_time && course.end_time
+                            ? `${course.start_time.slice(0, 5)}-${course.end_time.slice(0, 5)}`
+                            : '—'}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt className="uppercase tracking-wide">Días</dt>
+                        <dd>
+                          {course.days_of_week && course.days_of_week.length > 0
+                            ? course.days_of_week
+                              .map(d => ['L', 'M', 'X', 'J', 'V', 'S', 'D'][d - 1])
+                              .join(', ')
+                            : '—'}
+                        </dd>
                       </div>
                       <div>
                         <dt className="uppercase tracking-wide">Precio</dt>

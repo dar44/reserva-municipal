@@ -5,7 +5,7 @@ import type { CourseInput, Curso } from '@/lib/models/cursos'
 
 export const dynamic = 'force-dynamic'
 
-function parseCourseId (params: { id: string }): number {
+function parseCourseId(params: { id: string }): number {
   const id = Number(params.id)
   if (Number.isNaN(id)) {
     throw new AuthorizationError('Identificador de curso inválido', 400)
@@ -13,7 +13,7 @@ function parseCourseId (params: { id: string }): number {
   return id
 }
 
-function sanitizeUpdatePayload (body: Partial<CourseInput>): Partial<CourseInput> {
+function sanitizeUpdatePayload(body: Partial<CourseInput>): Partial<CourseInput> {
   const payload: Partial<CourseInput> = {}
 
   if (typeof body.name === 'string') payload.name = body.name.trim()
@@ -21,6 +21,9 @@ function sanitizeUpdatePayload (body: Partial<CourseInput>): Partial<CourseInput
   if ('location' in body) payload.location = body.location ?? null
   if ('begining_date' in body) payload.begining_date = body.begining_date ?? null
   if ('end_date' in body) payload.end_date = body.end_date ?? null
+  if ('start_time' in body) payload.start_time = body.start_time ?? null
+  if ('end_time' in body) payload.end_time = body.end_time ?? null
+  if ('days_of_week' in body) payload.days_of_week = body.days_of_week ?? null
   if ('price' in body && body.price !== undefined) payload.price = Number(body.price)
   if ('capacity' in body && body.capacity !== undefined) payload.capacity = Number(body.capacity)
   if ('image' in body) payload.image = body.image ?? null
@@ -30,7 +33,7 @@ function sanitizeUpdatePayload (body: Partial<CourseInput>): Partial<CourseInput
   return payload
 }
 
-export async function GET (
+export async function GET(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -74,7 +77,7 @@ export async function GET (
   }
 }
 
-export async function PATCH (
+export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -118,7 +121,7 @@ export async function PATCH (
   }
 }
 
-export async function DELETE (
+export async function DELETE(
   _req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {

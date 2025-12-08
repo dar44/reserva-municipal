@@ -9,6 +9,9 @@ export interface Curso {
   location: string | null
   begining_date: string | null
   end_date: string | null
+  start_time: string | null
+  end_time: string | null
+  days_of_week: number[] | null
   price: number
   state: CursoState
   capacity: number
@@ -42,6 +45,9 @@ export interface CourseInput {
   location?: string | null
   begining_date?: string | null
   end_date?: string | null
+  start_time?: string | null
+  end_time?: string | null
+  days_of_week?: number[] | null
   price?: number
   capacity?: number
   image?: string | null

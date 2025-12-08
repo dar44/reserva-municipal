@@ -5,13 +5,16 @@ import type { CourseInput, Curso } from '@/lib/models/cursos'
 
 export const dynamic = 'force-dynamic'
 
-function sanitizeCoursePayload (body: Partial<CourseInput>): CourseInput {
+function sanitizeCoursePayload(body: Partial<CourseInput>): CourseInput {
   const base: CourseInput = {
     name: body.name?.trim() ?? '',
     description: body.description ?? null,
     location: body.location ?? null,
     begining_date: body.begining_date ?? null,
     end_date: body.end_date ?? null,
+    start_time: body.start_time ?? null,
+    end_time: body.end_time ?? null,
+    days_of_week: body.days_of_week ?? null,
     price: body.price ?? 0,
     capacity: body.capacity ?? 0,
     image: body.image ?? null,
@@ -26,7 +29,7 @@ function sanitizeCoursePayload (body: Partial<CourseInput>): CourseInput {
   return base
 }
 
-export async function GET (req: Request) {
+export async function GET(req: Request) {
   const auth = await requireAuthAPI(['admin', 'organizer', 'worker'])
   if ('error' in auth) {
     return auth.error
@@ -61,7 +64,7 @@ export async function GET (req: Request) {
   }
 }
 
-export async function POST (req: Request) {
+export async function POST(req: Request) {
   const auth = await requireAuthAPI(['organizer', 'admin'])
   if ('error' in auth) {
     return auth.error
@@ -86,6 +89,9 @@ export async function POST (req: Request) {
         location: sanitized.location,
         begining_date: sanitized.begining_date,
         end_date: sanitized.end_date,
+        start_time: sanitized.start_time,
+        end_time: sanitized.end_time,
+        days_of_week: sanitized.days_of_week,
         price: sanitized.price,
         capacity: sanitized.capacity,
         image: sanitized.image,
