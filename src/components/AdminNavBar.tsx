@@ -40,6 +40,7 @@ export default function AdminNavBar() {
           <div className="space-x-2">
             <Link href="/admin/panel" className={linkClass('/admin/panel')}>Panel</Link>
             <Link href="/admin/recintos" className={linkClass('/admin/recintos')}>Recintos</Link>
+            <Link href="/admin/cursos" className={linkClass('/admin/cursos')}>Cursos</Link>
             <Link href="/admin/usuarios" className={linkClass('/admin/usuarios')}>Usuarios</Link>
             <Link href="/admin/reservas" className={linkClass('/admin/reservas')}>Reservas</Link>
           </div>
