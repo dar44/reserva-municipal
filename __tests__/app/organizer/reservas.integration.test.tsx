@@ -6,10 +6,11 @@ import OrganizerReservationsClient from '@/app/organizer/reservas/OrganizerReser
 
 // Mock react-toastify
 jest.mock('react-toastify', () => {
-  const mockToast = jest.fn()
-  mockToast.success = jest.fn()
-  mockToast.error = jest.fn()
-  mockToast.info = jest.fn()
+  const mockToast = Object.assign(jest.fn(), {
+    success: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn()
+  })
   return { toast: mockToast }
 })
 
