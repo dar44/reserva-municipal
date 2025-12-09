@@ -325,6 +325,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
 
               <label className="text-sm">
                 <span className="font-medium text-gray-200">Recinto *</span>
+                <p className="text-xs text-gray-400 mb-1">Selecciona el espacio a reservar</p>
                 <select
                   name="recinto_id"
                   className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
@@ -522,12 +523,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                     <td className="px-4 py-3 text-gray-400 text-xs">{formatDateTime(reservation.end_at)}</td>
                     <td className="px-4 py-3">
                       <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${reservation.status === 'pendiente'
-                          ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                          : reservation.status === 'aprobada'
-                            ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                            : reservation.status === 'rechazada'
-                              ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                              : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
+                        ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                        : reservation.status === 'aprobada'
+                          ? 'bg-green-500/20 text-green-300 border border-green-500/30'
+                          : reservation.status === 'rechazada'
+                            ? 'bg-red-500/20 text-red-300 border border-red-500/30'
+                            : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                         }`}>
                         {reservation.status === 'pendiente' && '⏳'}
                         {reservation.status === 'aprobada' && '✓'}
