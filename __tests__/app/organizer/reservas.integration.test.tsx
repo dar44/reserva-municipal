@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { toast } from 'react-toastify'
 
-import OrganizerReservationsClient from '@/app/organizer/reservas/OrganizerReservationsClient'
+import OrganizerReservationsClient from '@/app/organizer/solicitudes/OrganizerReservationsClient'
 
 // Mock react-toastify
 jest.mock('react-toastify', () => {

@@ -7,7 +7,7 @@ import { supabase } from '@/lib/supabaseClient'
 import ProfileDropdown from './ProfileDropdown'
 import ProfileModal from './ProfileModal'
 
-export default function OrganizerNavBar () {
+export default function OrganizerNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) => `px-3 py-2 rounded-md text-sm font-medium ${pathname.startsWith(href) ? 'bg-blue-600 text-white' : 'text-gray-200 hover:bg-gray-700'}`
 
@@ -39,7 +39,7 @@ export default function OrganizerNavBar () {
         <div className="space-x-2">
           <Link href="/organizer/panel" className={linkClass('/organizer/panel')}>Panel</Link>
           <Link href="/organizer/cursos" className={linkClass('/organizer/cursos')}>Cursos</Link>
-          <Link href="/organizer/reservas" className={linkClass('/organizer/reservas')}>Reservas</Link>
+          <Link href="/organizer/solicitudes" className={linkClass('/organizer/solicitudes')}>Solicitudes</Link>
         </div>
         <div className="relative">
           <button onClick={() => setMenuOpen(!menuOpen)} className="text-sm">

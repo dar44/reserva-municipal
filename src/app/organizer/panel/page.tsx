@@ -214,7 +214,7 @@ export default async function OrganizerPanelPage() {
               return (
                 <li key={reservation.id}>
                   <Link
-                    href="/organizer/reservas"
+                    href="/organizer/solicitudes"
                     className="group relative block overflow-hidden rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-5 backdrop-blur-sm transition-all duration-300 hover:border-gray-600/50 hover:shadow-xl hover:shadow-gray-900/20 hover:scale-[1.01]"
                   >
                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
