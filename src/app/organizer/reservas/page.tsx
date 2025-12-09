@@ -4,14 +4,14 @@ import { getSessionProfile } from '@/lib/auth/roles'
 
 export const dynamic = 'force-dynamic'
 
-export default async function OrganizerReservationsPage () {
+export default async function OrganizerReservationsPage() {
   const supabase = await createSupabaseServer()
   const profile = await getSessionProfile(supabase)
 
   const [coursesResponse, recintosResponse, reservationsResponse] = await Promise.all([
     supabase
       .from('cursos')
-      .select('id,name')
+      .select('id,name,begining_date,end_date,start_time,end_time,days_of_week')
       .eq('organizer_uid', profile.uid)
       .order('name'),
     supabase

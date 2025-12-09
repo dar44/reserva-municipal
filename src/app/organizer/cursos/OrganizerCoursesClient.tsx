@@ -276,12 +276,19 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
     <div className="space-y-8">
       <section className="space-y-4">
         <header>
-          <h1 className="text-2xl font-semibold">Gestión de cursos</h1>
-          <p className="text-sm text-gray-400">Crea nuevos programas/cursos y administra los ya publicados.</p>
+          <h1 className="text-3xl font-bold">📚 Gestión de cursos</h1>
+          <p className="text-sm text-gray-400 mt-1">Crea nuevos programas/cursos y administra los ya publicados.</p>
         </header>
 
-        <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-          <p>Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
+        <article className="rounded-lg border border-emerald-500/50 bg-emerald-950/30 p-4 shadow-lg">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm text-emerald-200 font-medium">Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
+            </div>
+          </div>
         </article>
       </section>
 
@@ -589,24 +596,33 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     </div>
                   </form>
                 ) : (
-                  <div className="space-y-2">
-                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
-                      <div>
-                        <h3 className="text-lg font-semibold">{course.name}</h3>
-                        <p className="text-sm text-gray-400">{course.location ?? 'Ubicación no especificada'}</p>
+                  <div className="space-y-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
+                      <div className="flex-1">
+                        <h3 className="text-xl font-bold text-gray-100">{course.name}</h3>
+                        <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                          </svg>
+                          {course.location ?? 'Ubicación no especificada'}
+                        </p>
                       </div>
-                      <span className={`self-start rounded px-2 py-0.5 text-xs uppercase ${course.state === 'Disponible'
-                        ? 'bg-green-700 text-white'
+                      <span className={`inline-flex items-center gap-1 self-start rounded-full px-4 py-1.5 text-xs font-semibold ${course.state === 'Disponible'
+                        ? 'bg-green-500/20 text-green-300 border border-green-500/30'
                         : course.state === 'No disponible'
-                          ? 'bg-yellow-700 text-white'
-                          : 'bg-red-700 text-white'
+                          ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
+                          : 'bg-red-500/20 text-red-300 border border-red-500/30'
                         }`}>
+                        {course.state === 'Disponible' && '✓'}
+                        {course.state === 'No disponible' && '⏸'}
+                        {course.state === 'Cancelado' && '✗'}
                         {course.state}
                       </span>
                     </div>
 
                     {course.image && course.image_bucket && (
-                      <div className="relative h-48 w-full rounded overflow-hidden bg-gray-800">
+                      <div className="relative h-48 w-full rounded-lg overflow-hidden bg-gray-800 shadow-lg">
                         <Image
                           src={getImageUrl(course.image, course.image_bucket) || ''}
                           alt={course.name}
@@ -617,56 +633,72 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       </div>
                     )}
 
-                    <p className="text-sm text-gray-300">{course.description ?? 'Sin descripción'}</p>
-                    <dl className="grid grid-cols-2 gap-2 text-xs text-gray-400 md:grid-cols-4">
-                      <div>
-                        <dt className="uppercase tracking-wide">Inicio</dt>
-                        <dd>{formatDate(course.begining_date)}</dd>
+                    {course.description && (
+                      <p className="text-sm text-gray-300 leading-relaxed">{course.description}</p>
+                    )}
+
+                    <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">📅 Inicio</span>
+                          <span className="text-gray-300 font-semibold">{formatDate(course.begining_date)}</span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">📅 Fin</span>
+                          <span className="text-gray-300 font-semibold">{formatDate(course.end_date)}</span>
+                        </div>
                       </div>
-                      <div>
-                        <dt className="uppercase tracking-wide">Fin</dt>
-                        <dd>{formatDate(course.end_date)}</dd>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">⏰ Horario</span>
+                          <span className="text-gray-300 font-semibold">
+                            {course.start_time && course.end_time
+                              ? `${course.start_time.slice(0, 5)}-${course.end_time.slice(0, 5)}`
+                              : '—'}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-xs">
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">📆 Días</span>
+                          <span className="text-gray-300 font-semibold">
+                            {course.days_of_week && course.days_of_week.length > 0
+                              ? course.days_of_week
+                                .map(d => ['L', 'M', 'X', 'J', 'V', 'S', 'D'][d - 1])
+                                .join(', ')
+                              : '—'}
+                          </span>
+                        </div>
                       </div>
-                      <div>
-                        <dt className="uppercase tracking-wide">Horario</dt>
-                        <dd>
-                          {course.start_time && course.end_time
-                            ? `${course.start_time.slice(0, 5)}-${course.end_time.slice(0, 5)}`
-                            : '—'}
-                        </dd>
+
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="text-gray-500 font-medium uppercase tracking-wider">💰 Precio</span>
+                        <span className="text-emerald-400 font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
                       </div>
-                      <div>
-                        <dt className="uppercase tracking-wide">Días</dt>
-                        <dd>
-                          {course.days_of_week && course.days_of_week.length > 0
-                            ? course.days_of_week
-                              .map(d => ['L', 'M', 'X', 'J', 'V', 'S', 'D'][d - 1])
-                              .join(', ')
-                            : '—'}
-                        </dd>
+                      <div className="flex items-center gap-2 text-xs">
+                        <span className="text-gray-500 font-medium uppercase tracking-wider">👥 Capacidad</span>
+                        <span className="text-gray-300 font-semibold">{course.capacity ?? '—'}</span>
                       </div>
-                      <div>
-                        <dt className="uppercase tracking-wide">Precio</dt>
-                        <dd>{course.price != null ? formatCurrency(Number(course.price), currency) : '—'}</dd>
-                      </div>
-                      <div>
-                        <dt className="uppercase tracking-wide">Capacidad</dt>
-                        <dd>{course.capacity ?? '—'}</dd>
-                      </div>
-                    </dl>
-                    <div className="flex flex-wrap gap-2">
+                    </div>
+
+                    <div className="flex flex-wrap gap-3 pt-2">
                       <button
                         type="button"
                         onClick={() => setEditingCourseId(course.id)}
-                        className="rounded bg-blue-600 px-3 py-1 text-sm"
+                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
                       >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                        </svg>
                         Editar
                       </button>
                       <button
                         type="button"
                         onClick={() => setDeletingCourseId(course.id)}
-                        className="rounded bg-red-600 px-3 py-1 text-sm"
+                        className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition-colors"
                       >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
                         Eliminar
                       </button>
                     </div>

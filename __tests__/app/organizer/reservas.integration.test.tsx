@@ -17,7 +17,7 @@ jest.mock('react-toastify', () => {
 describe('OrganizerReservationsClient', () => {
   const baseProps = {
     courses: [
-      { id: 10, name: 'Curso de verano' }
+      { id: 10, name: 'Curso de verano', begining_date: null, end_date: null, start_time: null, end_time: null, days_of_week: null }
     ],
     recintos: [
       { id: 5, name: 'Sala multiuso', state: 'Disponible' },
@@ -110,12 +110,12 @@ describe('OrganizerReservationsClient', () => {
 
     render(<OrganizerReservationsClient {...baseProps} />)
 
-    await user.selectOptions(screen.getByLabelText('Curso'), '10')
-    await user.selectOptions(screen.getByLabelText('Recinto'), '5')
-    await user.type(screen.getByLabelText('Fecha de inicio'), '2026-03-01')
-    await user.type(screen.getByLabelText('Fecha de término'), '2026-03-02')
-    await user.type(screen.getByLabelText('Hora de inicio'), '08:00')
-    await user.type(screen.getByLabelText('Hora de término'), '09:00')
+    await user.selectOptions(screen.getByLabelText(/Curso/i), '10')
+    await user.selectOptions(screen.getByLabelText(/Recinto/i), '5')
+    await user.type(screen.getByLabelText(/Fecha de inicio/i), '2026-03-01')
+    await user.type(screen.getByLabelText(/Fecha de término/i), '2026-03-02')
+    await user.type(screen.getByLabelText(/Hora de inicio/i), '08:00')
+    await user.type(screen.getByLabelText(/Hora de término/i), '09:00')
     await user.click(screen.getByLabelText('Lunes'))
 
     await user.click(screen.getByRole('button', { name: /enviar solicitud/i }))
