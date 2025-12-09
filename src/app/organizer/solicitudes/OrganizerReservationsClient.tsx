@@ -1,6 +1,7 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 
 type OrganizerCourse = {
@@ -49,6 +50,9 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
   const [reservationList, setReservationList] = useState(reservations)
   const [submittingReservation, setSubmittingReservation] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState<OrganizerCourse | null>(null)
+  const searchParams = useSearchParams()
+  const formRef = useRef<HTMLFormElement>(null)
+
   const availableRecintos = useMemo(
     () => recintos.filter(r => r.state === 'Disponible'),
     [recintos],
@@ -84,6 +88,20 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
     if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) return null
     return { hours, minutes }
   }
+
+  // Pre-select recinto from URL query param
+  useEffect(() => {
+    const recintoParam = searchParams?.get('recinto')
+    if (recintoParam && formRef.current) {
+      const recintoId = Number(recintoParam)
+      const recintoSelect = formRef.current.elements.namedItem('recinto_id') as HTMLSelectElement
+      if (recintoSelect && availableRecintos.some(r => r.id === recintoId)) {
+        recintoSelect.value = recintoParam
+        // Scroll to form
+        formRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }, [searchParams, availableRecintos])
 
   const handleCourseChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const cursoId = Number(event.target.value)
@@ -305,7 +323,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
         ) : availableRecintos.length === 0 ? (
           <p className="text-sm text-gray-400">No hay recintos disponibles en este momento. Inténtalo más tarde.</p>
         ) : (
-          <form onSubmit={handleReservationSubmit} className="space-y-6">
+          <form ref={formRef} onSubmit={handleReservationSubmit} className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
               <label className="text-sm">
                 <span className="font-medium text-gray-200">Curso *</span>

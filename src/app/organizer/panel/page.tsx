@@ -101,7 +101,10 @@ export default async function OrganizerPanelPage() {
       {/* Tarjetas de estadísticas - Diseño premium con gradientes */}
       <section className="grid gap-6 md:grid-cols-3">
         {/* Tarjeta de Cursos */}
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/20 via-violet-700/10 to-transparent border border-violet-500/20 p-6 shadow-xl shadow-violet-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:scale-[1.02] hover:border-violet-400/30">
+        <Link
+          href="/organizer/cursos"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/20 via-violet-700/10 to-transparent border border-violet-500/20 p-6 shadow-xl shadow-violet-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:scale-[1.02] hover:border-violet-400/30 cursor-pointer block"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
@@ -117,10 +120,13 @@ export default async function OrganizerPanelPage() {
               Gestiona tus programas desde la sección de cursos.
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Tarjeta de Solicitudes */}
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600/20 via-blue-700/10 to-transparent border border-blue-500/20 p-6 shadow-xl shadow-blue-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:border-blue-400/30">
+        <Link
+          href="/organizer/solicitudes"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600/20 via-blue-700/10 to-transparent border border-blue-500/20 p-6 shadow-xl shadow-blue-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:border-blue-400/30 cursor-pointer block"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
@@ -136,10 +142,13 @@ export default async function OrganizerPanelPage() {
               Consulta el estado de cada solicitud en la vista de reservas.
             </p>
           </div>
-        </div>
+        </Link>
 
         {/* Tarjeta de Recintos */}
-        <div className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600/20 via-emerald-700/10 to-transparent border border-emerald-500/20 p-6 shadow-xl shadow-emerald-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-[1.02] hover:border-emerald-400/30">
+        <Link
+          href="/organizer/recintos"
+          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600/20 via-emerald-700/10 to-transparent border border-emerald-500/20 p-6 shadow-xl shadow-emerald-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-[1.02] hover:border-emerald-400/30 cursor-pointer block"
+        >
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
@@ -152,10 +161,10 @@ export default async function OrganizerPanelPage() {
               {availableRecintos}
             </p>
             <p className="text-xs text-gray-400 leading-relaxed">
-              Consulta la lista actualizada en la sección de reservas.
+              Consulta la lista actualizada en la sección de recintos.
             </p>
           </div>
-        </div>
+        </Link>
       </section>
 
       {/* Últimas solicitudes - Diseño de lista mejorado con más contexto */}
