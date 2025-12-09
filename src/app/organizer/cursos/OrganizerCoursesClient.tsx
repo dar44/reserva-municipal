@@ -8,6 +8,7 @@ import { toast } from 'react-toastify'
 import type { StorageObject } from '@/lib/storage'
 import { COURSE_IMAGE_BUCKET } from '@/lib/cursoImages'
 import OrganizerCourseImagePicker from '@/components/OrganizerCourseImagePicker'
+import LocationPicker from '@/components/LocationPicker'
 
 type OrganizerCourse = {
   id: number
@@ -318,15 +319,14 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
             />
           </label>
 
-          <label className="text-sm md:col-span-2">
-            Ubicación
-            <input
-              type="text"
-              name="location"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
-              placeholder="Dirección o ciudad"
+          <div className="md:col-span-2">
+            <LocationPicker
+              valueNames={{
+                address: 'location',
+              }}
+              className="mb-0"
             />
-          </label>
+          </div>
 
           <label className="text-sm">
             Fecha de inicio
@@ -463,15 +463,17 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         rows={3}
                       />
                     </label>
-                    <label className="text-sm md:col-span-2">
-                      Ubicación
-                      <input
-                        type="text"
-                        name="location"
-                        defaultValue={course.location ?? ''}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                    <div className="md:col-span-2">
+                      <LocationPicker
+                        valueNames={{
+                          address: 'location',
+                        }}
+                        defaultValues={{
+                          address: course.location ?? undefined,
+                        }}
+                        className="mb-0"
                       />
-                    </label>
+                    </div>
                     <label className="text-sm">
                       Fecha de inicio
                       <input
