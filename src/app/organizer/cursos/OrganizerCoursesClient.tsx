@@ -323,6 +323,17 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
             <LocationPicker
               valueNames={{
                 address: 'location',
+                postalCode: 'postal_code_display',
+                city: 'city_display',
+                province: 'province_display',
+                region: 'region_display',
+              }}
+              labels={{
+                address: 'Dirección',
+                postalCode: 'Código Postal',
+                city: 'Ciudad',
+                province: 'Provincia',
+                region: 'Comunidad',
               }}
               className="mb-0"
             />
@@ -370,21 +381,25 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
           <div className="space-y-2 md:col-span-2">
             <label className="block text-sm font-medium">Días de la semana</label>
-            <div className="grid grid-cols-4 gap-2">
+            <p className="text-xs text-gray-400">Selecciona los días en los que se imparte el curso.</p>
+            <div className="mt-2 flex flex-wrap gap-2">
               {[
-                { value: 1, label: 'Lun' },
-                { value: 2, label: 'Mar' },
-                { value: 3, label: 'Mié' },
-                { value: 4, label: 'Jue' },
-                { value: 5, label: 'Vie' },
-                { value: 6, label: 'Sáb' },
-                { value: 7, label: 'Dom' },
+                { value: 1, label: 'Lunes' },
+                { value: 2, label: 'Martes' },
+                { value: 3, label: 'Miércoles' },
+                { value: 4, label: 'Jueves' },
+                { value: 5, label: 'Viernes' },
+                { value: 6, label: 'Sábado' },
+                { value: 7, label: 'Domingo' },
               ].map(day => (
-                <label key={day.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                <label
+                  key={day.value}
+                  className="flex items-center gap-2 rounded border border-gray-700 bg-gray-900 px-3 py-2 text-xs uppercase tracking-wide hover:border-emerald-500 cursor-pointer transition-colors"
+                >
                   <input
                     type="checkbox"
                     name={`day_${day.value}`}
-                    className="h-4 w-4 accent-emerald-600"
+                    className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
                   />
                   {day.label}
                 </label>
@@ -467,9 +482,20 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <LocationPicker
                         valueNames={{
                           address: 'location',
+                          postalCode: 'postal_code_display',
+                          city: 'city_display',
+                          province: 'province_display',
+                          region: 'region_display',
                         }}
                         defaultValues={{
                           address: course.location ?? undefined,
+                        }}
+                        labels={{
+                          address: 'Dirección',
+                          postalCode: 'Código Postal',
+                          city: 'Ciudad',
+                          province: 'Provincia',
+                          region: 'Comunidad',
                         }}
                         className="mb-0"
                       />
@@ -519,22 +545,26 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
                     <div className="space-y-2 md:col-span-2">
                       <label className="block text-sm font-medium">Días de la semana</label>
-                      <div className="grid grid-cols-4 gap-2">
+                      <p className="text-xs text-gray-400">Selecciona los días en los que se imparte el curso.</p>
+                      <div className="mt-2 flex flex-wrap gap-2">
                         {[
-                          { value: 1, label: 'Lun' },
-                          { value: 2, label: 'Mar' },
-                          { value: 3, label: 'Mié' },
-                          { value: 4, label: 'Jue' },
-                          { value: 5, label: 'Vie' },
-                          { value: 6, label: 'Sáb' },
-                          { value: 7, label: 'Dom' },
+                          { value: 1, label: 'Lunes' },
+                          { value: 2, label: 'Martes' },
+                          { value: 3, label: 'Miércoles' },
+                          { value: 4, label: 'Jueves' },
+                          { value: 5, label: 'Viernes' },
+                          { value: 6, label: 'Sábado' },
+                          { value: 7, label: 'Domingo' },
                         ].map(day => (
-                          <label key={day.value} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <label
+                            key={day.value}
+                            className="flex items-center gap-2 rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs uppercase tracking-wide hover:border-blue-500 cursor-pointer transition-colors"
+                          >
                             <input
                               type="checkbox"
                               name={`day_${day.value}`}
                               defaultChecked={course.days_of_week?.includes(day.value)}
-                              className="h-4 w-4 accent-blue-600"
+                              className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
                             />
                             {day.label}
                           </label>

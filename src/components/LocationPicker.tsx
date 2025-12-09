@@ -75,8 +75,10 @@ const reverseGeocode = async (lat: number, lng: number) => {
           'Accept-Language': 'es',
         },
       }
-    )
-    if (!response.ok) throw new Error('Respuesta inválida')
+    ).catch(() => null) // Catch network errors silently
+
+    if (!response || !response.ok) return null
+
     const data = await response.json()
     return {
       display_name: data.display_name as string,
@@ -86,28 +88,34 @@ const reverseGeocode = async (lat: number, lng: number) => {
       place_id: data.place_id as number,
     } satisfies Suggestion
   } catch (error) {
-    console.error('Error al obtener datos de la ubicación seleccionada', error)
+    // Silent - don't log to console
     return null
   }
 }
 
 const searchAddress = async (query: string, signal: AbortSignal) => {
-  const url = new URL('https://nominatim.openstreetmap.org/search')
-  url.searchParams.set('format', 'jsonv2')
-  url.searchParams.set('addressdetails', '1')
-  url.searchParams.set('limit', '6')
-  url.searchParams.set('q', query)
+  try {
+    const url = new URL('https://nominatim.openstreetmap.org/search')
+    url.searchParams.set('format', 'jsonv2')
+    url.searchParams.set('addressdetails', '1')
+    url.searchParams.set('limit', '6')
+    url.searchParams.set('q', query)
 
-  const response = await fetch(url, {
-    signal,
-    headers: {
-      'Accept-Language': 'es',
-    },
-  })
+    const response = await fetch(url, {
+      signal,
+      headers: {
+        'Accept-Language': 'es',
+      },
+    }).catch(() => null) // Catch network errors silently
 
-  if (!response.ok) throw new Error('No se pudieron obtener resultados')
-  const data: Suggestion[] = await response.json()
-  return data
+    if (!response || !response.ok) return []
+
+    const data: Suggestion[] = await response.json()
+    return data
+  } catch (error) {
+    // Silent - don't log to console
+    return []
+  }
 }
 
 const LocationPicker = ({
@@ -236,6 +244,10 @@ const LocationPicker = ({
     }
   }, [leafletReady, selectedPosition])
 
+  // Disabled automatic geocoding to prevent incorrect matches
+  // When editing, the address is shown but not auto-searched
+  // User can manually search or click on map to set location
+  /*
   useEffect(() => {
     if (!defaultValues?.address || geocodeAttempted || selectedPosition) return
     let cancelled = false
@@ -262,6 +274,7 @@ const LocationPicker = ({
       controller.abort()
     }
   }, [defaultValues?.address, geocodeAttempted, selectedPosition, updateValuesFromSuggestion])
+  */
 
   useEffect(() => {
     if (searchTerm.trim().length < 3) {
