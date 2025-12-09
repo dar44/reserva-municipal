@@ -33,7 +33,7 @@ const jsonSpy = NextResponse.json as jest.Mock
 
 import { POST } from '@/app/api/organizer/reservas/route'
 
-function createSupabaseStub (options: {
+function createSupabaseStub(options: {
   curso?: { id: number; organizer_uid: string } | null
   cursoError?: { message: string } | null
   insertData?: Array<Record<string, any>> | null
@@ -100,7 +100,7 @@ describe('POST /api/organizer/reservas', () => {
     const supabaseStub = createSupabaseStub({
       insertData: blocksFromDb,
       curso: { id: 33, organizer_uid: 'org-123' },
- })
+    })
 
     requireAuthAPIMock.mockResolvedValue({
       supabase: supabaseStub.supabase,
@@ -127,23 +127,23 @@ describe('POST /api/organizer/reservas', () => {
     const response = await POST(request)
 
     expect(supabaseStub.insertMock).toHaveBeenCalledWith([
-   {
-     curso_id: 33,
-     organizer_uid: 'org-123',
-     recinto_id: 44,
-     start_at: '2025-01-06T09:15:00.000Z',
-     end_at:   '2025-01-06T13:45:00.000Z',
-     observations: 'Necesitamos proyector',
-   },
-   {
-     curso_id: 33,
-     organizer_uid: 'org-123',
-     recinto_id: 44,
-     start_at: '2025-01-08T09:15:00.000Z',
-     end_at:   '2025-01-08T13:45:00.000Z',
-     observations: 'Necesitamos proyector',
-   },
- ])
+      {
+        curso_id: 33,
+        organizer_uid: 'org-123',
+        recinto_id: 44,
+        start_at: '2025-01-06T09:15:00.000Z',
+        end_at: '2025-01-06T13:45:00.000Z',
+        request_reason: 'Necesitamos proyector',
+      },
+      {
+        curso_id: 33,
+        organizer_uid: 'org-123',
+        recinto_id: 44,
+        start_at: '2025-01-08T09:15:00.000Z',
+        end_at: '2025-01-08T13:45:00.000Z',
+        request_reason: 'Necesitamos proyector',
+      },
+    ])
 
     expect(jsonSpy).toHaveBeenCalledWith({
       reservas: [
