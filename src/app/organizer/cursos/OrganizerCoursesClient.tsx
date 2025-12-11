@@ -277,7 +277,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
     <div className="space-y-8">
       <section className="space-y-4">
         <header>
-          <h1 className="text-3xl font-bold">📚 Gestión de cursos</h1>
+          <h1 className="text-3xl font-bold">Gestión de cursos</h1>
           <p className="text-sm text-gray-400 mt-1">Crea nuevos programas/cursos y administra los ya publicados.</p>
         </header>
 
@@ -646,9 +646,6 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                           ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
                           : 'bg-red-500/20 text-red-300 border border-red-500/30'
                         }`}>
-                        {course.state === 'Disponible' && '✓'}
-                        {course.state === 'No disponible' && '⏸'}
-                        {course.state === 'Cancelado' && '✗'}
                         {course.state}
                       </span>
                     </div>
@@ -672,18 +669,18 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">📅 Inicio</span>
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">Inicio</span>
                           <span className="text-gray-300 font-semibold">{formatDate(course.begining_date)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">📅 Fin</span>
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">Fin</span>
                           <span className="text-gray-300 font-semibold">{formatDate(course.end_date)}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">⏰ Horario</span>
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">Horario</span>
                           <span className="text-gray-300 font-semibold">
                             {course.start_time && course.end_time
                               ? `${course.start_time.slice(0, 5)}-${course.end_time.slice(0, 5)}`
@@ -691,7 +688,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">📆 Días</span>
+                          <span className="text-gray-500 font-medium uppercase tracking-wider">Días</span>
                           <span className="text-gray-300 font-semibold">
                             {course.days_of_week && course.days_of_week.length > 0
                               ? course.days_of_week
@@ -703,11 +700,11 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       </div>
 
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-gray-500 font-medium uppercase tracking-wider">💰 Precio</span>
+                        <span className="text-gray-500 font-medium uppercase tracking-wider">Precio</span>
                         <span className="text-emerald-400 font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-gray-500 font-medium uppercase tracking-wider">👥 Capacidad</span>
+                        <span className="text-gray-500 font-medium uppercase tracking-wider">Capacidad</span>
                         <span className="text-gray-300 font-semibold">{course.capacity ?? '—'}</span>
                       </div>
                     </div>

@@ -393,14 +393,14 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-emerald-400 mt-2">✓ Los campos del formulario se han completado automáticamente</p>
+                    <p className="text-xs text-emerald-400 mt-2">Los campos del formulario se han completado automáticamente</p>
                   </div>
                 </div>
               </div>
             )}
 
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">📅 Rango de fechas</h3>
+              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Rango de fechas</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="text-sm">
                   <span className="font-medium text-gray-200">Fecha de inicio *</span>
@@ -423,7 +423,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </label>
               </div>
 
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">⏰ Horario</h3>
+              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Horario</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="text-sm">
                   <span className="font-medium text-gray-200">Hora de inicio *</span>
@@ -446,7 +446,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </label>
               </div>
 
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">📆 Días de la semana</h3>
+              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Días de la semana</h3>
               <fieldset className="text-sm">
                 <p className="text-xs text-gray-400 mb-2">Selecciona los días en los que se debe reservar el recinto.</p>
                 <div className="mt-2 flex flex-wrap gap-2">
@@ -494,7 +494,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                     Enviando…
                   </span>
                 ) : (
-                  '📤 Enviar solicitud'
+                  'Enviar solicitud'
                 )}
               </button>
             </div>
@@ -504,7 +504,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
 
       <section className="space-y-4">
         <div>
-          <h2 className="text-xl font-semibold">📋 Historial de solicitudes</h2>
+          <h2 className="text-xl font-semibold">Historial de solicitudes</h2>
           <p className="text-sm text-gray-400">Consulta el estado de tus peticiones de reserva.</p>
         </div>
 
@@ -548,10 +548,6 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                             ? 'bg-red-500/20 text-red-300 border border-red-500/30'
                             : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
                         }`}>
-                        {reservation.status === 'pendiente' && '⏳'}
-                        {reservation.status === 'aprobada' && '✓'}
-                        {reservation.status === 'rechazada' && '✗'}
-                        {reservation.status === 'cancelada' && '⊘'}
                         {reservation.status}
                       </span>
                     </td>

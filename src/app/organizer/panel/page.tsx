@@ -89,7 +89,6 @@ export default async function OrganizerPanelPage() {
         <article className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-emerald-600/5 to-transparent backdrop-blur-sm p-6 shadow-lg shadow-emerald-500/5">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-transparent pointer-events-none" />
           <div className="relative flex items-start gap-4">
-            <div className="text-2xl">💡</div>
             <p className="text-sm text-emerald-100/90 leading-relaxed">
               Usa la barra superior para crear cursos y gestionar tus solicitudes. Desde la sección de reservas podrás
               consultar los recintos disponibles y enviar nuevos bloques de horarios en un solo paso.
@@ -111,7 +110,6 @@ export default async function OrganizerPanelPage() {
               <h2 className="text-xs font-semibold uppercase tracking-wider text-violet-300/80">
                 Cursos publicados
               </h2>
-              <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-300">📚</div>
             </div>
             <p className="text-5xl font-bold bg-gradient-to-br from-violet-200 to-violet-400 bg-clip-text text-transparent">
               {coursesCount}
@@ -133,7 +131,6 @@ export default async function OrganizerPanelPage() {
               <h2 className="text-xs font-semibold uppercase tracking-wider text-blue-300/80">
                 Solicitudes enviadas
               </h2>
-              <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-300">📋</div>
             </div>
             <p className="text-5xl font-bold bg-gradient-to-br from-blue-200 to-blue-400 bg-clip-text text-transparent">
               {reservationsCount}
@@ -155,7 +152,6 @@ export default async function OrganizerPanelPage() {
               <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-300/80">
                 Recintos disponibles
               </h2>
-              <div className="text-2xl opacity-60 group-hover:opacity-100 transition-opacity duration-300">🏢</div>
             </div>
             <p className="text-5xl font-bold bg-gradient-to-br from-emerald-200 to-emerald-400 bg-clip-text text-transparent">
               {availableRecintos}
@@ -178,7 +174,6 @@ export default async function OrganizerPanelPage() {
 
         {latestReservations.length === 0 ? (
           <div className="rounded-2xl border border-dashed border-gray-700/50 bg-gray-900/30 p-12 text-center">
-            <div className="text-5xl mb-4 opacity-30">📭</div>
             <p className="text-sm text-gray-500">Todavía no has enviado solicitudes de reserva.</p>
           </div>
         ) : (
@@ -195,26 +190,22 @@ export default async function OrganizerPanelPage() {
                 aprobada: {
                   bg: 'bg-gradient-to-r from-emerald-500 to-emerald-600',
                   text: 'text-white',
-                  shadow: 'shadow-lg shadow-emerald-500/20',
-                  icon: '✓'
+                  shadow: 'shadow-lg shadow-emerald-500/20'
                 },
                 rechazada: {
                   bg: 'bg-gradient-to-r from-red-500 to-red-600',
                   text: 'text-white',
-                  shadow: 'shadow-lg shadow-red-500/20',
-                  icon: '✕'
+                  shadow: 'shadow-lg shadow-red-500/20'
                 },
                 cancelada: {
                   bg: 'bg-gradient-to-r from-gray-600 to-gray-700',
                   text: 'text-white',
-                  shadow: 'shadow-lg shadow-gray-500/20',
-                  icon: '○'
+                  shadow: 'shadow-lg shadow-gray-500/20'
                 },
                 pendiente: {
                   bg: 'bg-gradient-to-r from-amber-400 to-amber-500',
                   text: 'text-gray-900',
-                  shadow: 'shadow-lg shadow-amber-500/20',
-                  icon: '⏱'
+                  shadow: 'shadow-lg shadow-amber-500/20'
                 }
               }
 
@@ -233,7 +224,6 @@ export default async function OrganizerPanelPage() {
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xl">📚</span>
                             <h3 className="text-base font-bold text-gray-100">
                               {cursoName}
                             </h3>
@@ -252,7 +242,6 @@ export default async function OrganizerPanelPage() {
                           transition-all duration-300
                           group-hover:scale-105
                         `}>
-                          <span>{config.icon}</span>
                           <span>{reservation.status}</span>
                         </span>
                       </div>
@@ -261,7 +250,6 @@ export default async function OrganizerPanelPage() {
                       <div className="grid gap-2 text-xs md:grid-cols-3">
                         {/* Recinto */}
                         <div className="flex items-start gap-2">
-                          <span className="text-base opacity-60">🏢</span>
                           <div className="flex flex-col">
                             <span className="text-gray-500">Recinto</span>
                             <span className="font-medium text-gray-300">{recintoName}</span>
@@ -270,7 +258,6 @@ export default async function OrganizerPanelPage() {
 
                         {/* Fecha y hora */}
                         <div className="flex items-start gap-2">
-                          <span className="text-base opacity-60">📅</span>
                           <div className="flex flex-col">
                             <span className="text-gray-500">Fecha y hora</span>
                             <span className="font-medium text-gray-300">
@@ -288,7 +275,6 @@ export default async function OrganizerPanelPage() {
 
                         {/* Duración */}
                         <div className="flex items-start gap-2">
-                          <span className="text-base opacity-60">⏱</span>
                           <div className="flex flex-col">
                             <span className="text-gray-500">Duración</span>
                             <span className="font-medium text-gray-300">
