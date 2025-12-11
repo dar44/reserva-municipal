@@ -1,0 +1,400 @@
+/* ============================================
+   TOKENS DE DISEÑO - SERVIMUNICIPAL
+   ============================================ */
+
+:root {
+    /* Escala de Neutrales - 10 tonos para jerarquía */
+    --neutral-50: 250 250 250;
+    --neutral-100: 244 244 245;
+    --neutral-200: 228 228 231;
+    --neutral-300: 212 212 216;
+    --neutral-400: 161 161 170;
+    --neutral-500: 113 113 122;
+    --neutral-600: 82 82 91;
+    --neutral-700: 63 63 70;
+    --neutral-800: 39 39 42;
+    --neutral-900: 24 24 27;
+    --neutral-950: 9 9 11;
+
+    /* Primario - Azul Institucional */
+    --primary-50: 239 246 255;
+    --primary-100: 219 234 254;
+    --primary-200: 191 219 254;
+    --primary-300: 147 197 253;
+    --primary-400: 96 165 250;
+    --primary-500: 59 130 246;
+    --primary-600: 37 99 235;
+    --primary-700: 29 78 216;
+    --primary-800: 30 64 175;
+    --primary-900: 30 58 138;
+    --primary-950: 23 37 84;
+
+    /* Éxito - Verde Institucional */
+    --success-50: 240 253 244;
+    --success-100: 220 252 231;
+    --success-200: 187 247 208;
+    --success-300: 134 239 172;
+    --success-400: 74 222 128;
+    --success-500: 34 197 94;
+    --success-600: 22 163 74;
+    --success-700: 21 128 61;
+    --success-800: 22 101 52;
+    --success-900: 20 83 45;
+    --success-950: 5 46 22;
+
+    /* Advertencia - Ámbar */
+    --warning-50: 255 251 235;
+    --warning-100: 254 243 199;
+    --warning-200: 253 230 138;
+    --warning-300: 252 211 77;
+    --warning-400: 251 191 36;
+    --warning-500: 245 158 11;
+    --warning-600: 217 119 6;
+    --warning-700: 180 83 9;
+    --warning-800: 146 64 14;
+    --warning-900: 120 53 15;
+    --warning-950: 69 26 3;
+
+    /* Error - Rojo */
+    --error-50: 254 242 242;
+    --error-100: 254 226 226;
+    --error-200: 254 202 202;
+    --error-300: 252 165 165;
+    --error-400: 248 113 113;
+    --error-500: 239 68 68;
+    --error-600: 220 38 38;
+    --error-700: 185 28 28;
+    --error-800: 153 27 27;
+    --error-900: 127 29 29;
+    --error-950: 69 10 10;
+
+    /* Información - Azul Claro */
+    --info-50: 240 249 255;
+    --info-100: 224 242 254;
+    --info-200: 186 230 253;
+    --info-300: 125 211 252;
+    --info-400: 56 189 248;
+    --info-500: 14 165 233;
+    --info-600: 2 132 199;
+    --info-700: 3 105 161;
+    --info-800: 7 89 133;
+    --info-900: 12 74 110;
+    --info-950: 8 47 73;
+}
+
+/* ============================================
+   MAPEO DE COLORES SEMÁNTICOS - Modo Claro
+   ============================================ */
+
+:root {
+    /* Fondos */
+    --background: rgb(var(--neutral-50));
+    --surface: rgb(255 255 255);
+    --surface-secondary: rgb(var(--neutral-100));
+
+    /* Textos */
+    --foreground: rgb(var(--neutral-950));
+    --foreground-secondary: rgb(var(--neutral-600));
+    --foreground-tertiary: rgb(var(--neutral-500));
+
+    /* Bordes */
+    --border: rgb(var(--neutral-200));
+    --border-strong: rgb(var(--neutral-300));
+
+    /* Acciones Primarias */
+    --primary: rgb(var(--primary-600));
+    --primary-hover: rgb(var(--primary-700));
+    --primary-active: rgb(var(--primary-800));
+    --primary-foreground: rgb(255 255 255);
+
+    /* Acciones Secundarias */
+    --secondary: rgb(var(--neutral-200));
+    --secondary-hover: rgb(var(--neutral-300));
+    --secondary-active: rgb(var(--neutral-400));
+    --secondary-foreground: rgb(var(--neutral-900));
+
+    /* Tarjetas */
+    --card: rgb(255 255 255);
+    --card-foreground: rgb(var(--neutral-950));
+    --card-border: rgb(var(--neutral-200));
+
+    /* Campos de Entrada */
+    --input: rgb(255 255 255);
+    --input-border: rgb(var(--neutral-300));
+    --input-focus-border: rgb(var(--primary-500));
+
+    /* Acento (estados hover, resaltados) */
+    --accent: rgb(var(--neutral-100));
+    --accent-hover: rgb(var(--neutral-200));
+    --accent-foreground: rgb(var(--neutral-900));
+
+    /* Apagado (deshabilitado, placeholder) */
+    --muted: rgb(var(--neutral-100));
+    --muted-foreground: rgb(var(--neutral-500));
+
+    /* Destructivo */
+    --destructive: rgb(var(--error-600));
+    --destructive-hover: rgb(var(--error-700));
+    --destructive-foreground: rgb(255 255 255);
+
+    /* Estados */
+    --success: rgb(var(--success-600));
+    --success-foreground: rgb(255 255 255);
+    --success-subtle: rgb(var(--success-100));
+    --success-subtle-foreground: rgb(var(--success-800));
+
+    --warning: rgb(var(--warning-500));
+    --warning-foreground: rgb(var(--neutral-950));
+    --warning-subtle: rgb(var(--warning-100));
+    --warning-subtle-foreground: rgb(var(--warning-800));
+
+    --error: rgb(var(--error-600));
+    --error-foreground: rgb(255 255 255);
+    --error-subtle: rgb(var(--error-100));
+    --error-subtle-foreground: rgb(var(--error-800));
+
+    --info: rgb(var(--info-500));
+    --info-foreground: rgb(255 255 255);
+    --info-subtle: rgb(var(--info-100));
+    --info-subtle-foreground: rgb(var(--info-800));
+
+    /* Anillo (foco) */
+    --ring: rgb(var(--primary-500) / 50%);
+
+    /* Popover */
+    --popover: rgb(255 255 255);
+    --popover-foreground: rgb(var(--neutral-950));
+
+    /* Barra Lateral (para uso futuro) */
+    --sidebar: rgb(var(--neutral-50));
+    --sidebar-foreground: rgb(var(--neutral-900));
+    --sidebar-primary: rgb(var(--primary-600));
+    --sidebar-primary-foreground: rgb(255 255 255);
+    --sidebar-accent: rgb(var(--neutral-200));
+    --sidebar-accent-foreground: rgb(var(--neutral-900));
+    --sidebar-border: rgb(var(--neutral-200));
+    --sidebar-ring: rgb(var(--primary-500) / 50%);
+}
+
+/* ============================================
+   MAPEO DE COLORES SEMÁNTICOS - Modo Oscuro
+   ============================================ */
+
+.dark {
+    /* Fondos - NO negro puro, grises oscuros más suaves */
+    --background: rgb(var(--neutral-950));
+    --surface: rgb(var(--neutral-900));
+    --surface-secondary: rgb(var(--neutral-800));
+
+    /* Textos */
+    --foreground: rgb(var(--neutral-50));
+    --foreground-secondary: rgb(var(--neutral-400));
+    --foreground-tertiary: rgb(var(--neutral-500));
+
+    /* Bordes - sutiles en modo oscuro */
+    --border: rgb(var(--neutral-800));
+    --border-strong: rgb(var(--neutral-700));
+
+    /* Acciones Primarias - ligeramente más claras en modo oscuro */
+    --primary: rgb(var(--primary-500));
+    --primary-hover: rgb(var(--primary-400));
+    --primary-active: rgb(var(--primary-300));
+    --primary-foreground: rgb(var(--neutral-950));
+
+    /* Acciones Secundarias */
+    --secondary: rgb(var(--neutral-800));
+    --secondary-hover: rgb(var(--neutral-700));
+    --secondary-active: rgb(var(--neutral-600));
+    --secondary-foreground: rgb(var(--neutral-100));
+
+    /* Tarjetas */
+    --card: rgb(var(--neutral-900));
+    --card-foreground: rgb(var(--neutral-50));
+    --card-border: rgb(var(--neutral-800));
+
+    /* Campos de Entrada */
+    --input: rgb(var(--neutral-900));
+    --input-border: rgb(var(--neutral-700));
+    --input-focus-border: rgb(var(--primary-500));
+
+    /* Acento */
+    --accent: rgb(var(--neutral-800));
+    --accent-hover: rgb(var(--neutral-700));
+    --accent-foreground: rgb(var(--neutral-100));
+
+    /* Apagado */
+    --muted: rgb(var(--neutral-800));
+    --muted-foreground: rgb(var(--neutral-500));
+
+    /* Destructivo */
+    --destructive: rgb(var(--error-500));
+    --destructive-hover: rgb(var(--error-400));
+    --destructive-foreground: rgb(var(--neutral-950));
+
+    /* Estados */
+    --success: rgb(var(--success-500));
+    --success-foreground: rgb(var(--neutral-950));
+    --success-subtle: rgb(var(--success-950));
+    --success-subtle-foreground: rgb(var(--success-300));
+
+    --warning: rgb(var(--warning-500));
+    --warning-foreground: rgb(var(--neutral-950));
+    --warning-subtle: rgb(var(--warning-950));
+    --warning-subtle-foreground: rgb(var(--warning-300));
+
+    --error: rgb(var(--error-500));
+    --error-foreground: rgb(var(--neutral-950));
+    --error-subtle: rgb(var(--error-950));
+    --error-subtle-foreground: rgb(var(--error-300));
+
+    --info: rgb(var(--info-500));
+    --info-foreground: rgb(var(--neutral-950));
+    --info-subtle: rgb(var(--info-950));
+    --info-subtle-foreground: rgb(var(--info-300));
+
+    /* Anillo */
+    --ring: rgb(var(--primary-500) / 50%);
+
+    /* Popover */
+    --popover: rgb(var(--neutral-900));
+    --popover-foreground: rgb(var(--neutral-50));
+
+    /* Barra Lateral */
+    --sidebar: rgb(var(--neutral-900));
+    --sidebar-foreground: rgb(var(--neutral-100));
+    --sidebar-primary: rgb(var(--primary-500));
+    --sidebar-primary-foreground: rgb(var(--neutral-950));
+    --sidebar-accent: rgb(var(--neutral-800));
+    --sidebar-accent-foreground: rgb(var(--neutral-100));
+    --sidebar-border: rgb(var(--neutral-800));
+    --sidebar-ring: rgb(var(--primary-500) / 50%);
+}
+
+/* ============================================
+   ESCALA DE ESPACIADO - Basada en 4px
+   ============================================ */
+
+:root {
+    --spacing-0: 0;
+    --spacing-1: 0.25rem;
+    /* 4px */
+    --spacing-2: 0.5rem;
+    /* 8px */
+    --spacing-3: 0.75rem;
+    /* 12px */
+    --spacing-4: 1rem;
+    /* 16px */
+    --spacing-5: 1.25rem;
+    /* 20px */
+    --spacing-6: 1.5rem;
+    /* 24px */
+    --spacing-7: 1.75rem;
+    /* 28px */
+    --spacing-8: 2rem;
+    /* 32px */
+    --spacing-10: 2.5rem;
+    /* 40px */
+    --spacing-12: 3rem;
+    /* 48px */
+    --spacing-16: 4rem;
+    /* 64px */
+    --spacing-20: 5rem;
+    /* 80px */
+    --spacing-24: 6rem;
+    /* 96px */
+}
+
+/* ============================================
+   RADIO DE BORDES
+   ============================================ */
+
+:root {
+    --radius-none: 0;
+    --radius-sm: 0.25rem;
+    /* 4px */
+    --radius-md: 0.375rem;
+    /* 6px */
+    --radius-lg: 0.5rem;
+    /* 8px */
+    --radius-xl: 0.75rem;
+    /* 12px */
+    --radius-2xl: 1rem;
+    /* 16px */
+    --radius-full: 9999px;
+
+    /* Radio semántico */
+    --radius: var(--radius-lg);
+}
+
+/* ============================================
+   SOMBRAS - Elevación sutil
+   ============================================ */
+
+:root {
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+}
+
+.dark {
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.3);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.4), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.4), 0 8px 10px -6px rgb(0 0 0 / 0.3);
+}
+
+/* ============================================
+   ESCALA TIPOGRÁFICA
+   ============================================ */
+
+:root {
+    /* Tamaños de fuente - jerarquía clara */
+    --text-xs: 0.75rem;
+    /* 12px */
+    --text-sm: 0.875rem;
+    /* 14px */
+    --text-base: 1rem;
+    /* 16px */
+    --text-lg: 1.125rem;
+    /* 18px */
+    --text-xl: 1.25rem;
+    /* 20px */
+    --text-2xl: 1.5rem;
+    /* 24px */
+    --text-3xl: 1.875rem;
+    /* 30px */
+    --text-4xl: 2.25rem;
+    /* 36px */
+    --text-5xl: 3rem;
+    /* 48px */
+
+    /* Alturas de línea */
+    --leading-none: 1;
+    --leading-tight: 1.25;
+    --leading-snug: 1.375;
+    --leading-normal: 1.5;
+    --leading-relaxed: 1.625;
+    --leading-loose: 2;
+
+    /* Pesos de fuente */
+    --font-normal: 400;
+    --font-medium: 500;
+    --font-semibold: 600;
+    --font-bold: 700;
+}
+
+/* ============================================
+   ESCALA Z-INDEX
+   ============================================ */
+
+:root {
+    --z-base: 0;
+    --z-dropdown: 1000;
+    --z-sticky: 1100;
+    --z-fixed: 1200;
+    --z-modal-backdrop: 1300;
+    --z-modal: 1400;
+    --z-popover: 1500;
+    --z-tooltip: 1600;
+}

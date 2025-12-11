@@ -9,8 +9,9 @@ import ProfileModal from "./ProfileModal";
 export default function WorkerNavBar() {
   const pathname = usePathname();
   const linkClass = (href: string) =>
-    `px-3 py-2 rounded-md text-sm font-medium ${
-      pathname.startsWith(href) ? "bg-blue-600 text-white" : "text-gray-200 hover:bg-gray-700"
+    `px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${pathname.startsWith(href)
+      ? "bg-primary text-primary-foreground shadow-sm"
+      : "text-foreground-secondary hover:bg-accent hover:text-accent-foreground"
     }`;
   const [profileName, setProfileName] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,12 +35,12 @@ export default function WorkerNavBar() {
   }, []);
 
   return (
-    <nav className="bg-gray-900 border-b border-gray-700">
-      <div className="container mx-auto flex items-center justify-between h-12 px-4">
-        <Link href="/worker/panel" className="text-lg font-semibold">
+    <nav className="border-b border-border bg-surface shadow-sm">
+      <div className="container mx-auto flex items-center justify-between h-16 px-6">
+        <Link href="/worker/panel" className="text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
           ServiMunicipal
         </Link>
-        <div className="space-x-2">
+        <div className="flex items-center gap-2">
           <Link href="/worker/panel" className={linkClass("/worker/panel")}>Panel</Link>
           <Link href="/worker/recintos" className={linkClass("/worker/recintos")}>Recintos</Link>
           <Link href="/worker/cursos" className={linkClass("/worker/cursos")}>Cursos</Link>
@@ -47,8 +48,12 @@ export default function WorkerNavBar() {
           <Link href="/worker/reservas" className={linkClass("/worker/reservas")}>Reservas</Link>
         </div>
         <div className="relative">
-          <button type="button" onClick={() => setMenuOpen(!menuOpen)} className="text-sm">
-            {profileName || ""} ▾
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-accent"
+          >
+            {profileName || ""} <span className="text-xs">▾</span>
           </button>
           {menuOpen && (
             <ProfileDropdown

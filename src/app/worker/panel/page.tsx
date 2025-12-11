@@ -1,31 +1,57 @@
 //app/worker/panel/page.tsx
 import Link from "next/link";
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export default function WorkerPanelPage() {
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-6">Panel del Trabajador Municipal</h1>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Panel del Trabajador Municipal</h1>
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Recintos Deportivos</h2>
-          <p className="text-sm text-gray-300 flex-1">Consulta los recintos y realiza reservas para los ciudadanos.</p>
-          <Link href="/worker/recintos" className="mt-4 bg-blue-600 px-3 py-1 rounded text-center text-sm">Ver Recintos</Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Cursos Disponibles</h2>
-          <p className="text-sm text-gray-300 flex-1">Consulta los cursos y realiza inscripciones para los ciudadanos.</p>
-          <Link href="/worker/cursos" className="mt-4 bg-blue-600 px-3 py-1 rounded text-center text-sm">Ver Cursos</Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Solicitudes</h2>
-          <p className="text-sm text-gray-300 flex-1">Gestiona las solicitudes de recintos enviadas por los organizadores de cursos.</p>
-          <Link href="/worker/solicitudes" className="mt-4 bg-blue-600 px-3 py-1 rounded text-center text-sm">Ver Solicitudes</Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Reservas</h2>
-          <p className="text-sm text-gray-300 flex-1">Consulta las reservas ciudadanas y valida las solicitudes de recintos para cursos.</p>
-          <Link href="/worker/reservas" className="mt-4 bg-blue-600 px-3 py-1 rounded text-center text-sm">Ver Reservas</Link>
-        </div>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Recintos Deportivos</CardTitle>
+            <CardDescription>Consulta los recintos y realiza reservas para los ciudadanos.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/worker/recintos">Ver Recintos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Cursos Disponibles</CardTitle>
+            <CardDescription>Consulta los cursos y realiza inscripciones para los ciudadanos.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/worker/cursos">Ver Cursos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Solicitudes</CardTitle>
+            <CardDescription>Gestiona las solicitudes de recintos enviadas por los organizadores de cursos.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/worker/solicitudes">Ver Solicitudes</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Reservas</CardTitle>
+            <CardDescription>Consulta las reservas ciudadanas y valida las solicitudes de recintos para cursos.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/worker/reservas">Ver Reservas</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   );

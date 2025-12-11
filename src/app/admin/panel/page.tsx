@@ -1,52 +1,58 @@
 ///app/admin/panel/page.tsx
 import Link from 'next/link'
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
 export const dynamic = 'force-dynamic'
 
-export default async function AdminPanelPage () {
+export default async function AdminPanelPage() {
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Panel de Administración</h1>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Recintos</h2>
-                    <p className="text-sm text-gray-300 flex-grow">Administra los recintos disponibles para eventos y actividades.</p>
-          <Link
-            href="/admin/recintos"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-2 rounded"
-          >
-            Gestionar Recintos
-          </Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Cursos</h2>
-                    <p className="text-sm text-gray-300 flex-grow">Administra los cursos disponibles y su programación.</p>
-          <Link
-            href="/admin/cursos"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-2 rounded"
-          >
-            Gestionar Cursos
-          </Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Usuarios</h2>
-          <p className="text-sm text-gray-300 flex-grow">Administra los usuarios y sus permisos del sistema.</p>
-          <Link
-            href="/admin/usuarios"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-2 rounded"
-          >
-            Gestionar Usuarios
-          </Link>
-        </div>
-        <div className="bg-gray-800 p-4 rounded flex flex-col">
-          <h2 className="text-lg font-semibold mb-2">Reservas</h2>
-          <p className="text-sm text-gray-300 flex-grow">Consulta todas las reservas realizadas y gestiona su estado.</p>
-          <Link
-            href="/admin/reservas"
-            className="mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm py-1 px-2 rounded"
-          >
-            Ver Reservas
-          </Link>
-        </div>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Panel de Administración</h1>
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Recintos</CardTitle>
+            <CardDescription>Administra los recintos disponibles para eventos y actividades.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/admin/recintos">Gestionar Recintos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Cursos</CardTitle>
+            <CardDescription>Administra los cursos disponibles y su programación.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/admin/cursos">Gestionar Cursos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Usuarios</CardTitle>
+            <CardDescription>Administra los usuarios y sus permisos del sistema.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/admin/usuarios">Gestionar Usuarios</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+        <Card className="flex flex-col">
+          <CardHeader className="flex-1">
+            <CardTitle>Reservas</CardTitle>
+            <CardDescription>Consulta todas las reservas realizadas y gestiona su estado.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/admin/reservas">Ver Reservas</Link>
+            </Button>
+          </CardFooter>
+        </Card>
       </div>
     </div>
   )
