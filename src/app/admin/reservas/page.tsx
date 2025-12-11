@@ -1,6 +1,9 @@
 import Link from 'next/link'
 import DeleteReservaButton from './DeleteReservaButton'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -40,11 +43,10 @@ type Inscripcion = {
 }
 
 type UnifiedItem = {
-  id: string // `${tipo}-${id}`
+  id: string
   originalId: number
   tipo: 'Recinto' | 'Curso'
   usuario: string
-  usuarioDNI: string
   item: string
   fechaInicio: string
   horaInicio: string | null
@@ -97,7 +99,6 @@ export default async function AdminReservasPage({
         originalId: r.id,
         tipo: 'Recinto',
         usuario,
-        usuarioDNI: startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }),
         item: r.recintos?.name || 'Recinto desconocido',
         fechaInicio: startDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }),
         horaInicio: startDate.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' }),
@@ -113,7 +114,6 @@ export default async function AdminReservasPage({
     safeInscripciones.forEach((i) => {
       const usuario = i.users ? `${i.users.name} ${i.users.surname}` : 'Desconocido'
       const beginDate = i.cursos?.begining_date ? new Date(i.cursos.begining_date) : null
-      const endDate = i.cursos?.end_date ? new Date(i.cursos.end_date) : null
       const estadoInscripcion =
         (i.status?.toLowerCase() || '') === 'cancelada'
           ? 'Cancelada'
@@ -121,29 +121,15 @@ export default async function AdminReservasPage({
             ? 'Confirmada'
             : 'Pendiente'
 
-      // Construir el horario basado en los campos start_time, end_time y days_of_week
       let horario = '-'
-
       const startTime = i.cursos?.start_time
       const endTime = i.cursos?.end_time
       const daysOfWeek = i.cursos?.days_of_week
 
       if (startTime && endTime && daysOfWeek && Array.isArray(daysOfWeek) && daysOfWeek.length > 0) {
-        const dayNames = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-        const dayLabels = daysOfWeek.map(d => dayNames[d - 1]).filter(Boolean)
-
-        const daysText = dayLabels.length === 1
-          ? dayLabels[0]
-          : dayLabels.length === 2
-            ? `${dayLabels[0]} y ${dayLabels[1]}`
-            : dayLabels.slice(0, -1).join(', ') + ' y ' + dayLabels[dayLabels.length - 1]
-
-        horario = `${daysText} ${startTime.slice(0, 5)}-${endTime.slice(0, 5)}`
-      } else if (beginDate && endDate) {
-        // Fallback: mostrar rango de fechas si no hay horarios
-        const formatDate = (date: Date) =>
-          date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' })
-        horario = `${formatDate(beginDate)} - ${formatDate(endDate)}`
+        const dayNames = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+        const dayLabels = daysOfWeek.map(d => dayNames[d - 1]).filter(Boolean).join(', ')
+        horario = `${dayLabels} ${startTime.slice(0, 5)}-${endTime.slice(0, 5)}`
       }
 
       unifiedItems.push({
@@ -151,7 +137,6 @@ export default async function AdminReservasPage({
         originalId: i.id,
         tipo: 'Curso',
         usuario,
-        usuarioDNI: beginDate ? beginDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
         item: i.cursos?.name || 'Curso desconocido',
         fechaInicio: beginDate ? beginDate.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' }) : '-',
         horaInicio: null,
@@ -163,7 +148,7 @@ export default async function AdminReservasPage({
     })
   }
 
-  // Filter by search (usuario or item)
+  // Filter by search
   let filteredItems = unifiedItems
   if (search) {
     const searchLower = search.toLowerCase()
@@ -183,123 +168,122 @@ export default async function AdminReservasPage({
     })
   }
 
-  // Sort by fecha inicio descending
+  // Sort by fecha
   filteredItems.sort((a, b) => {
     const dateA = new Date(a.fechaInicio.split('/').reverse().join('-'))
     const dateB = new Date(b.fechaInicio.split('/').reverse().join('-'))
     return dateB.getTime() - dateA.getTime()
   })
 
+  const getEstadoBadgeClass = (estado: string) => {
+    switch (estado.toLowerCase()) {
+      case 'confirmada':
+        return 'bg-success text-success-foreground'
+      case 'pendiente':
+        return 'bg-warning text-warning-foreground'
+      case 'cancelada':
+        return 'bg-muted text-muted-foreground'
+      default:
+        return ''
+    }
+  }
+
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Reservas</h1>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Reservas e Inscripciones</h1>
 
       {/* Filters */}
-      <form method="get" className="flex gap-3 items-center">
+      <form method="get" className="flex gap-3 items-center mb-8">
         <input
           type="text"
           name="search"
           defaultValue={search}
           placeholder="Buscar por usuario o ítem..."
-          className="flex-1 max-w-md bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"
+          className="input-base flex-1 max-w-md"
         />
         <select
           name="status"
           defaultValue={status ?? 'all'}
-          className="bg-gray-800 border border-gray-700 rounded px-3 py-2 text-sm"
+          className="input-base"
         >
           <option value="all">Todos los estados</option>
           <option value="confirmada">Confirmada</option>
           <option value="pendiente">Pendiente</option>
           <option value="cancelada">Cancelada</option>
         </select>
-        <button type="submit" className="bg-blue-600 px-4 py-2 rounded text-sm hover:bg-blue-700">
+        <Button type="submit">
           Filtrar
-        </button>
+        </Button>
       </form>
 
       {/* Table */}
-      <div className="bg-gray-800 rounded overflow-hidden">
-        <table className="min-w-full text-sm">
-          <thead className="bg-gray-700">
-            <tr>
-              <th className="px-4 py-3 text-left">Usuario</th>
-              <th className="px-4 py-3 text-left">Tipo</th>
-              <th className="px-4 py-3 text-left">Ítem</th>
-              <th className="px-4 py-3 text-left">Fecha y hora</th>
-              <th className="px-4 py-3 text-left">Horario</th>
-              <th className="px-4 py-3 text-left">Total</th>
-              <th className="px-4 py-3 text-left">Estado</th>
-              <th className="px-4 py-3 text-left">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Usuario</TableHead>
+              <TableHead>Tipo</TableHead>
+              <TableHead>Ítem</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Horario</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {filteredItems.length > 0 ? (
               filteredItems.map((item) => (
-                <tr key={item.id} className="border-t border-gray-700">
-                  <td className="px-4 py-3">
-                    <div className="flex flex-col">
-                      <span className="font-medium">{item.usuario}</span>
-                      <span className="text-xs text-gray-400">{item.usuarioDNI}</span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="inline-flex items-center gap-1">
-                      {item.tipo === 'Curso' ? '📚' : '🏢'} {item.tipo}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">{item.item}</td>
-                  <td className="px-4 py-3">
+                <TableRow key={item.id}>
+                  <TableCell className="font-medium">{item.usuario}</TableCell>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {item.tipo}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-secondary">{item.item}</TableCell>
+                  <TableCell className="text-secondary">
                     <div className="flex flex-col">
                       <span>{item.fechaInicio}</span>
                       {item.horaInicio && (
-                        <span className="text-xs text-gray-400">{item.horaInicio}</span>
+                        <span className="text-xs text-tertiary">{item.horaInicio}</span>
                       )}
                     </div>
-                  </td>
-                  <td className="px-4 py-3">{item.horario}</td>
-                  <td className="px-4 py-3">$ {item.total}</td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${item.estado.toLowerCase() === 'confirmada'
-                        ? 'bg-green-900 text-green-300'
-                        : item.estado.toLowerCase() === 'pendiente'
-                          ? 'bg-yellow-900 text-yellow-300'
-                          : item.estado.toLowerCase() === 'cancelada'
-                            ? 'bg-gray-700 text-gray-300'
-                            : 'bg-gray-700 text-gray-300'
-                        }`}
-                    >
+                  </TableCell>
+                  <TableCell className="text-secondary">{item.horario}</TableCell>
+                  <TableCell className="font-medium">$ {item.total}</TableCell>
+                  <TableCell>
+                    <Badge className={getEstadoBadgeClass(item.estado)}>
                       {item.estado}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <Link
-                        href={
-                          item.tipo === 'Recinto'
-                            ? `/admin/reservas/${item.originalId}/editar`
-                            : `/admin/inscripciones/${item.originalId}/editar`
-                        }
-                        className="text-blue-400 hover:text-blue-300"
-                        title="Editar"
-                      >
-                        ✏️
-                      </Link>
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button asChild size="sm" variant="ghost">
+                        <Link
+                          href={
+                            item.tipo === 'Recinto'
+                              ? `/admin/reservas/${item.originalId}/editar`
+                              : `/admin/inscripciones/${item.originalId}/editar`
+                          }
+                        >
+                          Editar
+                        </Link>
+                      </Button>
                       <DeleteReservaButton id={item.originalId} tipo={item.tipo} />
                     </div>
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))
             ) : (
-              <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-gray-400">
+              <TableRow>
+                <TableCell colSpan={8} className="text-center text-secondary py-8">
                   No se encontraron reservas.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </div>
   )

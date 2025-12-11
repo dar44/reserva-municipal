@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import CancelButton from './CancelButton'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -27,7 +29,6 @@ export default async function CursoDetallePage({
 
   const supabase = await createSupabaseServer()
 
-
   const { data: curso } = await supabase
     .from('cursos')
     .select('name')
@@ -35,7 +36,6 @@ export default async function CursoDetallePage({
     .single()
 
   if (!curso) return notFound()
-
 
   const { data: inscripciones, error } = await supabase
     .from('inscripciones')
@@ -48,7 +48,7 @@ export default async function CursoDetallePage({
         email,
         phone
       )
-    `) 
+    `)
     .eq('curso_id', id)
     .eq('status', 'activa')
     .returns<Inscripcion[]>()
@@ -58,44 +58,54 @@ export default async function CursoDetallePage({
   }
 
   return (
-    <div>
-      <Link href="/worker/cursos" className="text-sm underline">Volver</Link>
-      <h1 className="text-2xl font-bold mb-4">
+    <div className="container-padding section-spacing">
+      <Link href="/worker/cursos" className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver
+      </Link>
+
+      <h1 className="mb-8">
         Usuarios Inscritos en el Curso: {curso.name}
       </h1>
-      <table className="min-w-full bg-gray-800 text-sm rounded overflow-hidden">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">DNI</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Teléfono</th>
-            <th className="px-4 py-2 text-left">Pago</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {inscripciones?.map((i) => (
-            <tr key={i.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">{i.usuario?.dni ?? '—'}</td>
-              <td className="px-4 py-2">{i.usuario?.name ?? '—'}</td>
-              <td className="px-4 py-2">{i.usuario?.email ?? '—'}</td>
-              <td className="px-4 py-2">{i.usuario?.phone ?? '—'}</td>
-              <td className="px-4 py-2">{i.paid ? 'Pagado' : 'Pendiente'}</td>
-              <td className="px-4 py-2">
-                <CancelButton id={i.id} />
-              </td>
-            </tr>
-          ))}
-          {(!inscripciones || inscripciones.length === 0) && (
-            <tr>
-              <td colSpan={5} className="px-4 py-4 text-center text-gray-400">
-                No hay inscripciones activas.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>DNI</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Teléfono</TableHead>
+              <TableHead>Pago</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {inscripciones?.map((i) => (
+              <TableRow key={i.id}>
+                <TableCell className="text-secondary">{i.usuario?.dni ?? '—'}</TableCell>
+                <TableCell className="font-medium">{i.usuario?.name ?? '—'}</TableCell>
+                <TableCell className="text-secondary">{i.usuario?.email ?? '—'}</TableCell>
+                <TableCell className="text-secondary">{i.usuario?.phone ?? '—'}</TableCell>
+                <TableCell>
+                  <Badge className={i.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
+                    {i.paid ? 'Pagado' : 'Pendiente'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
+                  <CancelButton id={i.id} />
+                </TableCell>
+              </TableRow>
+            ))}
+            {(!inscripciones || inscripciones.length === 0) && (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center text-secondary py-8">
+                  No hay inscripciones activas.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

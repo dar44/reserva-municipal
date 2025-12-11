@@ -86,94 +86,141 @@
    MAPEO DE COLORES SEMÁNTICOS - Modo Claro
    ============================================ */
 
-:root {
-    /* Fondos */
-    --background: rgb(var(--neutral-50));
-    --surface: rgb(255 255 255);
-    --surface-secondary: rgb(var(--neutral-100));
+:root,
+.light {
+    /* Fondos - Blanco y grises muy claros */
+    --background: rgb(255 255 255);
+    --surface: rgb(248 250 252);
+    /* slate-50 */
+    --surface-secondary: rgb(241 245 249);
+    /* slate-100 */
 
-    /* Textos */
-    --foreground: rgb(var(--neutral-950));
-    --foreground-secondary: rgb(var(--neutral-600));
-    --foreground-tertiary: rgb(var(--neutral-500));
+    /* Textos - Oscuros para máximo contraste */
+    --foreground: rgb(15 23 42);
+    /* slate-900 */
+    --foreground-secondary: rgb(51 65 85);
+    /* slate-700 - mejor contraste (10.7:1) */
+    --foreground-tertiary: rgb(100 116 139);
+    /* slate-500 */
 
-    /* Bordes */
-    --border: rgb(var(--neutral-200));
-    --border-strong: rgb(var(--neutral-300));
+    /* Bordes - Visibles pero sutiles */
+    --border: rgb(226 232 240);
+    /* slate-200 */
+    --border-strong: rgb(203 213 225);
+    /* slate-300 */
 
     /* Acciones Primarias */
-    --primary: rgb(var(--primary-600));
-    --primary-hover: rgb(var(--primary-700));
-    --primary-active: rgb(var(--primary-800));
+    --primary: rgb(16 185 129);
+    /* emerald-500 */
+    --primary-hover: rgb(5 150 105);
+    /* emerald-600 */
+    --primary-active: rgb(4 120 87);
+    /* emerald-700 */
     --primary-foreground: rgb(255 255 255);
 
     /* Acciones Secundarias */
-    --secondary: rgb(var(--neutral-200));
-    --secondary-hover: rgb(var(--neutral-300));
-    --secondary-active: rgb(var(--neutral-400));
-    --secondary-foreground: rgb(var(--neutral-900));
+    --secondary: rgb(241 245 249);
+    /* slate-100 */
+    --secondary-hover: rgb(226 232 240);
+    /* slate-200 */
+    --secondary-active: rgb(203 213 225);
+    /* slate-300 */
+    --secondary-foreground: rgb(15 23 42);
+    /* slate-900 */
 
     /* Tarjetas */
     --card: rgb(255 255 255);
-    --card-foreground: rgb(var(--neutral-950));
-    --card-border: rgb(var(--neutral-200));
+    --card-foreground: rgb(15 23 42);
+    /* slate-900 */
+    --card-border: rgb(226 232 240);
+    /* slate-200 */
 
     /* Campos de Entrada */
     --input: rgb(255 255 255);
-    --input-border: rgb(var(--neutral-300));
-    --input-focus-border: rgb(var(--primary-500));
+    --input-border: rgb(203 213 225);
+    /* slate-300 */
+    --input-focus-border: rgb(16 185 129);
+    /* emerald-500 */
 
     /* Acento (estados hover, resaltados) */
-    --accent: rgb(var(--neutral-100));
-    --accent-hover: rgb(var(--neutral-200));
-    --accent-foreground: rgb(var(--neutral-900));
+    --accent: rgb(240 253 244);
+    /* emerald-50 */
+    --accent-hover: rgb(209 250 229);
+    /* emerald-100 */
+    --accent-foreground: rgb(4 120 87);
+    /* emerald-700 */
 
     /* Apagado (deshabilitado, placeholder) */
-    --muted: rgb(var(--neutral-100));
-    --muted-foreground: rgb(var(--neutral-500));
+    --muted: rgb(241 245 249);
+    /* slate-100 */
+    --muted-foreground: rgb(100 116 139);
+    /* slate-500 */
 
     /* Destructivo */
-    --destructive: rgb(var(--error-600));
-    --destructive-hover: rgb(var(--error-700));
+    --destructive: rgb(220 38 38);
+    /* red-700 */
+    --destructive-hover: rgb(185 28 28);
+    /* red-800 */
     --destructive-foreground: rgb(255 255 255);
 
     /* Estados */
-    --success: rgb(var(--success-600));
+    --success: rgb(22 163 74);
+    /* green-600 */
     --success-foreground: rgb(255 255 255);
-    --success-subtle: rgb(var(--success-100));
-    --success-subtle-foreground: rgb(var(--success-800));
+    --success-subtle: rgb(220 252 231);
+    /* green-100 */
+    --success-subtle-foreground: rgb(22 101 52);
+    /* green-800 */
 
-    --warning: rgb(var(--warning-500));
-    --warning-foreground: rgb(var(--neutral-950));
-    --warning-subtle: rgb(var(--warning-100));
-    --warning-subtle-foreground: rgb(var(--warning-800));
+    --warning: rgb(234 179 8);
+    /* yellow-500 */
+    --warning-foreground: rgb(255 255 255);
+    --warning-subtle: rgb(254 243 199);
+    /* yellow-100 */
+    --warning-subtle-foreground: rgb(146 64 14);
+    /* yellow-800 */
 
-    --error: rgb(var(--error-600));
+    --error: rgb(220 38 38);
+    /* red-700 */
     --error-foreground: rgb(255 255 255);
-    --error-subtle: rgb(var(--error-100));
-    --error-subtle-foreground: rgb(var(--error-800));
+    --error-subtle: rgb(254 226 226);
+    /* red-100 */
+    --error-subtle-foreground: rgb(153 27 27);
+    /* red-800 */
 
-    --info: rgb(var(--info-500));
+    --info: rgb(14 165 233);
+    /* sky-500 */
     --info-foreground: rgb(255 255 255);
-    --info-subtle: rgb(var(--info-100));
-    --info-subtle-foreground: rgb(var(--info-800));
+    --info-subtle: rgb(224 242 254);
+    /* sky-100 */
+    --info-subtle-foreground: rgb(7 89 133);
+    /* sky-800 */
 
     /* Anillo (foco) */
-    --ring: rgb(var(--primary-500) / 50%);
+    --ring: rgb(16 185 129 / 50%);
+    /* emerald-500/50 */
 
     /* Popover */
     --popover: rgb(255 255 255);
-    --popover-foreground: rgb(var(--neutral-950));
+    --popover-foreground: rgb(15 23 42);
+    /* slate-900 */
 
     /* Barra Lateral (para uso futuro) */
-    --sidebar: rgb(var(--neutral-50));
-    --sidebar-foreground: rgb(var(--neutral-900));
-    --sidebar-primary: rgb(var(--primary-600));
+    --sidebar: rgb(248 250 252);
+    /* slate-50 */
+    --sidebar-foreground: rgb(15 23 42);
+    /* slate-900 */
+    --sidebar-primary: rgb(16 185 129);
+    /* emerald-500 */
     --sidebar-primary-foreground: rgb(255 255 255);
-    --sidebar-accent: rgb(var(--neutral-200));
-    --sidebar-accent-foreground: rgb(var(--neutral-900));
-    --sidebar-border: rgb(var(--neutral-200));
-    --sidebar-ring: rgb(var(--primary-500) / 50%);
+    --sidebar-accent: rgb(241 245 249);
+    /* slate-100 */
+    --sidebar-accent-foreground: rgb(15 23 42);
+    /* slate-900 */
+    --sidebar-border: rgb(226 232 240);
+    /* slate-200 */
+    --sidebar-ring: rgb(16 185 129 / 50%);
+    /* emerald-500/50 */
 }
 
 /* ============================================

@@ -9,17 +9,18 @@ import {
 } from '@/lib/storage'
 import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
-export default async function NewUsuarioPage () {
+export default async function NewUsuarioPage() {
   const defaultImages = await listBucketPrefix(
     supabaseAdmin,
     USER_STORAGE_BUCKET,
     USER_DEFAULTS_FOLDER
   )
 
-  async function createUsuario (formData: FormData) {
+  async function createUsuario(formData: FormData) {
     'use server'
     const data = {
       name: formData.get('name') as string,
@@ -94,30 +95,69 @@ export default async function NewUsuarioPage () {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Nuevo Usuario</h1>
-      <form
-        action={createUsuario}
-        className="space-y-3 bg-gray-800 p-4 rounded text-sm"
-      >
-        <input name="name" className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
-        <input name="surname" className="w-full p-2 rounded bg-gray-700" placeholder="Apellido" required />
-        <input name="email" type="email" className="w-full p-2 rounded bg-gray-700" placeholder="Email" required />
-        <input name="password" type="password" className="w-full p-2 rounded bg-gray-700" placeholder="Password" required />
-        <input name="phone" className="w-full p-2 rounded bg-gray-700" placeholder="Teléfono" required />
-        <input name="dni" className="w-full p-2 rounded bg-gray-700" placeholder="DNI" required />
+    <div className="container-padding section-spacing max-w-2xl mx-auto">
+      <div className="mb-8">
+        <Link href="/admin/usuarios" className="text-sm text-primary hover:underline mb-4 inline-block">
+          ← Volver a Usuarios
+        </Link>
+        <h1>Nuevo Usuario</h1>
+      </div>
+
+      <form action={createUsuario} className="space-y-6 surface p-6 rounded-lg">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Nombre</label>
+            <input name="name" className="input-base w-full" placeholder="Nombre" required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Apellido</label>
+            <input name="surname" className="input-base w-full" placeholder="Apellido" required />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Email</label>
+          <input name="email" type="email" className="input-base w-full" placeholder="usuario@ejemplo.com" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Contraseña</label>
+          <input name="password" type="password" className="input-base w-full" placeholder="••••••••" required />
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Teléfono</label>
+            <input name="phone" className="input-base w-full" placeholder="+34 600 000 000" required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">DNI</label>
+            <input name="dni" className="input-base w-full" placeholder="12345678A" required />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Rol</label>
+          <select name="role" className="input-base w-full">
+            <option value="citizen">Ciudadano</option>
+            <option value="worker">Trabajador Municipal</option>
+            <option value="organizer">Organizador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
         <UserImagePicker
           defaultImages={defaultImages}
           helpText="Si no subes ninguna imagen se mostrará una imagen por defecto."
         />
-        <select name="role" className="w-full p-2 rounded bg-gray-700">
-          <option value="citizen">citizen</option>
-          <option value="worker">worker</option>
-          <option value="admin">admin</option>
-        </select>
-        <div className="space-x-2">
-          <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Crear</button>
-          <Link href="/admin/usuarios" className="text-gray-300">Cancelar</Link>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Crear Usuario</Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/usuarios">Cancelar</Link>
+          </Button>
         </div>
       </form>
     </div>

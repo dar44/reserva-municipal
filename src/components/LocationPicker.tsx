@@ -321,12 +321,12 @@ const LocationPicker = ({
 
     return (
       <label className="flex flex-col gap-1 text-sm" key={key}>
-        <span className="text-gray-300">{label}</span>
+        <span className="text-secondary">{label}</span>
         <input
           name={name}
           value={values[key]}
           onChange={(event) => setValues(prev => ({ ...prev, [key]: event.target.value }))}
-          className="w-full rounded border border-gray-700 bg-gray-900 p-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
+          className="input-base w-full"
           required={required && key === 'address'}
           placeholder={label ?? ''}
         />
@@ -341,11 +341,11 @@ const LocationPicker = ({
   }
 
   const suggestionsList = suggestions.length > 0 && suggestionsVisible && (
-    <ul className="absolute z-[1000] mt-1 max-h-52 w-full overflow-auto rounded border border-gray-700 bg-gray-900 text-sm shadow-lg">
+    <ul className="absolute z-[1000] mt-1 max-h-52 w-full overflow-auto rounded border surface text-sm shadow-lg">
       {suggestions.map(suggestion => (
         <li
           key={suggestion.place_id}
-          className="cursor-pointer px-3 py-2 hover:bg-gray-800"
+          className="cursor-pointer px-3 py-2 hover:bg-accent"
           onMouseDown={(event) => {
             event.preventDefault()
             handleSelectSuggestion(suggestion)
@@ -358,10 +358,10 @@ const LocationPicker = ({
   )
 
   return (
-    <div className={`space-y-3 rounded border border-gray-700 bg-gray-900 p-3 ${className}`}>
+    <div className={`space-y-3 rounded border surface p-3 ${className}`}>
       <div className="relative">
         <label className="flex flex-col gap-1 text-sm">
-          <span className="text-gray-300">Buscar dirección</span>
+          <span className="text-secondary">Buscar dirección</span>
           <input
             type="search"
             value={searchTerm}
@@ -374,11 +374,11 @@ const LocationPicker = ({
               window.setTimeout(() => setSuggestionsVisible(false), 200)
             }}
             placeholder="Introduce una dirección o lugar"
-            className="w-full rounded border border-gray-700 bg-gray-950 p-2 text-sm text-gray-100 focus:border-blue-500 focus:outline-none"
+            className="input-base w-full"
           />
         </label>
         {isSearching && (
-          <div className="absolute right-2 top-9 text-xs text-gray-400">Buscando…</div>
+          <div className="absolute right-2 top-9 text-xs text-tertiary">Buscando…</div>
         )}
         {suggestionsList}
       </div>
@@ -386,9 +386,9 @@ const LocationPicker = ({
       <div>
         <div
           ref={mapContainerRef}
-          className="h-60 w-full overflow-hidden rounded border border-gray-700 bg-gray-800"
+          className="h-60 w-full overflow-hidden rounded border bg-muted"
         />
-        <p className="mt-1 text-xs text-gray-400">Pulsa sobre el mapa para ajustar el marcador.</p>
+        <p className="mt-1 text-xs text-tertiary">Pulsa sobre el mapa para ajustar el marcador.</p>
       </div>
 
       <div className="grid gap-3 sm:grid-cols-2">

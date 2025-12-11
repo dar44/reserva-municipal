@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from 'react'
 import { useToast } from '@/components/Toast'
+import { Button } from '@/components/ui/button'
 
 interface ReservationFormProps {
   recintoId: number
@@ -9,7 +10,7 @@ interface ReservationFormProps {
   priceLabel: string
 }
 
-export default function ReservationForm ({ recintoId, slots, priceLabel }: ReservationFormProps) {
+export default function ReservationForm({ recintoId, slots, priceLabel }: ReservationFormProps) {
   const toast = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -62,12 +63,12 @@ export default function ReservationForm ({ recintoId, slots, priceLabel }: Reser
         <input
           type="date"
           name="date"
-          className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1"
+          className="input-base block w-full mt-1"
           required
         />
       </label>
       <label className="block text-sm">Hora inicio – fin
-        <select name="slot" className="block w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1">
+        <select name="slot" className="input-base block w-full mt-1">
           {slots.map((slot) => (
             <option key={slot} value={slot}>
               {slot}
@@ -75,13 +76,14 @@ export default function ReservationForm ({ recintoId, slots, priceLabel }: Reser
           ))}
         </select>
       </label>
-      <button
-        className="w-full bg-blue-600 py-2 rounded disabled:opacity-60"
+      <Button
+        className="w-full hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 transition-all"
         disabled={isSubmitting}
+        type="submit"
       >
         {isSubmitting ? 'Procesando...' : `Confirmar reserva – ${priceLabel}`}
-      </button>
-      <p className="text-xs text-gray-400 text-center">
+      </Button>
+      <p className="text-xs text-tertiary text-center">
         Serás redirigido al checkout seguro de Lemon Squeezy para completar el pago.
       </p>
     </form>

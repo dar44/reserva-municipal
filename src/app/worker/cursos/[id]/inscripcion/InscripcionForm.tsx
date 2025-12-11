@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
+import { Button } from "@/components/ui/button"
 
-export default function InscripcionForm ({ cursoId }: { cursoId: number }) {
+export default function InscripcionForm({ cursoId }: { cursoId: number }) {
   const [isNew, setIsNew] = useState(false)
   const toast = useToast()
 
@@ -15,7 +16,7 @@ export default function InscripcionForm ({ cursoId }: { cursoId: number }) {
       curso_id: cursoId,
       email: formData.get('email') as string,
       newUser: isNew,
-      fromWorker:true,
+      fromWorker: true,
     }
     if (isNew) {
       Object.assign(payload, {
@@ -41,22 +42,49 @@ export default function InscripcionForm ({ cursoId }: { cursoId: number }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <p className="text-sm">¿El participante tiene cuenta en el sistema?</p>
-      <div className="flex gap-2">
-        <button type="button" onClick={() => setIsNew(false)} className={`px-3 py-1 rounded text-xs ${!isNew ? 'bg-blue-600' : 'bg-gray-600'}`}>Usuario existente</button>
-        <button type="button" onClick={() => setIsNew(true)} className={`px-3 py-1 rounded text-xs ${isNew ? 'bg-blue-600' : 'bg-gray-600'}`}>Nuevo usuario</button>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <p className="text-sm font-medium mb-2">¿El participante tiene cuenta en el sistema?</p>
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            onClick={() => setIsNew(false)}
+            variant={!isNew ? "default" : "outline"}
+            size="sm"
+          >
+            Usuario existente
+          </Button>
+          <Button
+            type="button"
+            onClick={() => setIsNew(true)}
+            variant={isNew ? "default" : "outline"}
+            size="sm"
+          >
+            Nuevo usuario
+          </Button>
+        </div>
       </div>
-      <input type="email" name="email" placeholder="Correo electrónico" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
+
+      <input
+        type="email"
+        name="email"
+        placeholder="Correo electrónico"
+        className="input-base w-full"
+        required
+      />
+
       {isNew && (
         <>
-          <input type="text" name="name" placeholder="Nombre" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-          <input type="text" name="surname" placeholder="Apellido" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-          <input type="text" name="dni" placeholder="DNI" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-          <input type="text" name="phone" placeholder="Teléfono" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
+          <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
+          <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
+          <input type="text" name="dni" placeholder="DNI" className="input-base w-full" required />
+          <input type="text" name="phone" placeholder="Teléfono" className="input-base w-full" required />
         </>
       )}
-      <button className="w-full bg-green-600 py-2 rounded">Confirmar Inscripción</button>
+
+      <Button className="w-full bg-success hover:bg-success/90" type="submit">
+        Confirmar Inscripción
+      </Button>
     </form>
   )
 }

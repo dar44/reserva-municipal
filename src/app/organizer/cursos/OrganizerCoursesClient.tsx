@@ -9,6 +9,8 @@ import type { StorageObject } from '@/lib/storage'
 import { COURSE_IMAGE_BUCKET } from '@/lib/cursoImages'
 import OrganizerCourseImagePicker from '@/components/OrganizerCourseImagePicker'
 import LocationPicker from '@/components/LocationPicker'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 
 type OrganizerCourse = {
   id: number
@@ -278,16 +280,16 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
       <section className="space-y-4">
         <header>
           <h1 className="text-3xl font-bold">Gestión de cursos</h1>
-          <p className="text-sm text-gray-400 mt-1">Crea nuevos programas/cursos y administra los ya publicados.</p>
+          <p className="text-secondary mt-1">Crea nuevos programas/cursos y administra los ya publicados.</p>
         </header>
 
-        <article className="rounded-lg border border-emerald-500/50 bg-emerald-950/30 p-4 shadow-lg">
+        <article className="rounded-lg border border-success/30 bg-success/5 p-4 shadow-lg">
           <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-emerald-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div className="flex-1">
-              <p className="text-sm text-emerald-200 font-medium">Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
+              <p className="text-sm text-foreground/90 font-medium">Completa los datos del curso y publícalo en el catálogo municipal al instante.</p>
             </div>
           </div>
         </article>
@@ -296,25 +298,25 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Crear un nuevo curso</h2>
-          <p className="text-sm text-gray-400">Completa la información básica del curso y publícalo al instante.</p>
+          <p className="text-secondary">Completa la información básica del curso y publícalo al instante.</p>
         </div>
 
-        <form onSubmit={handleCreateCourse} className="grid gap-3 md:grid-cols-2">
-          <label className="text-sm md:col-span-2">
-            Nombre
+        <form onSubmit={handleCreateCourse} className="surface p-6 rounded-lg border space-y-4">
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Nombre</span>
             <input
               type="text"
               name="name"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
               required
             />
           </label>
 
-          <label className="text-sm md:col-span-2">
-            Descripción
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Descripción</span>
             <textarea
               name="description"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
               rows={3}
             />
           </label>
@@ -339,49 +341,49 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
             />
           </div>
 
-          <label className="text-sm">
-            Fecha de inicio
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Fecha de inicio</span>
             <input
               type="date"
               name="begining_date"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
             />
           </label>
 
-          <label className="text-sm">
-            Fecha de fin
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Fecha de fin</span>
             <input
               type="date"
               name="end_date"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
             />
           </label>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="md:col-span-2 space-y-3">
             <label className="block text-sm font-medium">Horario del curso</label>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+                <label className="block text-sm font-medium mb-2">Hora de inicio</label>
                 <input
                   type="time"
                   name="start_time"
-                  className="w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  className="input-base w-full"
                 />
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+                <label className="block text-sm font-medium mb-2">Hora de fin</label>
                 <input
                   type="time"
                   name="end_time"
-                  className="w-full rounded border border-gray-700 bg-gray-900 p-2"
+                  className="input-base w-full"
                 />
               </div>
             </div>
           </div>
 
-          <div className="space-y-2 md:col-span-2">
+          <div className="md:col-span-2 space-y-3">
             <label className="block text-sm font-medium">Días de la semana</label>
-            <p className="text-xs text-gray-400">Selecciona los días en los que se imparte el curso.</p>
+            <p className="text-xs text-secondary">Selecciona los días en los que se imparte el curso.</p>
             <div className="mt-2 flex flex-wrap gap-2">
               {[
                 { value: 1, label: 'Lunes' },
@@ -394,12 +396,12 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
               ].map(day => (
                 <label
                   key={day.value}
-                  className="flex items-center gap-2 rounded border border-gray-700 bg-gray-900 px-3 py-2 text-xs uppercase tracking-wide hover:border-emerald-500 cursor-pointer transition-colors"
+                  className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-success cursor-pointer transition-colors border"
                 >
                   <input
                     type="checkbox"
                     name={`day_${day.value}`}
-                    className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                    className="h-4 w-4 rounded border-border bg-background text-success focus:ring-success"
                   />
                   {day.label}
                 </label>
@@ -407,22 +409,22 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
             </div>
           </div>
 
-          <label className="text-sm">
-            Precio (CLP)
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Precio (€)</span>
             <input
               type="number"
               step="0.01"
               name="price"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
             />
           </label>
 
-          <label className="text-sm">
-            Capacidad
+          <label className="block">
+            <span className="text-sm font-medium mb-2 block">Capacidad</span>
             <input
               type="number"
               name="capacity"
-              className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2"
+              className="input-base w-full"
             />
           </label>
 
@@ -434,13 +436,13 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
           />
 
           <div className="md:col-span-2">
-            <button
+            <Button
               type="submit"
-              className="w-full rounded bg-emerald-600 py-2 text-white transition hover:bg-emerald-500 md:w-auto md:px-4"
+              className="w-full md:w-auto bg-success hover:bg-success/90"
               disabled={creatingCourse}
             >
               {creatingCourse ? 'Creando…' : 'Crear curso'}
-            </button>
+            </Button>
           </div>
         </form>
       </section>
@@ -448,15 +450,15 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Tus cursos</h2>
-          <p className="text-sm text-gray-400">Edita o elimina los cursos publicados.</p>
+          <p className="text-secondary">Edita o elimina los cursos publicados.</p>
         </div>
 
         {courseList.length === 0 ? (
-          <p className="text-sm text-gray-400">Aún no has creado cursos. ¡Comienza creando uno desde el formulario anterior!</p>
+          <p className="text-secondary">Aún no has creado cursos. ¡Comienza creando uno desde el formulario anterior!</p>
         ) : (
           <ul className="space-y-4">
             {courseList.map(course => (
-              <li key={course.id} className="rounded border border-gray-700 bg-gray-900 p-4">
+              <li key={course.id} className="surface rounded-lg border p-6">
                 {editingCourseId === course.id ? (
                   <form onSubmit={event => handleUpdateCourse(event, course.id)} className="grid gap-3 md:grid-cols-2">
                     <label className="text-sm md:col-span-2">
@@ -465,7 +467,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         type="text"
                         name="name"
                         defaultValue={course.name}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                         required
                       />
                     </label>
@@ -474,7 +476,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <textarea
                         name="description"
                         defaultValue={course.description ?? ''}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                         rows={3}
                       />
                     </label>
@@ -506,7 +508,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         type="date"
                         name="begining_date"
                         defaultValue={course.begining_date ? course.begining_date.slice(0, 10) : ''}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                       />
                     </label>
                     <label className="text-sm">
@@ -515,7 +517,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         type="date"
                         name="end_date"
                         defaultValue={course.end_date ? course.end_date.slice(0, 10) : ''}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                       />
                     </label>
 
@@ -528,7 +530,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                             type="time"
                             name="start_time"
                             defaultValue={course.start_time || ''}
-                            className="w-full rounded border border-gray-700 bg-gray-950 p-2"
+                            className="input-base w-full"
                           />
                         </div>
                         <div>
@@ -537,7 +539,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                             type="time"
                             name="end_time"
                             defaultValue={course.end_time || ''}
-                            className="w-full rounded border border-gray-700 bg-gray-950 p-2"
+                            className="input-base w-full"
                           />
                         </div>
                       </div>
@@ -558,13 +560,13 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         ].map(day => (
                           <label
                             key={day.value}
-                            className="flex items-center gap-2 rounded border border-gray-700 bg-gray-950 px-3 py-2 text-xs uppercase tracking-wide hover:border-blue-500 cursor-pointer transition-colors"
+                            className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-primary cursor-pointer transition-colors border"
                           >
                             <input
                               type="checkbox"
                               name={`day_${day.value}`}
                               defaultChecked={course.days_of_week?.includes(day.value)}
-                              className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-blue-500 focus:ring-blue-500"
+                              className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                             />
                             {day.label}
                           </label>
@@ -573,13 +575,13 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     </div>
 
                     <label className="text-sm">
-                      Precio (CLP)
+                      Precio (€)
                       <input
                         type="number"
                         step="0.01"
                         name="price"
                         defaultValue={course.price ?? undefined}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                       />
                     </label>
                     <label className="text-sm">
@@ -588,7 +590,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                         type="number"
                         name="capacity"
                         defaultValue={course.capacity ?? undefined}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                       />
                     </label>
 
@@ -609,22 +611,22 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <select
                         name="state"
                         defaultValue={course.state}
-                        className="mt-1 w-full rounded border border-gray-700 bg-gray-950 p-2"
+                        className="input-base w-full"
                       >
                         <option value="Disponible">Disponible</option>
                         <option value="No disponible">No disponible</option>
                         <option value="Cancelado">Cancelado</option>
                       </select>
                     </label>
-                    <div className="flex gap-2 md:col-span-2">
-                      <button type="submit" className="rounded bg-blue-600 px-3 py-1 text-sm">Guardar cambios</button>
-                      <button
+                    <div className="flex gap-3 md:col-span-2">
+                      <Button type="submit">Guardar cambios</Button>
+                      <Button
                         type="button"
                         onClick={() => setEditingCourseId(null)}
-                        className="rounded bg-gray-700 px-3 py-1 text-sm"
+                        variant="outline"
                       >
                         Cancelar
-                      </button>
+                      </Button>
                     </div>
                   </form>
                 ) : (
@@ -640,14 +642,17 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                           {course.location ?? 'Ubicación no especificada'}
                         </p>
                       </div>
-                      <span className={`inline-flex items-center gap-1 self-start rounded-full px-4 py-1.5 text-xs font-semibold ${course.state === 'Disponible'
-                        ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                        : course.state === 'No disponible'
-                          ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                          : 'bg-red-500/20 text-red-300 border border-red-500/30'
-                        }`}>
+                      <Badge
+                        className={
+                          course.state === 'Disponible'
+                            ? 'bg-success text-success-foreground'
+                            : course.state === 'No disponible'
+                              ? 'bg-warning text-warning-foreground'
+                              : 'bg-error text-error-foreground'
+                        }
+                      >
                         {course.state}
-                      </span>
+                      </Badge>
                     </div>
 
                     {course.image && course.image_bucket && (
@@ -663,33 +668,33 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     )}
 
                     {course.description && (
-                      <p className="text-sm text-gray-300 leading-relaxed">{course.description}</p>
+                      <p className="text-secondary leading-relaxed">{course.description}</p>
                     )}
 
-                    <div className="grid grid-cols-2 gap-4 p-4 rounded-lg bg-gray-800/50 border border-gray-700">
+                    <div className="surface p-4 rounded-lg border space-y-3">
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">Inicio</span>
-                          <span className="text-gray-300 font-semibold">{formatDate(course.begining_date)}</span>
+                          <span className="text-tertiary font-medium uppercase tracking-wider">Inicio</span>
+                          <span className="text-foreground font-semibold">{formatDate(course.begining_date)}</span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">Fin</span>
-                          <span className="text-gray-300 font-semibold">{formatDate(course.end_date)}</span>
+                          <span className="text-tertiary font-medium uppercase tracking-wider">Fin</span>
+                          <span className="text-foreground font-semibold">{formatDate(course.end_date)}</span>
                         </div>
                       </div>
 
                       <div className="space-y-3">
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">Horario</span>
-                          <span className="text-gray-300 font-semibold">
+                          <span className="text-tertiary font-medium uppercase tracking-wider">Horario</span>
+                          <span className="text-foreground font-semibold">
                             {course.start_time && course.end_time
                               ? `${course.start_time.slice(0, 5)}-${course.end_time.slice(0, 5)}`
                               : '—'}
                           </span>
                         </div>
                         <div className="flex items-center gap-2 text-xs">
-                          <span className="text-gray-500 font-medium uppercase tracking-wider">Días</span>
-                          <span className="text-gray-300 font-semibold">
+                          <span className="text-tertiary font-medium uppercase tracking-wider">Días</span>
+                          <span className="text-foreground font-semibold">
                             {course.days_of_week && course.days_of_week.length > 0
                               ? course.days_of_week
                                 .map(d => ['L', 'M', 'X', 'J', 'V', 'S', 'D'][d - 1])
@@ -700,36 +705,37 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       </div>
 
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-gray-500 font-medium uppercase tracking-wider">Precio</span>
-                        <span className="text-emerald-400 font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
+                        <span className="text-tertiary font-medium uppercase tracking-wider">Precio</span>
+                        <span className="text-success font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs">
-                        <span className="text-gray-500 font-medium uppercase tracking-wider">Capacidad</span>
-                        <span className="text-gray-300 font-semibold">{course.capacity ?? '—'}</span>
+                        <span className="text-tertiary font-medium uppercase tracking-wider">Capacidad</span>
+                        <span className="text-foreground font-semibold">{course.capacity ?? '—'}</span>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-3 pt-2">
-                      <button
+                      <Button
                         type="button"
                         onClick={() => setEditingCourseId(course.id)}
-                        className="inline-flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-500 transition-colors"
+                        className="inline-flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                         </svg>
                         Editar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         type="button"
                         onClick={() => setDeletingCourseId(course.id)}
-                        className="inline-flex items-center gap-2 rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500 transition-colors"
+                        variant="destructive"
+                        className="inline-flex items-center gap-2"
                       >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                         </svg>
                         Eliminar
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -740,25 +746,25 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
       </section>
 
       {deletingCourseId !== null && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="surface p-6 rounded-lg shadow-xl max-w-md border">
             <h3 className="text-lg font-bold mb-4">Confirmar eliminación</h3>
-            <p className="text-gray-300 mb-6">
+            <p className="text-secondary mb-6">
               ¿Estás seguro de que quieres eliminar este curso?
             </p>
             <div className="flex gap-3 justify-end">
-              <button
+              <Button
                 onClick={() => setDeletingCourseId(null)}
-                className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
+                variant="outline"
               >
                 Cancelar
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => handleDeleteCourse(deletingCourseId)}
-                className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
+                variant="destructive"
               >
                 Eliminar
-              </button>
+              </Button>
             </div>
           </div>
         </div>

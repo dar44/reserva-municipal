@@ -5,7 +5,9 @@ import Link from "next/link";
 import { getConfiguredCurrency } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
-import StatCard from "@/components/StatCard";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const dynamic = "force-dynamic";
 
@@ -140,169 +142,174 @@ export default async function ReservasPage({
   );
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Mis reservas</h1>
-      <p className="text-gray-400 mb-6">Gestiona tus reservas de recintos e inscripciones a cursos</p>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-4">Mis reservas</h1>
+      <p className="text-secondary mb-8">Gestiona tus reservas de recintos e inscripciones a cursos</p>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <StatCard label="Total de reservas" value={totalReservas} />
-        <StatCard label="Reservas activas" value={reservasActivas} />
-        <StatCard label="Total invertido" value={formatCurrency(totalInvertido, currency)} />
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardDescription>Total de reservas</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight">{totalReservas}</div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-md">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-secondary">Reservas activas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{reservasActivas}</div>
+          </CardContent>
+        </Card>
+        <Card className="shadow-md">
+          <CardHeader className="pb-2">
+            <CardDescription>Total invertido</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold tracking-tight">{formatCurrency(totalInvertido, currency)}</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Active Reservations */}
       <h2 className="text-xl font-semibold mb-4">Reservas activas</h2>
-      <div className="bg-gray-800 rounded-lg overflow-hidden mb-8 border border-gray-700">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
-            <thead className="bg-gray-700 text-gray-200 text-sm uppercase">
-              <tr>
-                <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">Nombre</th>
-                <th className="px-4 py-3">Fecha inicio</th>
-                <th className="px-4 py-3">Fecha fin</th>
-                <th className="px-4 py-3">Total</th>
-                <th className="px-4 py-3">Estado</th>
-                <th className="px-4 py-3">Acciones</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {activeItems.length > 0 ? (
-                activeItems.map(item => (
-                  <Fragment key={`${item.type}-${item.id}`}>
-                    <tr className="hover:bg-gray-750 transition-colors">
-                      <td className="px-4 py-3">
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
-                          {item.type}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 font-medium">{item.name}</td>
-                      <td className="px-4 py-3 text-gray-300">{new Date(item.startAt).toLocaleString()}</td>
-                      <td className="px-4 py-3 text-gray-300">{new Date(item.endAt).toLocaleString()}</td>
-                      <td className="px-4 py-3 font-medium">
-                        {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
-                      </td>
-                      <td className="px-4 py-3">
-                        {item.paid ? (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-900 text-green-300 border border-green-700">
-                            Pagado
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-900 text-yellow-300 border border-yellow-700">
-                            Pendiente
-                          </span>
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm mb-8">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tipo</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Fecha inicio</TableHead>
+              <TableHead>Fecha fin</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {activeItems.length > 0 ? (
+              activeItems.map(item => (
+                <Fragment key={`${item.type}-${item.id}`}>
+                  <TableRow>
+                    <TableCell>
+                      <Badge variant="outline">
+                        {item.type}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="font-medium">{item.name}</TableCell>
+                    <TableCell className="text-secondary text-xs">{new Date(item.startAt).toLocaleString()}</TableCell>
+                    <TableCell className="text-secondary text-xs">{new Date(item.endAt).toLocaleString()}</TableCell>
+                    <TableCell className="font-medium">
+                      {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={item.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
+                        {item.paid ? 'Pagado' : 'Pendiente'}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex items-center gap-3">
+                        {item.type === 'Recinto' && (
+                          <Link
+                            href={`/reservas?expanded=${item.id}`}
+                            scroll={false}
+                            className="text-sm font-medium text-gray-300 hover:text-white hover:underline"
+                          >
+                            Ver detalle
+                          </Link>
                         )}
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
-                          {item.type === 'Recinto' && (
+                        {!item.paid && (
+                          <DeleteButton id={item.originalId} type={item.type} />
+                        )}
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                  {expandedId === item.id && item.type === 'Recinto' && item.ubication && (
+                    <TableRow className="bg-muted/50">
+                      <TableCell colSpan={7} className="px-4 py-4">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <p className="text-sm font-medium text-foreground">
+                              <span className="mr-2">📍</span>
+                              Cómo llegar a tu reserva
+                            </p>
                             <Link
-                              href={`/reservas?expanded=${item.id}`}
+                              href="/reservas"
                               scroll={false}
-                              className="text-sm font-medium text-gray-300 hover:text-white hover:underline"
+                              className="text-xs text-tertiary hover:text-foreground"
                             >
-                              Ver detalle
+                              Cerrar mapa
                             </Link>
-                          )}
-                          {!item.paid && (
-                            <DeleteButton id={item.originalId} type={item.type} />
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                    {expandedId === item.id && item.type === 'Recinto' && item.ubication && (
-                      <tr className="bg-gray-900/50">
-                        <td colSpan={7} className="px-4 py-4">
-                          <div className="space-y-2">
-                            <div className="flex justify-between items-center">
-                              <p className="text-sm font-medium text-gray-300">
-                                <span className="mr-2">📍</span>
-                                Cómo llegar a tu reserva
-                              </p>
-                              <Link
-                                href="/reservas"
-                                scroll={false}
-                                className="text-xs text-gray-500 hover:text-gray-300"
-                              >
-                                Cerrar mapa
-                              </Link>
-                            </div>
-                            <p className="text-xs text-gray-400 mb-2">Ubicación de {item.name}: {item.ubication}</p>
-                            <OpenStreetMapView
-                              address={item.ubication}
-                              title={`Ubicación de ${item.name}`}
-                              className="h-64"
-                            />
                           </div>
-                        </td>
-                      </tr>
-                    )}
-                  </Fragment>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="px-4 py-8 text-center text-gray-400">
-                    No tienes reservas activas en este momento.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                          <p className="text-xs text-tertiary mb-2">Ubicación de {item.name}: {item.ubication}</p>
+                          <OpenStreetMapView
+                            address={item.ubication}
+                            title={`Ubicación de ${item.name}`}
+                            className="h-64"
+                          />
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
+                </Fragment>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-secondary py-8">
+                  No tienes reservas activas en este momento.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
 
       {/* History Section */}
       <h2 className="text-xl font-semibold mb-4">Historial</h2>
-      <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700">
-        <div className="overflow-x-auto">
-          <table className="min-w-full text-left">
-            <thead className="bg-gray-700 text-gray-200 text-sm uppercase">
-              <tr>
-                <th className="px-4 py-3">Tipo</th>
-                <th className="px-4 py-3">Nombre</th>
-                <th className="px-4 py-3">Fecha</th>
-                <th className="px-4 py-3">Total</th>
-                <th className="px-4 py-3">Estado</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
-              {historyItems.length > 0 ? (
-                historyItems.map(item => (
-                  <tr key={`${item.type}-${item.id}`} className="hover:bg-gray-750 transition-colors">
-                    <td className="px-4 py-3">
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-300 border border-gray-600">
-                        {item.type}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium text-gray-400">{item.name}</td>
-                    <td className="px-4 py-3 text-gray-500">{new Date(item.startAt).toLocaleDateString()}</td>
-                    <td className="px-4 py-3 font-medium text-gray-500">
-                      {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
-                    </td>
-                    <td className="px-4 py-3">
-                      {item.status === 'cancelada' ? (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-900 text-red-300 border border-red-700">
-                          Cancelada
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-700 text-gray-400 border border-gray-600">
-                          Finalizada
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center text-gray-400">
-                    No tienes historial de reservas.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Tipo</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Total</TableHead>
+              <TableHead>Estado</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {historyItems.length > 0 ? (
+              historyItems.map(item => (
+                <TableRow key={`${item.type}-${item.id}`}>
+                  <TableCell>
+                    <Badge variant="outline">
+                      {item.type}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="font-medium text-tertiary">{item.name}</TableCell>
+                  <TableCell className="text-secondary text-xs">{new Date(item.startAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="font-medium text-secondary">
+                    {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
+                  </TableCell>
+                  <TableCell>
+                    <Badge className={item.status === 'cancelada' ? "bg-error text-error-foreground" : "bg-muted text-muted-foreground"}>
+                      {item.status === 'cancelada' ? 'Cancelada' : 'Finalizada'}
+                    </Badge>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} className="text-center text-secondary py-8">
+                  No tienes historial de reservas.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
       </div>
     </div>
   );

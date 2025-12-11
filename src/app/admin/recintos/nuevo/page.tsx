@@ -5,11 +5,12 @@ import LocationPicker from '@/components/LocationPicker'
 import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { revalidatePath } from 'next/cache'
 import { processRecintoImageInput } from '@/lib/recintoImages'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
-export default async function NewRecintoPage () {
-  async function createRecinto (formData: FormData) {
+export default async function NewRecintoPage() {
+  async function createRecinto(formData: FormData) {
     'use server'
     const supabase = await createSupabaseServer()
     const { image, image_bucket } = await processRecintoImageInput({
@@ -35,11 +36,25 @@ export default async function NewRecintoPage () {
   }
 
   return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-bold">Nuevo Recinto</h1>
-      <form action={createRecinto} className="space-y-3 bg-gray-800 p-4 rounded text-sm">
-        <input name="name" className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
-        <textarea name="description" className="w-full p-2 rounded bg-gray-700" placeholder="Descripción" required />
+    <div className="container-padding section-spacing max-w-2xl mx-auto">
+      <div className="mb-8">
+        <Link href="/admin/recintos" className="text-sm text-primary hover:underline mb-4 inline-block">
+          ← Volver a Recintos
+        </Link>
+        <h1>Nuevo Recinto</h1>
+      </div>
+
+      <form action={createRecinto} className="space-y-6 surface p-6 rounded-lg">
+        <div>
+          <label className="block text-sm font-medium mb-2">Nombre</label>
+          <input name="name" className="input-base w-full" placeholder="Nombre del recinto" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Descripción</label>
+          <textarea name="description" className="input-base w-full min-h-[100px]" placeholder="Descripción del recinto" required />
+        </div>
+
         <LocationPicker
           valueNames={{
             address: 'ubication',
@@ -51,15 +66,23 @@ export default async function NewRecintoPage () {
           labels={{ region: 'Comunidad' }}
           required
         />
-        <select name="state" className="w-full p-2 rounded bg-gray-700">
-          <option value="Disponible">Disponible</option>
-          <option value="No disponible">No disponible</option>
-          <option value="Bloqueado">Bloqueado</option>
-        </select>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Estado</label>
+          <select name="state" className="input-base w-full">
+            <option value="Disponible">Disponible</option>
+            <option value="No disponible">No disponible</option>
+            <option value="Bloqueado">Bloqueado</option>
+          </select>
+        </div>
+
         <RecintoImagePicker />
-        <div className="space-x-2">
-          <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Crear</button>
-          <Link href="/admin/recintos" className="text-gray-300">Cancelar</Link>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Crear Recinto</Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/recintos">Cancelar</Link>
+          </Button>
         </div>
       </form>
     </div>

@@ -6,6 +6,7 @@ import { formatCurrency } from "@/lib/currency";
 import ReservationForm from "./ReservationForm";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
+import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 
@@ -44,11 +45,16 @@ export default async function RecintoDetail({
     priceLabel = "Pago";
   }
 
+  const isDisponible = recinto.state === "Disponible";
+
   return (
-    <div className="space-y-6">
-      <Link href="/recintos" className="text-sm underline">← Volver al listado</Link>
-      <div className="grid md:grid-cols-2 gap-8 bg-gray-800 rounded-lg p-6 shadow">
-        <div className="relative h-64 bg-gray-700 flex items-center justify-center text-gray-400">
+    <div className="container-padding section-spacing">
+      <Link href="/recintos" className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver al listado
+      </Link>
+
+      <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl">
+        <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center text-tertiary">
           {imageUrl ? (
             <Image
               src={imageUrl}
@@ -58,19 +64,33 @@ export default async function RecintoDetail({
               sizes="(min-width: 768px) 50vw, 100vw"
             />
           ) : (
-            "Imagen"
+            "Sin imagen"
           )}
         </div>
-        <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold">{recinto.name}</h1>
-            <span className={`px-2 py-0.5 rounded text-xs ${recinto.state==='Disponible'?'bg-green-700':'bg-red-700'}`}>{recinto.state}</span>
-          </div>
-          <p><strong>Ubicación:</strong> {recinto.ubication}</p>
-          <p><strong>Descripción:</strong> {recinto.description}</p>
 
-          {recinto.state === "Disponible" && (
-            <ReservationForm recintoId={recinto.id} slots={slots} priceLabel={priceLabel} />
+        <div className="space-y-6">
+          <div>
+            <div className="flex items-center gap-3 mb-4">
+              <h1 className="text-3xl font-bold">{recinto.name}</h1>
+              <Badge
+                variant={isDisponible ? "default" : "secondary"}
+                className={isDisponible ? "bg-success text-success-foreground" : "bg-error text-error-foreground"}
+              >
+                {recinto.state}
+              </Badge>
+            </div>
+
+            <div className="space-y-3 text-secondary">
+              <p><strong className="text-foreground">Ubicación:</strong> {recinto.ubication}</p>
+              <p><strong className="text-foreground">Descripción:</strong> {recinto.description}</p>
+              <p><strong className="text-foreground">Precio:</strong> <span className="text-primary font-semibold">{priceLabel}/hora</span></p>
+            </div>
+          </div>
+
+          {isDisponible && (
+            <div className="pt-4 border-t border-border">
+              <ReservationForm recintoId={recinto.id} slots={slots} priceLabel={priceLabel} />
+            </div>
           )}
         </div>
       </div>

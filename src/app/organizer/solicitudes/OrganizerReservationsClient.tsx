@@ -3,6 +3,16 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 
 type OrganizerCourse = {
   id: number
@@ -283,29 +293,29 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
     <div className="space-y-8">
       <section className="space-y-4">
         <header>
-          <h1 className="text-2xl font-semibold">Solicitudes de reserva</h1>
-          <p className="text-sm text-gray-400">Envía nuevas peticiones y consulta el historial de respuestas.</p>
+          <h1 className="text-3xl font-bold">Solicitudes de reserva</h1>
+          <p className="text-secondary">Envía nuevas peticiones y consulta el historial de respuestas.</p>
         </header>
-        <article className="rounded border border-emerald-500 bg-emerald-50/80 p-4 text-sm text-emerald-900">
-          <p>Selecciona un curso, el recinto deseado y programa los días y horarios en los que necesitas usarlo.</p>
-          <p className="mt-2">Cada solicitud puede generar varios bloques dentro del rango de fechas indicado.</p>
+        <article className="rounded-lg border border-success/30 bg-success/5 p-4 shadow-lg">
+          <p className="text-sm text-foreground/90">Selecciona un curso, el recinto deseado y programa los días y horarios en los que necesitas usarlo.</p>
+          <p className="text-sm text-foreground/90 mt-2">Cada solicitud puede generar varios bloques dentro del rango de fechas indicado.</p>
         </article>
       </section>
 
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Recintos disponibles</h2>
-          <p className="text-sm text-gray-400">Estos recintos están habilitados para nuevas solicitudes.</p>
+          <p className="text-secondary">Estos recintos están habilitados para nuevas solicitudes.</p>
         </div>
 
         {availableRecintos.length === 0 ? (
-          <p className="text-sm text-gray-400">No hay recintos con disponibilidad en este momento.</p>
+          <p className="text-secondary">No hay recintos con disponibilidad en este momento.</p>
         ) : (
           <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {availableRecintos.map(recinto => (
-              <article key={recinto.id} className="rounded border border-gray-700 bg-gray-900 p-4">
-                <h3 className="text-sm font-semibold text-gray-100">{recinto.name}</h3>
-                <p className="mt-1 text-xs text-emerald-400">Disponible para solicitudes</p>
+              <article key={recinto.id} className="surface rounded-lg border p-4">
+                <h3 className="text-sm font-semibold">{recinto.name}</h3>
+                <Badge className="mt-2 bg-success text-success-foreground">Disponible para solicitudes</Badge>
               </article>
             ))}
           </div>
@@ -315,22 +325,22 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Nueva solicitud</h2>
-          <p className="text-sm text-gray-400">Define el rango de fechas, los días de la semana y la franja horaria que necesitas reservar.</p>
+          <p className="text-secondary">Define el rango de fechas, los días de la semana y la franja horaria que necesitas reservar.</p>
         </div>
 
         {courses.length === 0 ? (
-          <p className="text-sm text-gray-400">Primero debes crear al menos un curso para poder solicitar un recinto.</p>
+          <p className="text-secondary">Primero debes crear al menos un curso para poder solicitar un recinto.</p>
         ) : availableRecintos.length === 0 ? (
-          <p className="text-sm text-gray-400">No hay recintos disponibles en este momento. Inténtalo más tarde.</p>
+          <p className="text-secondary">No hay recintos disponibles en este momento. Inténtalo más tarde.</p>
         ) : (
-          <form ref={formRef} onSubmit={handleReservationSubmit} className="space-y-6">
+          <form ref={formRef} onSubmit={handleReservationSubmit} className="surface p-6 rounded-lg border space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
-              <label className="text-sm">
-                <span className="font-medium text-gray-200">Curso *</span>
-                <p className="text-xs text-gray-400 mb-1">Los campos se completarán automáticamente</p>
+              <label className="block">
+                <span className="text-sm font-medium mb-2 block">Curso *</span>
+                <p className="text-xs text-secondary mb-2">Los campos se completarán automáticamente</p>
                 <select
                   name="curso_id"
-                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="input-base w-full"
                   required
                   onChange={handleCourseChange}
                 >
@@ -341,12 +351,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </select>
               </label>
 
-              <label className="text-sm">
-                <span className="font-medium text-gray-200">Recinto *</span>
-                <p className="text-xs text-gray-400 mb-1">Selecciona el espacio a reservar</p>
+              <label className="block">
+                <span className="text-sm font-medium mb-2 block">Recinto *</span>
+                <p className="text-xs text-secondary mb-2">Selecciona el espacio a reservar</p>
                 <select
                   name="recinto_id"
-                  className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="input-base w-full"
                   required
                 >
                   <option value="">Selecciona un recinto</option>
@@ -358,108 +368,108 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
             </div>
 
             {selectedCourse && (
-              <div className="rounded-lg border border-emerald-600 bg-emerald-950/30 p-4">
+              <div className="rounded-lg border border-success/30 bg-success/10 p-4">
                 <div className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-emerald-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-success mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-emerald-300 mb-2">Horario del curso: {selectedCourse.name}</h3>
+                    <h3 className="font-semibold text-success mb-2">Horario del curso: {selectedCourse.name}</h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {selectedCourse.begining_date && (
                         <div>
-                          <span className="text-gray-400">Fecha inicio:</span>
-                          <span className="ml-2 text-gray-200">{new Date(selectedCourse.begining_date).toLocaleDateString('es-ES')}</span>
+                          <span className="text-secondary">Fecha inicio:</span>
+                          <span className="ml-2 text-foreground">{new Date(selectedCourse.begining_date).toLocaleDateString('es-ES')}</span>
                         </div>
                       )}
                       {selectedCourse.end_date && (
                         <div>
-                          <span className="text-gray-400">Fecha fin:</span>
-                          <span className="ml-2 text-gray-200">{new Date(selectedCourse.end_date).toLocaleDateString('es-ES')}</span>
+                          <span className="text-secondary">Fecha fin:</span>
+                          <span className="ml-2 text-foreground">{new Date(selectedCourse.end_date).toLocaleDateString('es-ES')}</span>
                         </div>
                       )}
                       {selectedCourse.start_time && selectedCourse.end_time && (
                         <div>
-                          <span className="text-gray-400">Horario:</span>
-                          <span className="ml-2 text-gray-200">{selectedCourse.start_time.slice(0, 5)} - {selectedCourse.end_time.slice(0, 5)}</span>
+                          <span className="text-secondary">Horario:</span>
+                          <span className="ml-2 text-foreground">{selectedCourse.start_time.slice(0, 5)} - {selectedCourse.end_time.slice(0, 5)}</span>
                         </div>
                       )}
                       {selectedCourse.days_of_week && selectedCourse.days_of_week.length > 0 && (
                         <div>
-                          <span className="text-gray-400">Días:</span>
-                          <span className="ml-2 text-gray-200">
+                          <span className="text-secondary">Días:</span>
+                          <span className="ml-2 text-foreground">
                             {selectedCourse.days_of_week.map(d => ['L', 'M', 'X', 'J', 'V', 'S', 'D'][d - 1] || 'D').join(', ')}
                           </span>
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-emerald-400 mt-2">Los campos del formulario se han completado automáticamente</p>
+                    <p className="text-xs text-success mt-2">Los campos del formulario se han completado automáticamente</p>
                   </div>
                 </div>
               </div>
             )}
 
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Rango de fechas</h3>
+              <h3 className="text-sm font-medium border-b pb-2">Rango de fechas</h3>
               <div className="grid gap-4 md:grid-cols-2">
-                <label className="text-sm">
-                  <span className="font-medium text-gray-200">Fecha de inicio *</span>
+                <label className="block">
+                  <span className="text-sm font-medium mb-2 block">Fecha de inicio *</span>
                   <input
                     type="date"
                     name="start_date"
-                    className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="input-base w-full"
                     required
                   />
                 </label>
 
-                <label className="text-sm">
-                  <span className="font-medium text-gray-200">Fecha de término *</span>
+                <label className="block">
+                  <span className="text-sm font-medium mb-2 block">Fecha de término *</span>
                   <input
                     type="date"
                     name="end_date"
-                    className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="input-base w-full"
                     required
                   />
                 </label>
               </div>
 
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Horario</h3>
+              <h3 className="text-sm font-medium border-b pb-2">Horario</h3>
               <div className="grid gap-4 md:grid-cols-2">
-                <label className="text-sm">
-                  <span className="font-medium text-gray-200">Hora de inicio *</span>
+                <label className="block">
+                  <span className="text-sm font-medium mb-2 block">Hora de inicio *</span>
                   <input
                     type="time"
                     name="start_time"
-                    className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="input-base w-full"
                     required
                   />
                 </label>
 
-                <label className="text-sm">
-                  <span className="font-medium text-gray-200">Hora de término *</span>
+                <label className="block">
+                  <span className="text-sm font-medium mb-2 block">Hora de término *</span>
                   <input
                     type="time"
                     name="end_time"
-                    className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                    className="input-base w-full"
                     required
                   />
                 </label>
               </div>
 
-              <h3 className="text-sm font-semibold text-gray-200 border-b border-gray-700 pb-2">Días de la semana</h3>
-              <fieldset className="text-sm">
-                <p className="text-xs text-gray-400 mb-2">Selecciona los días en los que se debe reservar el recinto.</p>
-                <div className="mt-2 flex flex-wrap gap-2">
+              <h3 className="text-sm font-medium border-b pb-2">Días de la semana</h3>
+              <fieldset>
+                <p className="text-xs text-secondary mb-3">Selecciona los días en los que se debe reservar el recinto.</p>
+                <div className="flex flex-wrap gap-2">
                   {DAY_OPTIONS.map(day => (
                     <label
                       key={day.value}
-                      className="flex items-center gap-2 rounded border border-gray-700 bg-gray-900 px-3 py-2 text-xs uppercase tracking-wide hover:border-emerald-500 cursor-pointer transition-colors"
+                      className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-success cursor-pointer transition-colors border"
                     >
                       <input
                         type="checkbox"
                         name="days_of_week"
                         value={day.value}
-                        className="h-4 w-4 rounded border-gray-600 bg-gray-800 text-emerald-500 focus:ring-emerald-500"
+                        className="h-4 w-4 rounded border-border bg-background text-success focus:ring-success"
                       />
                       {day.label}
                     </label>
@@ -468,35 +478,35 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
               </fieldset>
             </div>
 
-            <label className="block text-sm">
-              <span className="font-medium text-gray-200">Observaciones</span>
-              <p className="text-xs text-gray-400 mb-1">Información adicional para el trabajador municipal (opcional)</p>
+            <label className="block">
+              <span className="text-sm font-medium mb-2 block">Observaciones</span>
+              <p className="text-xs text-secondary mb-2">Información adicional para el trabajador municipal (opcional)</p>
               <textarea
                 name="observations"
-                className="mt-1 w-full rounded border border-gray-700 bg-gray-900 p-2 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                className="input-base w-full"
                 rows={3}
                 placeholder="Ej: Necesitamos proyector y sillas adicionales"
               />
             </label>
 
             <div>
-              <button
+              <Button
                 type="submit"
-                className="w-full rounded-lg bg-emerald-600 py-3 px-6 font-semibold text-white transition hover:bg-emerald-500 disabled:bg-gray-700 disabled:cursor-not-allowed md:w-auto"
+                className="w-full md:w-auto bg-success hover:bg-success/90"
                 disabled={submittingReservation}
               >
                 {submittingReservation ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8  0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
                     Enviando…
                   </span>
                 ) : (
                   'Enviar solicitud'
                 )}
-              </button>
+              </Button>
             </div>
           </form>
         )}
@@ -505,59 +515,59 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
       <section className="space-y-4">
         <div>
           <h2 className="text-xl font-semibold">Historial de solicitudes</h2>
-          <p className="text-sm text-gray-400">Consulta el estado de tus peticiones de reserva.</p>
+          <p className="text-secondary">Consulta el estado de tus peticiones de reserva.</p>
         </div>
 
         {reservationList.length === 0 ? (
-          <div className="rounded-lg border border-gray-700 bg-gray-900/50 p-8 text-center">
-            <svg className="w-16 h-16 mx-auto text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="surface rounded-lg border p-12 text-center">
+            <svg className="w-16 h-16 mx-auto text-tertiary mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <p className="text-gray-400">Todavía no has enviado solicitudes de reserva.</p>
-            <p className="text-sm text-gray-500 mt-2">Crea una nueva solicitud arriba para comenzar</p>
+            <p className="text-secondary">Todavía no has enviado solicitudes de reserva.</p>
+            <p className="text-sm text-tertiary mt-2">Crea una nueva solicitud arriba para comenzar</p>
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-gray-700">
-            <table className="min-w-full bg-gray-900 text-sm">
-              <thead className="bg-gray-800">
-                <tr className="border-b border-gray-700">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Curso</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Recinto</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Inicio</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Fin</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Estado</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-300 uppercase tracking-wider">Observaciones</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {reservationList.map((reservation, index) => (
-                  <tr
-                    key={reservation.id}
-                    className={`hover:bg-gray-800/50 transition-colors ${index % 2 === 0 ? 'bg-gray-900' : 'bg-gray-900/50'}`}
-                  >
-                    <td className="px-4 py-3 font-medium text-gray-200">{courseNameById.get(reservation.curso_id) ?? `Curso #${reservation.curso_id}`}</td>
-                    <td className="px-4 py-3 text-gray-300">{recintoNameById.get(reservation.recinto_id) ?? `Recinto #${reservation.recinto_id}`}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{formatDateTime(reservation.start_at)}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{formatDateTime(reservation.end_at)}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-flex items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold ${reservation.status === 'pendiente'
-                        ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/30'
-                        : reservation.status === 'aprobada'
-                          ? 'bg-green-500/20 text-green-300 border border-green-500/30'
-                          : reservation.status === 'rechazada'
-                            ? 'bg-red-500/20 text-red-300 border border-red-500/30'
-                            : 'bg-gray-500/20 text-gray-300 border border-gray-500/30'
-                        }`}>
+          <div className="surface rounded-lg border overflow-hidden">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Curso</TableHead>
+                  <TableHead>Recinto</TableHead>
+                  <TableHead>Inicio</TableHead>
+                  <TableHead>Fin</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Observaciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {reservationList.map((reservation) => (
+                  <TableRow key={reservation.id}>
+                    <TableCell className="font-medium">{courseNameById.get(reservation.curso_id) ?? `Curso #${reservation.curso_id}`}</TableCell>
+                    <TableCell>{recintoNameById.get(reservation.recinto_id) ?? `Recinto #${reservation.recinto_id}`}</TableCell>
+                    <TableCell className="text-xs text-secondary">{formatDateTime(reservation.start_at)}</TableCell>
+                    <TableCell className="text-xs text-secondary">{formatDateTime(reservation.end_at)}</TableCell>
+                    <TableCell>
+                      <Badge
+                        className={
+                          reservation.status === 'pendiente'
+                            ? 'bg-warning text-warning-foreground'
+                            : reservation.status === 'aprobada'
+                              ? 'bg-success text-success-foreground'
+                              : reservation.status === 'rechazada'
+                                ? 'bg-error text-error-foreground'
+                                : 'bg-muted text-muted-foreground'
+                        }
+                      >
                         {reservation.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-xs text-gray-400 max-w-xs truncate">
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-xs text-secondary max-w-xs truncate">
                       {reservation.observations || '—'}
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
+              </TableBody>
+            </Table>
           </div>
         )}
       </section>

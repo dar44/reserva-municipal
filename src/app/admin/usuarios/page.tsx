@@ -5,8 +5,9 @@ import { createSupabaseServer } from '@/lib/supabaseServer'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { buildStorageUrl } from '@/lib/storage'
 import UsuarioActions from './UsuarioActions'
-
-
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -22,7 +23,7 @@ type Usuario = {
   avatarUrl: string | null
 }
 
-export default async function AdminUsuariosPage () {
+export default async function AdminUsuariosPage() {
   const supabase = await createSupabaseServer()
   const { data } = await supabase
     .from('users')
@@ -43,53 +44,72 @@ export default async function AdminUsuariosPage () {
     }))
   )
 
+  const getRoleBadgeColor = (role: string) => {
+    switch (role) {
+      case 'admin': return 'bg-error text-error-foreground'
+      case 'worker': return 'bg-warning text-warning-foreground'
+      case 'organizer': return 'bg-info text-info-foreground'
+      default: return ''
+    }
+  }
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Usuarios</h1>
-        <Link href="/admin/usuarios/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Usuario</Link>
+    <div className="container-padding section-spacing">
+      <div className="flex justify-between items-center mb-8">
+        <h1>Usuarios</h1>
+        <Button asChild>
+          <Link href="/admin/usuarios/nuevo">+ Nuevo Usuario</Link>
+        </Button>
       </div>
-      <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">Imagen</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Email</th>
-            <th className="px-4 py-2 text-left">Teléfono</th>
-            <th className="px-4 py-2 text-left">DNI</th>
-            <th className="px-4 py-2 text-left">Rol</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {usuarios?.map(u => (
-            <tr key={u.id} className="border-t border-gray-700">
-              <td className="px-4 py-2">
-                {u.avatarUrl ? (
-                  <Image
-                    src={u.avatarUrl}
-                    alt={u.name}
-                    width={40}
-                    height={40}
-                    className="w-10 h-10 object-cover"
-                  />
-                ) : (
-                  '—'
-                )}
-              </td>
-              <td className="px-4 py-2">{u.name}</td>
-              <td className="px-4 py-2">{u.email}</td>
-              <td className="px-4 py-2">{u.phone}</td>
-              <td className="px-4 py-2">{u.dni}</td>
-              <td className="px-4 py-2">{u.role}</td>
-              <td className="px-4 py-2">
+
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Imagen</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Teléfono</TableHead>
+              <TableHead>DNI</TableHead>
+              <TableHead>Rol</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {usuarios?.map(u => (
+              <TableRow key={u.id}>
+                <TableCell>
+                  {u.avatarUrl ? (
+                    <Image
+                      src={u.avatarUrl}
+                      alt={u.name}
+                      width={48}
+                      height={48}
+                      className="w-12 h-12 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                      {u.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                </TableCell>
+                <TableCell className="font-medium">{u.name}</TableCell>
+                <TableCell className="text-secondary">{u.email}</TableCell>
+                <TableCell className="text-secondary">{u.phone}</TableCell>
+                <TableCell className="text-secondary">{u.dni}</TableCell>
+                <TableCell>
+                  <Badge className={getRoleBadgeColor(u.role)}>
+                    {u.role}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
                   <UsuarioActions id={u.id} />
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

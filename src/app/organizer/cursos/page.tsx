@@ -27,7 +27,7 @@ export default async function OrganizerCoursesPage() {
   )
 
   return (
-    <section className="mx-auto max-w-5xl space-y-6 p-2 sm:p-4">
+    <section className="container-padding section-spacing max-w-5xl mx-auto">
       <OrganizerCoursesClient courses={cursos ?? []} defaultImages={defaultImages} />
     </section>
   )

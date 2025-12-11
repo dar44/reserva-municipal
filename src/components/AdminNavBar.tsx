@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import ProfileDropdown from './ProfileDropdown'
 import ProfileModal from './ProfileModal'
+import { ThemeToggle } from './ThemeToggle'
 
 export default function AdminNavBar() {
   const pathname = usePathname()
@@ -43,12 +44,13 @@ export default function AdminNavBar() {
           <Link href="/admin/panel" className="text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
             ServiMunicipal
           </Link>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Link href="/admin/panel" className={linkClass('/admin/panel')}>Panel</Link>
             <Link href="/admin/recintos" className={linkClass('/admin/recintos')}>Recintos</Link>
             <Link href="/admin/cursos" className={linkClass('/admin/cursos')}>Cursos</Link>
             <Link href="/admin/usuarios" className={linkClass('/admin/usuarios')}>Usuarios</Link>
             <Link href="/admin/reservas" className={linkClass('/admin/reservas')}>Reservas</Link>
+            <ThemeToggle />
           </div>
           <div className="relative">
             <button

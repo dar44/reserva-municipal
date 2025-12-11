@@ -17,10 +17,14 @@ export default async function InscripcionCurso({ params }: { params: Promise<{ i
   if (!curso) return notFound()
 
   return (
-    <div className="max-w-md mx-auto space-y-4">
-      <Link href="/worker/cursos" className="text-sm underline">← Volver al listado</Link>
-      <h1 className="text-2xl font-bold">Inscripción en {curso.name}</h1>
-      <div className="bg-gray-800 p-4 rounded space-y-3">
+    <div className="container-padding section-spacing max-w-2xl mx-auto">
+      <Link href="/worker/cursos" className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver al listado
+      </Link>
+
+      <h1 className="mb-8">Inscripción en {curso.name}</h1>
+
+      <div className="surface p-6 rounded-lg">
         <InscripcionForm cursoId={curso.id} />
       </div>
     </div>

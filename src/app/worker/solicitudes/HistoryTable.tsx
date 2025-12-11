@@ -1,5 +1,8 @@
 'use client'
 
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+
 type ReservationStatus = 'aprobada' | 'rechazada'
 
 type HistoryRow = {
@@ -18,10 +21,7 @@ type Props = {
     history: HistoryRow[]
 }
 
-const statusStyles: Record<ReservationStatus, string> = {
-    aprobada: 'bg-green-700 text-white',
-    rechazada: 'bg-red-700 text-white',
-}
+
 
 export default function HistoryTable({ history }: Props) {
     const formatDate = (value: string) => {
@@ -43,52 +43,50 @@ export default function HistoryTable({ history }: Props) {
     }
 
     if (history.length === 0) {
-        return <p className="text-sm text-gray-400">No hay historial de solicitudes.</p>
+        return <p className="text-secondary">No hay historial de solicitudes.</p>
     }
 
     return (
-        <div className="overflow-x-auto">
-            <table className="min-w-full overflow-hidden rounded bg-gray-800 text-sm">
-                <thead className="bg-gray-700 text-xs uppercase text-gray-300">
-                    <tr>
-                        <th className="px-4 py-2 text-left">Organizador</th>
-                        <th className="px-4 py-2 text-left">Recinto</th>
-                        <th className="px-4 py-2 text-left">Fecha solicitada</th>
-                        <th className="px-4 py-2 text-left">Horario</th>
-                        <th className="px-4 py-2 text-left">Motivo</th>
-                        <th className="px-4 py-2 text-left">Estado</th>
-                        <th className="px-4 py-2 text-left">Respuesta</th>
-                    </tr>
-                </thead>
-                <tbody>
+        <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+            <Table>
+                <TableHeader>
+                    <TableRow>
+                        <TableHead>Organizador</TableHead>
+                        <TableHead>Recinto</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Horario</TableHead>
+                        <TableHead>Motivo</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Respuesta</TableHead>
+                    </TableRow>
+                </TableHeader>
+                <TableBody>
                     {history.map(row => (
-                        <tr key={row.id} className="border-t border-gray-700">
-                            <td className="px-4 py-2">
-                                <div>
-                                    <div className="font-medium">{row.organizer_name}</div>
-                                    <div className="text-xs text-gray-400">{formatDate(row.created_at)}</div>
-                                </div>
-                            </td>
-                            <td className="px-4 py-2">{row.recinto_name}</td>
-                            <td className="px-4 py-2">{formatDate(row.start_at)}</td>
-                            <td className="px-4 py-2">
+                        <TableRow key={row.id}>
+                            <TableCell>
+                                <div className="font-medium">{row.organizer_name}</div>
+                                <div className="text-xs text-tertiary">{formatDate(row.created_at)}</div>
+                            </TableCell>
+                            <TableCell className="text-secondary">{row.recinto_name}</TableCell>
+                            <TableCell className="text-secondary text-xs">{formatDate(row.start_at)}</TableCell>
+                            <TableCell className="text-secondary text-xs">
                                 {formatTime(row.start_at)}-{formatTime(row.end_at)}
-                            </td>
-                            <td className="px-4 py-2 text-xs text-gray-300">
+                            </TableCell>
+                            <TableCell className="text-xs text-secondary">
                                 {truncate(row.request_reason)}
-                            </td>
-                            <td className="px-4 py-2">
-                                <span className={`rounded px-2 py-0.5 text-xs uppercase ${statusStyles[row.status]}`}>
+                            </TableCell>
+                            <TableCell>
+                                <Badge className={row.status === 'aprobada' ? "bg-success text-success-foreground" : "bg-error text-error-foreground"}>
                                     {row.status === 'aprobada' ? 'Aprobada' : 'Rechazada'}
-                                </span>
-                            </td>
-                            <td className="px-4 py-2 text-xs text-gray-300">
+                                </Badge>
+                            </TableCell>
+                            <TableCell className="text-xs text-secondary">
                                 {truncate(row.observations)}
-                            </td>
-                        </tr>
+                            </TableCell>
+                        </TableRow>
                     ))}
-                </tbody>
-            </table>
+                </TableBody>
+            </Table>
         </div>
     )
 }

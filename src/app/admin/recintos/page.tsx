@@ -3,10 +3,13 @@ import Image from 'next/image'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import RecintoActions from './RecintoActions'
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from '@/lib/recintoImages'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
-export default async function AdminRecintosPage () {
+export default async function AdminRecintosPage() {
   const supabase = await createSupabaseServer()
   const { data: recintos } = await supabase
     .from('recintos')
@@ -16,50 +19,63 @@ export default async function AdminRecintosPage () {
   const defaultImageUrl = getRecintoDefaultPublicUrl(supabase)
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-4">
-        <h1 className="text-2xl font-bold">Recintos</h1>
-        <Link href="/admin/recintos/nuevo" className="bg-blue-600 px-3 py-1 rounded text-sm">+ Nuevo Recinto</Link>
+    <div className="container-padding section-spacing">
+      <div className="flex justify-between items-center mb-8">
+        <h1>Recintos</h1>
+        <Button asChild>
+          <Link href="/admin/recintos/nuevo">+ Nuevo Recinto</Link>
+        </Button>
       </div>
-      <table className="min-w-full bg-gray-800 rounded overflow-hidden text-sm">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">Imagen</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Ubicación</th>
-            <th className="px-4 py-2 text-left">Estado</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {recintos?.map(r => {
-            const imageUrl = getRecintoImageUrl(supabase, r.image, r.image_bucket, defaultImageUrl)
-            return (
-              <tr key={r.id} className="border-t border-gray-700">
-                <td className="px-4 py-2">
-                  {imageUrl ? (
-                    <Image
-                      src={imageUrl}
-                      alt={r.name}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10 rounded object-cover"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 rounded bg-gray-700" />
-                  )}
-                </td>
-                <td className="px-4 py-2">{r.name}</td>
-                <td className="px-4 py-2">{r.ubication}</td>
-                <td className="px-4 py-2">{r.state}</td>
-                <td className="px-4 py-2">
-                  <RecintoActions id={r.id} />
-                </td>
-              </tr>
-            )
-          })}
-        </tbody>
-      </table>
+
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Imagen</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Ubicación</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {recintos?.map(r => {
+              const imageUrl = getRecintoImageUrl(supabase, r.image, r.image_bucket, defaultImageUrl)
+              const isDisponible = r.state === 'Disponible'
+              return (
+                <TableRow key={r.id}>
+                  <TableCell>
+                    {imageUrl ? (
+                      <Image
+                        src={imageUrl}
+                        alt={r.name}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 rounded-md object-cover"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 rounded-md bg-muted" />
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">{r.name}</TableCell>
+                  <TableCell className="text-secondary">{r.ubication}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={isDisponible ? "default" : "secondary"}
+                      className={isDisponible ? "bg-success text-success-foreground" : ""}
+                    >
+                      {r.state}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <RecintoActions id={r.id} />
+                  </TableCell>
+                </TableRow>
+              )
+            })}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

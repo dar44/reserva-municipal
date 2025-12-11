@@ -2,6 +2,8 @@ import { createSupabaseServer } from "@/lib/supabaseServer";
 import DeleteButton from "./DeleteButton";
 import { getConfiguredCurrency } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = "force-dynamic";
 
@@ -32,49 +34,57 @@ export default async function WorkerReservasPage() {
   }
 
   return (
-    <section className="space-y-4">
-      <header>
-        <h1 className="text-2xl font-bold">Listado de Reservas de Ciudadanos</h1>
-        <p className="text-sm text-gray-300">
+    <section className="container-padding section-spacing">
+      <header className="mb-8">
+        <h1>Listado de Reservas de Ciudadanos</h1>
+        <p className="text-secondary mt-2">
           Administra las reservas realizadas por los ciudadanos y controla su estado de pago.
         </p>
       </header>
-      <div className="overflow-x-auto">
-        <table className="min-w-full overflow-hidden rounded bg-gray-800 text-sm">
-          <thead className="bg-gray-700">
-            <tr>
-              <th className="px-4 py-2 text-left">ID</th>
-              <th className="px-4 py-2 text-left">Usuario</th>
-              <th className="px-4 py-2 text-left">Recinto</th>
-              <th className="px-4 py-2 text-left">Fecha y Hora</th>
-              <th className="px-4 py-2 text-left">Precio</th>
-              <th className="px-4 py-2 text-left">Pago</th>
-              <th className="px-4 py-2 text-left">Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
+
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>ID</TableHead>
+              <TableHead>Usuario</TableHead>
+              <TableHead>Recinto</TableHead>
+              <TableHead>Fecha y Hora</TableHead>
+              <TableHead>Precio</TableHead>
+              <TableHead>Pago</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {(reservas ?? []).map(r => (
-              <tr key={r.id} className="border-t border-gray-700">
-                <td className="px-4 py-2">{r.id}</td>
-                <td className="px-4 py-2">{r.users?.email ?? ''}</td>
-                <td className="px-4 py-2">{r.recintos?.name ?? ''}</td>
-                <td className="px-4 py-2">{formatDate(r.start_at)} - {formatDate(r.end_at)}</td>
-                <td className="px-4 py-2">{formatPrice(Number(r.price ?? 0))}</td>
-                <td className="px-4 py-2">{r.paid ? 'Pagado' : 'Pendiente'}</td>
-                <td className="px-4 py-2">
+              <TableRow key={r.id}>
+                <TableCell className="font-medium">#{r.id}</TableCell>
+                <TableCell className="text-secondary">{r.users?.email ?? '—'}</TableCell>
+                <TableCell className="text-secondary">{r.recintos?.name ?? '—'}</TableCell>
+                <TableCell className="text-secondary text-xs">
+                  <div>{formatDate(r.start_at)}</div>
+                  <div>{formatDate(r.end_at)}</div>
+                </TableCell>
+                <TableCell className="font-medium">{formatPrice(Number(r.price ?? 0))}</TableCell>
+                <TableCell>
+                  <Badge className={r.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
+                    {r.paid ? 'Pagado' : 'Pendiente'}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">
                   <DeleteButton id={r.id} />
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ))}
             {(!reservas || reservas.length === 0) && (
-              <tr>
-                <td colSpan={7} className="px-4 py-6 text-center text-sm text-gray-400">
+              <TableRow>
+                <TableCell colSpan={7} className="text-center text-secondary py-8">
                   No hay reservas registradas.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
     </section>
   );

@@ -9,7 +9,7 @@ export default async function CitizenLayout({ children }: { children: ReactNode 
   await requireAuthRSC()
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <NavBar />
       <main className="flex-1 p-4 container mx-auto">{children}</main>
     </div>

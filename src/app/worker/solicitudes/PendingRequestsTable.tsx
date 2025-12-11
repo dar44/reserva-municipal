@@ -2,6 +2,9 @@
 
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 type ReservationStatus = 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
 
@@ -124,68 +127,68 @@ export default function PendingRequestsTable({ requests }: Props) {
     }
 
     if (rows.length === 0) {
-        return <p className="text-sm text-gray-400">No hay solicitudes pendientes.</p>
+        return <p className="text-secondary">No hay solicitudes pendientes.</p>
     }
 
     return (
         <>
-            <div className="overflow-x-auto">
-                <table className="min-w-full overflow-hidden rounded bg-gray-800 text-sm">
-                    <thead className="bg-gray-700 text-xs uppercase text-gray-300">
-                        <tr>
-                            <th className="px-4 py-2 text-left">Organizador</th>
-                            <th className="px-4 py-2 text-left">Recinto</th>
-                            <th className="px-4 py-2 text-left">Fecha solicitada</th>
-                            <th className="px-4 py-2 text-left">Horario</th>
-                            <th className="px-4 py-2 text-left">Motivo</th>
-                            <th className="px-4 py-2 text-left">Estado</th>
-                            <th className="px-4 py-2 text-left">Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
+            <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+                <Table>
+                    <TableHeader>
+                        <TableRow>
+                            <TableHead>Organizador</TableHead>
+                            <TableHead>Recinto</TableHead>
+                            <TableHead>Fecha</TableHead>
+                            <TableHead>Horario</TableHead>
+                            <TableHead>Motivo</TableHead>
+                            <TableHead>Estado</TableHead>
+                            <TableHead className="text-right">Acciones</TableHead>
+                        </TableRow>
+                    </TableHeader>
+                    <TableBody>
                         {rows.map(row => (
-                            <tr key={row.id} className="border-t border-gray-700">
-                                <td className="px-4 py-2">
-                                    <div>
-                                        <div className="font-medium">{row.organizer_name}</div>
-                                        <div className="text-xs text-gray-400">{formatDate(row.created_at)}</div>
-                                    </div>
-                                </td>
-                                <td className="px-4 py-2">{row.recinto_name}</td>
-                                <td className="px-4 py-2">{formatDate(row.start_at)}</td>
-                                <td className="px-4 py-2">
+                            <TableRow key={row.id}>
+                                <TableCell>
+                                    <div className="font-medium">{row.organizer_name}</div>
+                                    <div className="text-xs text-tertiary">{formatDate(row.created_at)}</div>
+                                </TableCell>
+                                <TableCell className="text-secondary">{row.recinto_name}</TableCell>
+                                <TableCell className="text-secondary text-xs">{formatDate(row.start_at)}</TableCell>
+                                <TableCell className="text-secondary text-xs">
                                     {formatTime(row.start_at)}-{formatTime(row.end_at)}
-                                </td>
-                                <td className="px-4 py-2 text-xs text-gray-300">
+                                </TableCell>
+                                <TableCell className="text-xs text-secondary">
                                     {truncate(row.observations)}
-                                </td>
-                                <td className="px-4 py-2">
-                                    <span className="rounded bg-yellow-600 px-2 py-0.5 text-xs uppercase text-black">
+                                </TableCell>
+                                <TableCell>
+                                    <Badge className="bg-warning text-warning-foreground">
                                         Pendiente
-                                    </span>
-                                </td>
-                                <td className="px-4 py-2">
-                                    <div className="flex gap-2">
-                                        <button
+                                    </Badge>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                    <div className="flex justify-end gap-2">
+                                        <Button
                                             onClick={() => openDecisionModal(row.id, 'aprobada')}
-                                            className="rounded bg-emerald-600 px-3 py-1 text-xs text-white disabled:opacity-60 hover:bg-emerald-500"
+                                            size="sm"
+                                            className="bg-success hover:bg-success/90"
                                             disabled={loadingId === row.id}
                                         >
                                             ✓ Aprobar
-                                        </button>
-                                        <button
+                                        </Button>
+                                        <Button
                                             onClick={() => openDecisionModal(row.id, 'rechazada')}
-                                            className="rounded bg-red-600 px-3 py-1 text-xs text-white disabled:opacity-60 hover:bg-red-500"
+                                            size="sm"
+                                            variant="destructive"
                                             disabled={loadingId === row.id}
                                         >
                                             ✗ Rechazar
-                                        </button>
+                                        </Button>
                                     </div>
-                                </td>
-                            </tr>
+                                </TableCell>
+                            </TableRow>
                         ))}
-                    </tbody>
-                </table>
+                    </TableBody>
+                </Table>
             </div>
             {decisionTarget && (
                 <div

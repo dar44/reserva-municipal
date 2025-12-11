@@ -73,7 +73,7 @@ export default async function OrganizerPanelPage() {
   }
 
   return (
-    <div className="space-y-10 pb-8">
+    <div className="container-padding section-spacing space-y-10 pb-8">
       {/* Sección de cabecera - Jerarquía tipográfica mejorada */}
       <section className="space-y-6">
         <header className="space-y-3">

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
+import { Button } from "@/components/ui/button"
 
 const slots = Array.from({ length: 12 }, (_, i) => {
   const start = 8 + i
@@ -13,7 +14,7 @@ const slots = Array.from({ length: 12 }, (_, i) => {
   }
 })
 
-export default function ReservationForm ({ recintoId }: { recintoId: number }) {
+export default function ReservationForm({ recintoId }: { recintoId: number }) {
   const [isNew, setIsNew] = useState(false)
   const toast = useToast()
 
@@ -56,35 +57,70 @@ export default function ReservationForm ({ recintoId }: { recintoId: number }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3">
-      <label className="block text-sm">Fecha
-        <input type="date" name="date" className="w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required />
-      </label>
-      <label className="block text-sm">Hora inicio – fin
-        <select name="time" className="w-full bg-gray-900 border border-gray-700 rounded p-2 mt-1" required>
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div>
+        <label className="block text-sm font-medium mb-2">Fecha</label>
+        <input
+          type="date"
+          name="date"
+          className="input-base w-full"
+          required
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium mb-2">Hora inicio – fin</label>
+        <select name="time" className="input-base w-full" required>
           {slots.map((slot) => (
             <option key={slot.value} value={slot.value}>
               {slot.label}
             </option>
           ))}
         </select>
-      </label>
-      <div className="space-y-2">
+      </div>
+
+      <div className="space-y-3">
+        <p className="text-sm font-medium">¿El usuario tiene cuenta en el sistema?</p>
         <div className="flex gap-2">
-          <button type="button" onClick={() => setIsNew(false)} className={`px-3 py-1 rounded text-xs ${!isNew ? 'bg-blue-600' : 'bg-gray-600'}`}>Usuario existente</button>
-          <button type="button" onClick={() => setIsNew(true)} className={`px-3 py-1 rounded text-xs ${isNew ? 'bg-blue-600' : 'bg-gray-600'}`}>Nuevo usuario</button>
+          <Button
+            type="button"
+            onClick={() => setIsNew(false)}
+            variant={!isNew ? "default" : "outline"}
+            size="sm"
+          >
+            Usuario existente
+          </Button>
+          <Button
+            type="button"
+            onClick={() => setIsNew(true)}
+            variant={isNew ? "default" : "outline"}
+            size="sm"
+          >
+            Nuevo usuario
+          </Button>
         </div>
-        <input type="email" name="email" placeholder="Correo electrónico" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Correo electrónico"
+          className="input-base w-full"
+          required
+        />
+
         {isNew && (
           <>
-            <input type="text" name="name" placeholder="Nombre" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-            <input type="text" name="surname" placeholder="Apellido" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-            <input type="text" name="dni" placeholder="DNI" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
-            <input type="text" name="phone" placeholder="Teléfono" className="w-full bg-gray-900 border border-gray-700 rounded p-2" required />
+            <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
+            <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
+            <input type="text" name="dni" placeholder="DNI" className="input-base w-full" required />
+            <input type="text" name="phone" placeholder="Teléfono" className="input-base w-full" required />
           </>
         )}
       </div>
-      <button className="w-full bg-green-600 py-2 rounded">Confirmar Reserva</button>
+
+      <Button className="w-full bg-success hover:bg-success/90" type="submit">
+        Confirmar Reserva
+      </Button>
     </form>
   )
 }

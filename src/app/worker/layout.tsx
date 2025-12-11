@@ -8,7 +8,7 @@ export default async function WorkerLayout({ children }: { children: ReactNode }
   await requireAuthRSC(['admin', 'worker'])
 
   return (
-    <div className="min-h-screen flex flex-col bg-black text-white">
+    <div className="min-h-screen flex flex-col bg-background text-foreground">
       <WorkerNavBar />
       <main className="flex-1 p-4 container mx-auto">{children}</main>
     </div>

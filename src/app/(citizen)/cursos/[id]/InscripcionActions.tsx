@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import ConfirmModal from '@/components/ConfirmModal'
 import { useToast } from '@/components/Toast'
+import { Button } from '@/components/ui/button'
 
 interface Props {
   cursoId: number
@@ -10,7 +11,7 @@ interface Props {
   inscripcionId?: number | null
 }
 
-export default function InscripcionActions ({ cursoId, email, inscripcionId }: Props) {
+export default function InscripcionActions({ cursoId, email, inscripcionId }: Props) {
   const toast = useToast()
   const [open, setOpen] = useState(false)
 
@@ -44,8 +45,8 @@ export default function InscripcionActions ({ cursoId, email, inscripcionId }: P
     return (
       <>
         <div className="flex gap-2">
-          <button disabled className="px-3 py-1 rounded text-sm bg-gray-600">Ya inscrito</button>
-          <button onClick={() => setOpen(true)} className="px-3 py-1 rounded text-sm bg-red-600">Cancelar</button>
+          <Button disabled variant="secondary" size="sm">Ya inscrito</Button>
+          <Button onClick={() => setOpen(true)} variant="destructive" size="sm">Cancelar</Button>
         </div>
         <ConfirmModal
           open={open}
@@ -61,8 +62,12 @@ export default function InscripcionActions ({ cursoId, email, inscripcionId }: P
   }
 
   return (
-    <button onClick={inscribir} className="px-3 py-1 rounded text-sm bg-blue-600">
+    <Button
+      onClick={inscribir}
+      size="sm"
+      className="hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 transition-all"
+    >
       Pagar e inscribirse
-    </button>
+    </Button>
   )
 }

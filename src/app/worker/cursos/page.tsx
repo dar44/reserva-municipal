@@ -2,6 +2,8 @@ import { createSupabaseServer } from "@/lib/supabaseServer";
 import Image from 'next/image'
 import CursoActions from "./CursoActions";
 import { getPublicStorageUrl } from '@/lib/storage'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = "force-dynamic";
 
@@ -34,66 +36,70 @@ export default async function WorkerCursosPage() {
   }))
 
   return (
-    <div>
-      <h1 className="text-2xl font-bold mb-4">Gestión de Cursos</h1>
-      <table className="min-w-full bg-gray-800 text-sm rounded overflow-hidden">
-        <thead className="bg-gray-700">
-          <tr>
-            <th className="px-4 py-2 text-left">Imagen</th>
-            <th className="px-4 py-2 text-left">Nombre</th>
-            <th className="px-4 py-2 text-left">Descripción</th>
-            <th className="px-4 py-2 text-left">Fecha</th>
-            <th className="px-4 py-2 text-left">Plazas disponibles</th>
-            <th className="px-4 py-2 text-left">Estado</th>
-            <th className="px-4 py-2 text-left">Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cursosWithImages?.map(c => {
-            const ocupadas = c.inscripciones?.[0]?.count ?? 0;
-            return (
-              <tr key={c.id} className="border-t border-gray-700">
-                <td className="px-4 py-2">
-                  {c.imageUrl ? (
-                    <Image
-                      src={c.imageUrl}
-                      alt={c.name}
-                      width={40}
-                      height={40}
-                      className="h-10 w-10 object-cover rounded"
-                    />
-                  ) : (
-                    <div className="h-10 w-10 bg-gray-700 rounded flex items-center justify-center text-sm text-gray-400 font-semibold">
-                      {c.name.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </td>
-                <td className="px-4 py-2">{c.name}</td>
-                <td className="px-4 py-2">{c.description}</td>
-                <td className="px-4 py-2">
-                  {c.begining_date
-                    ? new Date(c.begining_date).toLocaleDateString()
-                    : ""}
-                </td>
-                <td className="px-4 py-2">
-                  {(c.capacity ?? 0) - ocupadas}/{c.capacity ?? 0}
-                </td>
-                <td className="px-4 py-2">
-                  <span
-                    className={`px-2 py-0.5 rounded text-xs ${c.state === "Disponible" ? "bg-green-700" : "bg-gray-600"
-                      }`}
-                  >
-                    {c.state}
-                  </span>
-                </td>
-                <td className="px-4 py-2">
-                  <CursoActions id={c.id} state={c.state} />
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Gestión de Cursos</h1>
+
+      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Imagen</TableHead>
+              <TableHead>Nombre</TableHead>
+              <TableHead>Descripción</TableHead>
+              <TableHead>Fecha</TableHead>
+              <TableHead>Plazas</TableHead>
+              <TableHead>Estado</TableHead>
+              <TableHead className="text-right">Acciones</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {cursosWithImages?.map(c => {
+              const ocupadas = c.inscripciones?.[0]?.count ?? 0;
+              const isDisponible = c.state === "Disponible"
+              return (
+                <TableRow key={c.id}>
+                  <TableCell>
+                    {c.imageUrl ? (
+                      <Image
+                        src={c.imageUrl}
+                        alt={c.name}
+                        width={48}
+                        height={48}
+                        className="h-12 w-12 object-cover rounded-md"
+                      />
+                    ) : (
+                      <div className="h-12 w-12 bg-muted rounded-md flex items-center justify-center text-lg font-semibold text-muted-foreground">
+                        {c.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </TableCell>
+                  <TableCell className="font-medium">{c.name}</TableCell>
+                  <TableCell className="text-secondary">{c.description}</TableCell>
+                  <TableCell className="text-secondary">
+                    {c.begining_date
+                      ? new Date(c.begining_date).toLocaleDateString()
+                      : "—"}
+                  </TableCell>
+                  <TableCell className="text-secondary">
+                    {(c.capacity ?? 0) - ocupadas}/{c.capacity ?? 0}
+                  </TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={isDisponible ? "default" : "secondary"}
+                      className={isDisponible ? "bg-success text-success-foreground" : ""}
+                    >
+                      {c.state}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <CursoActions id={c.id} state={c.state} />
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 }

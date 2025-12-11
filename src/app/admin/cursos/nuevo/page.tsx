@@ -10,6 +10,7 @@ import {
   processCourseImageInput,
 } from '@/lib/cursoImages'
 import { listBucketPrefix } from '@/lib/storage'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -95,22 +96,37 @@ export default async function NuevoCursoPage() {
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-4">
-      <Link href="/admin/cursos" className="text-sm underline">← Volver</Link>
-      <h1 className="text-2xl font-bold">Nuevo Curso</h1>
-      <form action={crearCurso} className="space-y-3">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Descripción"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+    <div className="container-padding section-spacing max-w-3xl">
+      <div className="mb-8">
+        <Link href="/admin/cursos" className="text-sm text-primary hover:underline mb-4 inline-block">
+          ← Volver a Cursos
+        </Link>
+        <h1>Nuevo Curso</h1>
+      </div>
+
+      <form action={crearCurso} className="space-y-6 surface p-6 rounded-lg">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-2">Nombre</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nombre del curso"
+              className="input-base w-full"
+              required
+            />
+          </div>
+
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium mb-2">Descripción</label>
+            <textarea
+              name="description"
+              placeholder="Descripción del curso"
+              className="input-base w-full min-h-[100px]"
+            />
+          </div>
+        </div>
+
         <LocationPicker
           valueNames={{
             address: 'location',
@@ -121,42 +137,52 @@ export default async function NuevoCursoPage() {
           }}
           labels={{ region: 'Comunidad' }}
         />
-        <input
-          type="date"
-          name="begining_date"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
-        <input
-          type="date"
-          name="end_date"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Horario del curso</label>
-          <div className="grid grid-cols-2 gap-3">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Fecha de inicio</label>
+            <input
+              type="date"
+              name="begining_date"
+              className="input-base w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Fecha de fin</label>
+            <input
+              type="date"
+              name="end_date"
+              className="input-base w-full"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-3">Horario del curso</label>
+          <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+              <label className="block text-xs text-secondary mb-2">Hora de inicio</label>
               <input
                 type="time"
                 name="start_time"
-                className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+                className="input-base w-full"
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+              <label className="block text-xs text-secondary mb-2">Hora de fin</label>
               <input
                 type="time"
                 name="end_time"
-                className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+                className="input-base w-full"
               />
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
-          <label className="block text-sm font-medium">Días de la semana</label>
-          <div className="grid grid-cols-4 gap-2">
+        <div>
+          <label className="block text-sm font-medium mb-3">Días de la semana</label>
+          <div className="grid grid-cols-4 gap-3">
             {[
               { value: 1, label: 'Lun' },
               { value: 2, label: 'Mar' },
@@ -170,36 +196,54 @@ export default async function NuevoCursoPage() {
                 <input
                   type="checkbox"
                   name={`day_${day.value}`}
-                  className="h-4 w-4 accent-blue-600"
+                  className="h-4 w-4 rounded"
                 />
                 {day.label}
               </label>
             ))}
           </div>
         </div>
-        <input
-          type="number"
-          step="0.1"
-          name="price"
-          placeholder="Precio"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
-        <select
-          name="state"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        >
-          <option value="Disponible">Disponible</option>
-          <option value="No disponible">No disponible</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
-        <input
-          type="number"
-          name="capacity"
-          placeholder="Capacidad"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+
+        <div className="grid md:grid-cols-2 gap-6">
+          <div>
+            <label className="block text-sm font-medium mb-2">Precio</label>
+            <input
+              type="number"
+              step="0.1"
+              name="price"
+              placeholder="0.00"
+              className="input-base w-full"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Capacidad</label>
+            <input
+              type="number"
+              name="capacity"
+              placeholder="0"
+              className="input-base w-full"
+            />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Estado</label>
+          <select name="state" className="input-base w-full">
+            <option value="Disponible">Disponible</option>
+            <option value="No disponible">No disponible</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
+
         <CourseImagePicker defaultImages={defaultImages} />
-        <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Crear</button>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Crear Curso</Button>
+          <Button asChild variant="outline">
+            <Link href="/admin/cursos">Cancelar</Link>
+          </Button>
+        </div>
       </form>
     </div>
   )

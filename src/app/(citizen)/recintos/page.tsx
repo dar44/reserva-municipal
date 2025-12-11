@@ -2,6 +2,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export const dynamic = "force-dynamic";
 
@@ -39,11 +41,11 @@ export default async function RecintosPage({
   const pricePerHour = 500;
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Recintos Disponibles</h1>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Recintos Disponibles</h1>
 
       <form
-        className="flex gap-2 mb-6 items-end"
+        className="flex gap-3 mb-8"
         action="/recintos"
       >
         <input
@@ -51,59 +53,61 @@ export default async function RecintosPage({
           name="search"
           placeholder="Buscar por nombre..."
           defaultValue={params.search}
-          className="bg-gray-800 border border-gray-700 rounded p-2 text-sm flex-1"
+          className="input-base flex-1 max-w-md"
         />
-        <button
-          type="submit"
-          className="px-3 py-2 bg-blue-600 rounded text-sm hover:bg-blue-500"
-        >
+        <Button type="submit">
           Buscar
-        </button>
-        <Link
-          href="/recintos"
-          className="px-3 py-2 bg-gray-700 rounded text-sm hover:bg-gray-600"
-        >
-          Limpiar
-        </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/recintos">Limpiar</Link>
+        </Button>
       </form>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {recintos?.map(r => {
           const imageUrl = getRecintoImageUrl(supabase, r.image, r.image_bucket, defaultImageUrl);
+          const isDisponible = r.state === 'Disponible';
           return (
             <Link
               key={r.id}
               href={`/recintos/${r.id}`}
-              className="bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-lg transition"
+              className="surface rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] group"
             >
-              <div className="relative h-40 bg-gray-700 flex items-center justify-center text-gray-400">
+              <div className="relative h-48 bg-muted flex items-center justify-center text-tertiary overflow-hidden">
                 {imageUrl ? (
                   <Image
                     src={imageUrl}
                     alt={r.name}
                     fill
-                    className="object-cover"
+                    className="object-cover transition-transform duration-300 group-hover:scale-110"
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                   />
                 ) : (
-                  "Imagen"
+                  "Sin imagen"
                 )}
               </div>
-              <div className="p-4 space-y-1">
-                <span className={`inline-block px-2 py-0.5 rounded text-xs ${r.state === 'Disponible' ? 'bg-green-700' : 'bg-red-700'}`}>{r.state}</span>
-                <h2 className="text-lg font-semibold">{r.name}</h2>
-                <p className="text-sm text-gray-300 line-clamp-2">{r.description}</p>
-                <p className="text-xs text-gray-500">{r.ubication}</p>
-                <div className="mt-2 flex items-center justify-end">
-                  <span className="text-sm font-semibold text-blue-400">{currency.format(pricePerHour)}/hora</span>
+              <div className="p-5 space-y-3">
+                <Badge
+                  variant={isDisponible ? "default" : "secondary"}
+                  className={isDisponible ? "bg-success text-success-foreground" : "bg-error text-error-foreground"}
+                >
+                  {r.state}
+                </Badge>
+                <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">{r.name}</h2>
+                <p className="text-sm text-secondary line-clamp-2">{r.description}</p>
+                <p className="text-sm text-tertiary">{r.ubication}</p>
+                <div className="mt-4 flex items-center justify-between">
+                  <span className="text-sm font-semibold text-primary">{currency.format(pricePerHour)}/hora</span>
+                  <span className="text-sm text-primary">Ver más →</span>
                 </div>
-                <button className="mt-2 w-full border border-blue-600 text-blue-400 rounded py-1 text-sm">Ver más</button>
               </div>
             </Link>
           );
         })}
         {!recintos?.length && (
-          <p className="text-sm text-gray-400">No se han encontrado recintos con los filtros seleccionados.</p>
+          <p className="text-secondary col-span-full text-center py-12">
+            No se han encontrado recintos con los filtros seleccionados.
+          </p>
         )}
       </div>
     </div>

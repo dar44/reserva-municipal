@@ -2,6 +2,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { getPublicStorageUrl } from '@/lib/storage'
 import { createSupabaseServerReadOnly } from '@/lib/supabaseServer'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = "force-dynamic";
 
@@ -51,11 +52,11 @@ export default async function CursosPage({
   });
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Cursos Disponibles</h1>
+    <div className="container-padding section-spacing">
+      <h1 className="mb-8">Cursos Disponibles</h1>
 
       <form
-        className="flex gap-2 mb-6 items-end"
+        className="flex flex-wrap gap-3 mb-8"
         action="/cursos"
       >
         <input
@@ -63,32 +64,28 @@ export default async function CursosPage({
           name="search"
           placeholder="Buscar por nombre..."
           defaultValue={params.search}
-          className="bg-gray-800 border border-gray-700 rounded p-2 text-sm flex-1"
+          className="input-base flex-1 min-w-[200px]"
         />
         <input
           type="date"
           name="from"
           defaultValue={params.from}
-          className="bg-gray-800 border border-gray-700 rounded p-2 text-sm"
+          className="input-base"
+          placeholder="Desde"
         />
         <input
           type="date"
           name="to"
           defaultValue={params.to}
-          className="bg-gray-800 border border-gray-700 rounded p-2 text-sm"
+          className="input-base"
+          placeholder="Hasta"
         />
-        <button
-          type="submit"
-          className="px-3 py-2 bg-blue-600 rounded text-sm hover:bg-blue-500"
-        >
+        <Button type="submit">
           Filtrar
-        </button>
-        <Link
-          href="/cursos"
-          className="px-3 py-2 bg-gray-700 rounded text-sm hover:bg-gray-600"
-        >
-          Limpiar
-        </Link>
+        </Button>
+        <Button asChild variant="outline">
+          <Link href="/cursos">Limpiar</Link>
+        </Button>
       </form>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -96,42 +93,44 @@ export default async function CursosPage({
           <Link
             key={c.id}
             href={`/cursos/${c.id}`}
-            className="bg-gray-800 rounded-lg overflow-hidden shadow hover:shadow-lg transition flex flex-col"
+            className="surface rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex flex-col group"
           >
-            <div className="relative h-40 bg-gray-700 flex items-center justify-center text-gray-400">
+            <div className="relative h-48 bg-muted flex items-center justify-center text-tertiary overflow-hidden">
               {c.imageUrl ? (
                 <Image
                   src={c.imageUrl}
                   alt={c.name}
                   fill
-                  className="object-cover"
+                  className="object-cover transition-transform duration-300 group-hover:scale-110"
                   sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
                 />
               ) : (
                 <span className="text-sm">Sin imagen disponible</span>
               )}
             </div>
-            <div className="p-4 flex flex-col flex-1 justify-between">
-              <div className="space-y-1">
-                <h2 className="text-lg font-semibold">{c.name}</h2>
-                <p className="text-sm text-gray-300 line-clamp-2">
+            <div className="p-5 flex flex-col flex-1 justify-between">
+              <div className="space-y-2">
+                <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">{c.name}</h2>
+                <p className="text-sm text-secondary line-clamp-2">
                   {c.description}
                 </p>
               </div>
-              <div className="mt-2 text-sm text-gray-400 flex justify-between items-center">
-                <span>{currency.format(c.price || 0)}</span>
-                <span>
+              <div className="mt-4 text-sm text-secondary flex justify-between items-center">
+                <span className="font-semibold text-foreground">{currency.format(c.price || 0)}</span>
+                <span className="text-sm">
                   {c.begining_date} - {c.end_date}
                 </span>
               </div>
-              <button className="mt-3 w-full border border-blue-600 text-blue-400 rounded py-1 text-sm">
-                Ver más
-              </button>
+              <div className="mt-3 text-sm text-primary text-right">
+                Ver más →
+              </div>
             </div>
           </Link>
         ))}
         {!cursosWithImages?.length && (
-          <p className="text-sm text-gray-400">No se han encontrado cursos disponibles con los filtros seleccionados.</p>
+          <p className="text-secondary col-span-full text-center py-12">
+            No se han encontrado cursos disponibles con los filtros seleccionados.
+          </p>
         )}
       </div>
     </div>

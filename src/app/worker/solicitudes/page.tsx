@@ -1,7 +1,7 @@
 import PendingRequestsTable from './PendingRequestsTable'
 import HistoryTable from './HistoryTable'
 import { createSupabaseServer } from '@/lib/supabaseServer'
-import StatCard from '@/components/StatCard'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const dynamic = 'force-dynamic'
 
@@ -110,30 +110,53 @@ export default async function WorkerSolicitudesPage() {
   const approvedCount = reservations.filter(r => r.status === 'aprobada').length
 
   return (
-    <div className="space-y-6">
-      <section className="space-y-2">
-        <h1 className="text-2xl font-semibold">Solicitudes de recintos</h1>
-        <p className="text-sm text-gray-400">
+    <div className="container-padding section-spacing">
+      <section className="mb-8">
+        <h1>Solicitudes de recintos</h1>
+        <p className="text-secondary mt-2">
           Revisa y gestiona las solicitudes de uso de recintos por organizadores
         </p>
       </section>
 
       {/* Statistics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <StatCard label="Total de solicitudes" value={totalRequests} />
-        <StatCard label="Pendientes de revisión" value={pendingCount} className="border-yellow-600" />
-        <StatCard label="Aprobadas" value={approvedCount} className="border-green-600" />
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card>
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-secondary">Total de solicitudes</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold">{totalRequests}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-warning">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-secondary">Pendientes de revisión</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-warning">{pendingCount}</div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-success">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-sm font-medium text-secondary">Aprobadas</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-3xl font-bold text-success">{approvedCount}</div>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Pending Requests */}
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Solicitudes pendientes</h2>
+      <section className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Solicitudes pendientes</h2>
         <PendingRequestsTable requests={pendingRequests} />
       </section>
 
       {/* History */}
-      <section className="space-y-3">
-        <h2 className="text-xl font-semibold">Historial de solicitudes</h2>
+      <section>
+        <h2 className="text-xl font-semibold mb-4">Historial de solicitudes</h2>
         <HistoryTable history={historyRequests} />
       </section>
     </div>

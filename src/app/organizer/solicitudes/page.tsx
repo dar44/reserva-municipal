@@ -42,7 +42,7 @@ export default async function OrganizerReservationsPage() {
     }
 
     return (
-        <section className="mx-auto max-w-5xl space-y-6 p-2 sm:p-4">
+        <section className="container-padding section-spacing max-w-5xl mx-auto">
             <OrganizerReservationsClient
                 courses={courses}
                 recintos={recintos}

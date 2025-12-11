@@ -69,11 +69,11 @@ export default async function ReservaDetailPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      <Link href="/reservas" className="text-sm underline">
+      <Link href="/reservas" className="text-sm text-primary hover:underline mb-6 inline-block">
         ← Volver
       </Link>
 
-      <div className="bg-gray-800 rounded-lg p-6 shadow space-y-6">
+      <div className="surface rounded-lg p-6 shadow-lg space-y-6">
         <div className="flex items-start justify-between gap-4">
           <div>
             <h1 className="text-2xl font-bold">
@@ -89,28 +89,28 @@ export default async function ReservaDetailPage({ params }: PageProps) {
 
         <dl className="grid sm:grid-cols-2 gap-4 text-sm">
           <div>
-            <dt className="text-gray-400">Estado</dt>
+            <dt className="text-secondary">Estado</dt>
             <dd className="font-medium capitalize">{reserva.status}</dd>
           </div>
           <div>
-            <dt className="text-gray-400">Pago</dt>
+            <dt className="text-secondary">Pago</dt>
             <dd className="font-medium">{reserva.paid ? "Pagado" : "Pendiente"}</dd>
           </div>
           <div>
-            <dt className="text-gray-400">Precio</dt>
+            <dt className="text-secondary">Precio</dt>
             <dd className="font-medium">{priceLabel}</dd>
           </div>
           {reserva.observations && (
             <div className="sm:col-span-2">
-              <dt className="text-gray-400">Observaciones</dt>
-              <dd className="font-medium text-gray-200">{reserva.observations}</dd>
+              <dt className="text-secondary">Observaciones</dt>
+              <dd className="font-medium">{reserva.observations}</dd>
             </div>
           )}
         </dl>
 
         {showMap && reserva.recintos?.ubication && (
           <div className="space-y-3">
-            <p className="text-sm font-medium text-gray-200">
+            <p className="text-sm font-medium text-foreground">
               Cómo llegar a tu reserva
             </p>
             <OpenStreetMapView

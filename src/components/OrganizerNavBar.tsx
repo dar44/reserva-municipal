@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import ProfileDropdown from './ProfileDropdown'
 import ProfileModal from './ProfileModal'
+import { ThemeToggle } from './ThemeToggle'
 
 export default function OrganizerNavBar() {
   const pathname = usePathname()
@@ -42,11 +43,12 @@ export default function OrganizerNavBar() {
         <Link href="/organizer/panel" className="text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors">
           ServiMunicipal
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           <Link href="/organizer/panel" className={linkClass('/organizer/panel')}>Panel</Link>
           <Link href="/organizer/recintos" className={linkClass('/organizer/recintos')}>Recintos</Link>
           <Link href="/organizer/cursos" className={linkClass('/organizer/cursos')}>Cursos</Link>
           <Link href="/organizer/solicitudes" className={linkClass('/organizer/solicitudes')}>Solicitudes</Link>
+          <ThemeToggle />
         </div>
         <div className="relative">
           <button

@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import {
@@ -11,6 +10,7 @@ import {
 } from '@/lib/storage'
 import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -100,27 +100,64 @@ export default async function EditUsuarioPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <Link href={`/admin/usuarios/${id}`} className="text-sm underline">← Volver</Link>
-      <h1 className="text-2xl font-bold">Editar Usuario</h1>
+    <div className="container-padding section-spacing max-w-3xl mx-auto">
+      <Link href={`/admin/usuarios/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver al Detalle
+      </Link>
+
+      <h1 className="mb-8">Editar Usuario</h1>
 
       <form
         action={updateUsuario}
-        className="space-y-3 bg-gray-800 p-4 rounded text-sm"
+        className="surface p-6 rounded-lg space-y-5"
       >
-        <input name="name" defaultValue={usuario.name} className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
-        <input name="surname" defaultValue={usuario.surname} className="w-full p-2 rounded bg-gray-700" placeholder="Apellido" required />
-        <input name="email" defaultValue={usuario.email} className="w-full p-2 rounded bg-gray-700" placeholder="Email" required />
-        <input name="phone" defaultValue={usuario.phone} className="w-full p-2 rounded bg-gray-700" placeholder="Teléfono" required />
-        <input name="dni" defaultValue={usuario.dni} className="w-full p-2 rounded bg-gray-700" placeholder="DNI" required />
-        <select name="role" defaultValue={usuario.role} className="w-full p-2 rounded bg-gray-700">
-          <option value="citizen">citizen</option>
-          <option value="worker">worker</option>
-          <option value="admin">admin</option>
-        </select>
-        <input name="password" type="password" className="w-full p-2 rounded bg-gray-700" placeholder="Nuevo password (opcional)" />
-        <div className="space-y-2 text-xs text-gray-300">
-          <p className="break-all">
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Nombre</label>
+            <input name="name" defaultValue={usuario.name} className="input-base w-full" placeholder="Nombre" required />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Apellido</label>
+            <input name="surname" defaultValue={usuario.surname} className="input-base w-full" placeholder="Apellido" required />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Email</label>
+          <input name="email" defaultValue={usuario.email} className="input-base w-full" placeholder="Email" type="email" required />
+        </div>
+
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Teléfono</label>
+            <input name="phone" defaultValue={usuario.phone} className="input-base w-full" placeholder="Teléfono" />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">DNI</label>
+            <input name="dni" defaultValue={usuario.dni} className="input-base w-full" placeholder="DNI" />
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Rol</label>
+          <select name="role" defaultValue={usuario.role} className="input-base w-full">
+            <option value="citizen">Ciudadano</option>
+            <option value="worker">Trabajador</option>
+            <option value="organizer">Organizador</option>
+            <option value="admin">Administrador</option>
+          </select>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Nueva contraseña (opcional)</label>
+          <input name="password" type="password" className="input-base w-full" placeholder="Dejar en blanco para no cambiar" />
+        </div>
+
+        <div className="space-y-2">
+          <label className="block text-sm font-medium">Imagen de perfil</label>
+          <p className="text-xs text-tertiary break-all">
             Actual: {usuario.image_bucket ? `${usuario.image_bucket}/${usuario.image ?? ''}` : 'Sin imagen'}
           </p>
           <UserImagePicker
@@ -130,9 +167,12 @@ export default async function EditUsuarioPage({ params }: Props) {
             initialDefault={defaultSelection}
           />
         </div>
-        <div className="space-x-2">
-          <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Guardar</button>
-          <Link href={`/admin/usuarios/${id}`} className="text-gray-300">Cancelar</Link>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Guardar Cambios</Button>
+          <Button asChild variant="outline">
+            <Link href={`/admin/usuarios/${id}`}>Cancelar</Link>
+          </Button>
         </div>
       </form>
     </div>

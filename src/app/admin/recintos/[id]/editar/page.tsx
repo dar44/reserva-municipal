@@ -5,6 +5,7 @@ import { createSupabaseServer } from '@/lib/supabaseServer'
 import LocationPicker from '@/components/LocationPicker'
 import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { processRecintoImageInput } from '@/lib/recintoImages'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -58,13 +59,24 @@ export default async function EditRecintoPage({ params }: Props) {
   }
 
   return (
-    <div className="space-y-4">
-      <Link href={`/admin/recintos/${id}`} className="text-sm underline">← Volver</Link>
-      <h1 className="text-2xl font-bold">Editar Recinto</h1>
+    <div className="container-padding section-spacing max-w-3xl mx-auto">
+      <Link href={`/admin/recintos/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver al Detalle
+      </Link>
 
-      <form action={updateRecinto} className="space-y-3 bg-gray-800 p-4 rounded text-sm">
-        <input name="name" defaultValue={recinto.name} className="w-full p-2 rounded bg-gray-700" placeholder="Nombre" required />
-        <textarea name="description" defaultValue={recinto.description ?? ''} className="w-full p-2 rounded bg-gray-700" placeholder="Descripción" />
+      <h1 className="mb-8">Editar Recinto</h1>
+
+      <form action={updateRecinto} className="surface p-6 rounded-lg space-y-5">
+        <div>
+          <label className="block text-sm font-medium mb-2">Nombre</label>
+          <input name="name" defaultValue={recinto.name} className="input-base w-full" placeholder="Nombre del recinto" required />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Descripción</label>
+          <textarea name="description" defaultValue={recinto.description ?? ''} className="input-base w-full" rows={3} placeholder="Descripción del recinto" />
+        </div>
+
         <LocationPicker
           valueNames={{
             address: 'ubication',
@@ -81,15 +93,23 @@ export default async function EditRecintoPage({ params }: Props) {
           }}
           required
         />
-        <select name="state" defaultValue={recinto.state} className="w-full p-2 rounded bg-gray-700">
-          <option value="Disponible">Disponible</option>
-          <option value="No disponible">No disponible</option>
-          <option value="Bloqueado">Bloqueado</option>
-        </select>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Estado</label>
+          <select name="state" defaultValue={recinto.state} className="input-base w-full">
+            <option value="Disponible">Disponible</option>
+            <option value="No disponible">No disponible</option>
+            <option value="Bloqueado">Bloqueado</option>
+          </select>
+        </div>
+
         <RecintoImagePicker initialImage={recinto.image ?? null} />
-        <div className="space-x-2">
-          <button type="submit" className="bg-blue-600 px-3 py-1 rounded">Guardar</button>
-          <Link href={`/admin/recintos/${id}`} className="text-gray-300">Cancelar</Link>
+
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Guardar Cambios</Button>
+          <Button asChild variant="outline">
+            <Link href={`/admin/recintos/${id}`}>Cancelar</Link>
+          </Button>
         </div>
       </form>
     </div>

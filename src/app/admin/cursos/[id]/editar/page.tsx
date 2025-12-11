@@ -11,6 +11,7 @@ import {
   processCourseImageInput,
 } from '@/lib/cursoImages'
 import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -132,26 +133,36 @@ export default async function EditarCursoPage({
   }
 
   return (
-    <div className="max-w-xl mx-auto space-y-4">
-      <Link href={`/admin/cursos/${id}`} className="text-sm underline">← Volver</Link>
-      <h1 className="text-2xl font-bold">Editar Curso</h1>
+    <div className="container-padding section-spacing max-w-3xl mx-auto">
+      <Link href={`/admin/cursos/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver al Detalle
+      </Link>
 
-      <form action={actualizarCurso} className="space-y-3">
-        <input
-          type="text"
-          name="name"
-          defaultValue={curso.name}
-          placeholder="Nombre"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-          required
-        />
+      <h1 className="mb-8">Editar Curso</h1>
 
-        <textarea
-          name="description"
-          defaultValue={curso.description ?? ''}
-          placeholder="Descripción"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+      <form action={actualizarCurso} className="surface p-6 rounded-lg space-y-5">
+        <div>
+          <label className="block text-sm font-medium mb-2">Nombre del curso</label>
+          <input
+            type="text"
+            name="name"
+            defaultValue={curso.name}
+            placeholder="Nombre"
+            className="input-base w-full"
+            required
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium mb-2">Descripción</label>
+          <textarea
+            name="description"
+            defaultValue={curso.description ?? ''}
+            placeholder="Descripción"
+            rows={3}
+            className="input-base w-full"
+          />
+        </div>
 
         <LocationPicker
           valueNames={{
@@ -167,19 +178,27 @@ export default async function EditarCursoPage({
           }}
         />
 
-        <input
-          type="date"
-          name="begining_date"
-          defaultValue={curso.begining_date ? new Date(curso.begining_date).toISOString().split('T')[0] : ''}
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Fecha de inicio</label>
+            <input
+              type="date"
+              name="begining_date"
+              defaultValue={curso.begining_date ? new Date(curso.begining_date).toISOString().split('T')[0] : ''}
+              className="input-base w-full"
+            />
+          </div>
 
-        <input
-          type="date"
-          name="end_date"
-          defaultValue={curso.end_date ? new Date(curso.end_date).toISOString().split('T')[0] : ''}
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+          <div>
+            <label className="block text-sm font-medium mb-2">Fecha de fin</label>
+            <input
+              type="date"
+              name="end_date"
+              defaultValue={curso.end_date ? new Date(curso.end_date).toISOString().split('T')[0] : ''}
+              className="input-base w-full"
+            />
+          </div>
+        </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Horario del curso</label>
@@ -190,7 +209,7 @@ export default async function EditarCursoPage({
                 type="time"
                 name="start_time"
                 defaultValue={curso.start_time || ''}
-                className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+                className="input-base w-full"
               />
             </div>
             <div>
@@ -199,7 +218,7 @@ export default async function EditarCursoPage({
                 type="time"
                 name="end_time"
                 defaultValue={curso.end_time || ''}
-                className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
+                className="input-base w-full"
               />
             </div>
           </div>
@@ -230,32 +249,43 @@ export default async function EditarCursoPage({
           </div>
         </div>
 
-        <input
-          type="number"
-          step="0.01"
-          name="price"
-          defaultValue={curso.price ?? 0}
-          placeholder="Precio"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+        <div className="grid md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-2">Precio (€)</label>
+            <input
+              type="number"
+              step="0.01"
+              name="price"
+              defaultValue={curso.price ?? 0}
+              placeholder="0.00"
+              className="input-base w-full"
+            />
+          </div>
 
-        <select
-          name="state"
-          defaultValue={curso.state}
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        >
-          <option value="Disponible">Disponible</option>
-          <option value="No disponible">No disponible</option>
-          <option value="Cancelado">Cancelado</option>
-        </select>
+          <div>
+            <label className="block text-sm font-medium mb-2">Capacidad</label>
+            <input
+              type="number"
+              name="capacity"
+              defaultValue={curso.capacity ?? 0}
+              placeholder="Número de plazas"
+              className="input-base w-full"
+            />
+          </div>
+        </div>
 
-        <input
-          type="number"
-          name="capacity"
-          defaultValue={curso.capacity ?? 0}
-          placeholder="Capacidad"
-          className="w-full bg-gray-900 border border-gray-700 p-2 rounded"
-        />
+        <div>
+          <label className="block text-sm font-medium mb-2">Estado</label>
+          <select
+            name="state"
+            defaultValue={curso.state}
+            className="input-base w-full"
+          >
+            <option value="Disponible">Disponible</option>
+            <option value="No disponible">No disponible</option>
+            <option value="Cancelado">Cancelado</option>
+          </select>
+        </div>
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Imagen del curso</label>
@@ -279,7 +309,12 @@ export default async function EditarCursoPage({
           />
         </div>
 
-        <button type="submit" className="bg-blue-600 px-4 py-2 rounded">Guardar</button>
+        <div className="flex gap-3 pt-4">
+          <Button type="submit">Guardar Cambios</Button>
+          <Button asChild variant="outline">
+            <Link href={`/admin/cursos/${id}`}>Cancelar</Link>
+          </Button>
+        </div>
       </form>
     </div>
   )

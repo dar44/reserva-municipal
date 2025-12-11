@@ -1,8 +1,9 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
-
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
 
@@ -68,54 +69,71 @@ export default async function EditReservaPage({ params }: Props) {
             : 'Pendiente'
 
     return (
-        <div className="space-y-4">
-            <Link href="/admin/reservas" className="text-sm underline">← Volver</Link>
-            <h1 className="text-2xl font-bold">Editar reserva #{reserva.id}</h1>
+        <div className="container-padding section-spacing max-w-2xl mx-auto">
+            <Link href="/admin/reservas" className="text-sm text-primary hover:underline mb-6 inline-block">
+                ← Volver a Reservas
+            </Link>
 
-            <div className="bg-gray-800 p-6 rounded space-y-4">
-                {/* Usuario */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Usuario</span>
-                    <span className="font-medium">{reserva.users ? `${reserva.users.name} ${reserva.users.surname}` : 'Desconocido'}</span>
-                </div>
+            <h1 className="mb-8">Editar reserva #{reserva.id}</h1>
 
-                {/* Nombre (Recinto) */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Nombre</span>
-                    <span className="font-medium">{reserva.recintos?.name ?? 'Recinto sin nombre'}</span>
-                </div>
+            <div className="surface p-6 rounded-lg space-y-6">
+                {/* Info de solo lectura */}
+                <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                        <span className="text-xs text-tertiary block mb-1">Usuario</span>
+                        <span className="font-medium">{reserva.users ? `${reserva.users.name} ${reserva.users.surname}` : 'Desconocido'}</span>
+                    </div>
 
-                {/* Fecha */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Fecha</span>
-                    <span className="font-medium">{fechaFormateada}</span>
-                </div>
+                    <div>
+                        <span className="text-xs text-tertiary block mb-1">Recinto</span>
+                        <span className="font-medium">{reserva.recintos?.name ?? 'Recinto sin nombre'}</span>
+                    </div>
 
-                {/* Total */}
-                <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Total</span>
-                    <span className="font-medium">$ {reserva.price}</span>
+                    <div className="md:col-span-2">
+                        <span className="text-xs text-tertiary block mb-1">Fecha y Hora</span>
+                        <span className="font-medium text-sm">{fechaFormateada}</span>
+                    </div>
+
+                    <div>
+                        <span className="text-xs text-tertiary block mb-1">Total</span>
+                        <span className="font-medium">$ {reserva.price}</span>
+                    </div>
+
+                    <div>
+                        <span className="text-xs text-tertiary block mb-1">Estado Actual</span>
+                        <Badge className={
+                            estadoActual === 'Confirmada' ? 'bg-success text-success-foreground' :
+                                estadoActual === 'Cancelada' ? 'bg-error text-error-foreground' :
+                                    'bg-warning text-warning-foreground'
+                        }>
+                            {estadoActual}
+                        </Badge>
+                    </div>
                 </div>
 
                 {/* Form con dropdown de estado */}
-                <form action={updateReserva} className="space-y-4 pt-4 border-t border-gray-700">
-                    <label className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400">Nuevo estado</span>
+                <form action={updateReserva} className="space-y-4 pt-4 border-t border-border">
+                    <div>
+                        <label className="block text-sm font-medium mb-2">
+                            Nuevo estado
+                        </label>
                         <select
                             name="estado"
                             defaultValue={estadoActual}
-                            className="rounded bg-gray-700 px-3 py-2"
+                            className="input-base w-full"
                             required
                         >
                             <option value="Confirmada">Confirmada</option>
                             <option value="Pendiente">Pendiente</option>
                             <option value="Cancelada">Cancelada</option>
                         </select>
-                    </label>
+                    </div>
 
-                    <div className="flex gap-2">
-                        <button type="submit" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
-                        <Link href="/admin/reservas" className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">Cancelar</Link>
+                    <div className="flex gap-3 pt-2">
+                        <Button type="submit">Guardar cambios</Button>
+                        <Button asChild variant="outline">
+                            <Link href="/admin/reservas">Cancelar</Link>
+                        </Button>
                     </div>
                 </form>
             </div>

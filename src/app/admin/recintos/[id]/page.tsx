@@ -4,6 +4,8 @@ import { redirect } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import DeleteButton from './DeleteButton'
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from '@/lib/recintoImages'
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 
 export const dynamic = 'force-dynamic'
 
@@ -25,33 +27,53 @@ export default async function RecintoDetailPage({ params }: Props) {
 
   const defaultImageUrl = getRecintoDefaultPublicUrl(supabase)
   const imageUrl = getRecintoImageUrl(supabase, recinto.image, recinto.image_bucket, defaultImageUrl)
+  const isDisponible = recinto.state === 'Disponible'
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center space-x-2">
-        <Link href="/admin/recintos" className="text-blue-400 text-sm">&larr; Volver</Link>
-        <h1 className="text-2xl font-bold">Detalle del Recinto</h1>
+    <div className="container-padding section-spacing max-w-4xl mx-auto">
+      <Link href="/admin/recintos" className="text-sm text-primary hover:underline mb-6 inline-block">
+        ← Volver a Recintos
+      </Link>
+
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <h1 className="text-3xl font-bold">Detalle del Recinto</h1>
+          <Badge
+            variant={isDisponible ? "default" : "secondary"}
+            className={isDisponible ? "bg-success text-success-foreground" : ""}
+          >
+            {recinto.state}
+          </Badge>
+        </div>
       </div>
 
-      <div className="bg-gray-800 p-4 rounded space-y-2 text-sm">
-        <div className="flex justify-center">
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center">
           {imageUrl ? (
-            <Image src={imageUrl} alt={recinto.name} width={240} height={160} className="h-40 w-full max-w-md rounded object-cover" />
+            <Image src={imageUrl} alt={recinto.name} fill className="object-cover" sizes="(min-width: 768px) 50vw, 100vw" />
           ) : (
-            <div className="h-40 w-full max-w-md rounded bg-gray-700" />
+            <span className="text-tertiary">Sin imagen</span>
           )}
         </div>
-        <p><strong>Nombre:</strong> {recinto.name}</p>
-        <p><strong>Descripción:</strong> {recinto.description}</p>
-        <p><strong>Ubicación:</strong> {recinto.ubication}</p>
-        <p><strong>Provincia:</strong> {recinto.province}</p>
-        <p><strong>Código Postal:</strong> {recinto.postal_code}</p>
-        <p><strong>Estado:</strong> {recinto.state}</p>
-      </div>
 
-      <div className="space-x-2">
-        <Link href={`/admin/recintos/${id}/editar`} className="text-yellow-400">Editar</Link>
-        <DeleteButton id={id} />
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-4">{recinto.name}</h2>
+            <div className="space-y-3 text-secondary">
+              <p><strong className="text-foreground">Descripción:</strong> {recinto.description}</p>
+              <p><strong className="text-foreground">Ubicación:</strong> {recinto.ubication}</p>
+              <p><strong className="text-foreground">Provincia:</strong> {recinto.province}</p>
+              <p><strong className="text-foreground">Código Postal:</strong> {recinto.postal_code}</p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button asChild>
+              <Link href={`/admin/recintos/${id}/editar`}>Editar Recinto</Link>
+            </Button>
+            <DeleteButton id={id} />
+          </div>
+        </div>
       </div>
     </div>
   )
