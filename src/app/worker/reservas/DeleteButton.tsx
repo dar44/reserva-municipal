@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import ConfirmModal from '@/components/ConfirmModal'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
 
 export default function DeleteButton({ id }: { id: number }) {
   const [open, setOpen] = useState(false)
@@ -19,7 +20,7 @@ export default function DeleteButton({ id }: { id: number }) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="bg-red-600 px-2 py-1 rounded text-xs">Eliminar</button>
+      <Button onClick={() => setOpen(true)} variant="destructive" size="sm">Eliminar</Button>
       <ConfirmModal
         open={open}
         message="¿Eliminar la reserva?"

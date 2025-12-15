@@ -18,16 +18,9 @@ interface Props {
 
 export default function OrganizerRecintosClient({ recintos }: Props) {
     return (
-        <section className="container-padding section-spacing max-w-6xl mx-auto">
-            <header className="space-y-2 mb-8">
-                <h1>Recintos disponibles</h1>
-                <p className="text-secondary">
-                    Consulta los recintos disponibles para solicitar
-                </p>
-            </header>
-
+        <>
             {recintos?.length ? (
-                <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+                <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
                     <Table>
                         <TableHeader>
                             <TableRow>
@@ -41,7 +34,7 @@ export default function OrganizerRecintosClient({ recintos }: Props) {
                             {recintos.map((recinto) => {
                                 const isDisponible = recinto.state === 'Disponible'
                                 return (
-                                    <TableRow key={recinto.id}>
+                                    <TableRow key={recinto.id} className="hover:bg-muted/50 transition-colors">
                                         <TableCell className="font-medium">{recinto.name}</TableCell>
                                         <TableCell className="text-secondary">
                                             {recinto.ubication || 'No especificada'}
@@ -76,6 +69,6 @@ export default function OrganizerRecintosClient({ recintos }: Props) {
             ) : (
                 <p className="text-secondary">No hay recintos disponibles por el momento.</p>
             )}
-        </section>
+        </>
     )
 }

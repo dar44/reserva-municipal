@@ -10,6 +10,7 @@ import {
 import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -154,7 +155,7 @@ export default async function NewUsuarioPage() {
         />
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Crear Usuario</Button>
+          <SubmitButton loadingText="Creando...">Crear Usuario</SubmitButton>
           <Button asChild variant="outline">
             <Link href="/admin/usuarios">Cancelar</Link>
           </Button>

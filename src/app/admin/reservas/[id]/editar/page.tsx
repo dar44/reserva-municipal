@@ -3,6 +3,7 @@ import { redirect } from 'next/navigation'
 import { revalidatePath } from 'next/cache'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 import { Badge } from "@/components/ui/badge"
 
 export const dynamic = 'force-dynamic'
@@ -130,7 +131,7 @@ export default async function EditReservaPage({ params }: Props) {
                     </div>
 
                     <div className="flex gap-3 pt-2">
-                        <Button type="submit">Guardar cambios</Button>
+                        <SubmitButton loadingText="Guardando...">Guardar cambios</SubmitButton>
                         <Button asChild variant="outline">
                             <Link href="/admin/reservas">Cancelar</Link>
                         </Button>

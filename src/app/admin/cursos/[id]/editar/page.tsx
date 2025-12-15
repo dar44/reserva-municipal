@@ -12,6 +12,7 @@ import {
 } from '@/lib/cursoImages'
 import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -310,7 +311,7 @@ export default async function EditarCursoPage({
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Guardar Cambios</Button>
+          <SubmitButton loadingText="Guardando...">Guardar Cambios</SubmitButton>
           <Button asChild variant="outline">
             <Link href={`/admin/cursos/${id}`}>Cancelar</Link>
           </Button>

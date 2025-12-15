@@ -53,7 +53,7 @@ export default async function RecintoDetail({
         ← Volver al listado
       </Link>
 
-      <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl">
+      <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface">
         <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center text-tertiary">
           {imageUrl ? (
             <Image

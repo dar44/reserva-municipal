@@ -47,7 +47,7 @@ export default function HistoryTable({ history }: Props) {
     }
 
     return (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
             <Table>
                 <TableHeader>
                     <TableRow>

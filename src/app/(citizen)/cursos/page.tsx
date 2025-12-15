@@ -3,6 +3,8 @@ import Link from 'next/link'
 import { getPublicStorageUrl } from '@/lib/storage'
 import { createSupabaseServerReadOnly } from '@/lib/supabaseServer'
 import { Button } from "@/components/ui/button"
+import { EmptyCoursesState } from '@/components/ui/empty-state'
+import { Calendar, DollarSign, ArrowRight } from 'lucide-react'
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +55,16 @@ export default async function CursosPage({
 
   return (
     <div className="container-padding section-spacing">
-      <h1 className="mb-8">Cursos Disponibles</h1>
+      {/* Header with gradient */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-2" />
+        <div className="relative">
+          <h1 className="mb-2">Cursos Disponibles</h1>
+          <p className="text-foreground-secondary">
+            Explora nuestra oferta educativa y encuentra el curso perfecto para ti
+          </p>
+        </div>
+      </div>
 
       <form
         className="flex flex-wrap gap-3 mb-8"
@@ -93,45 +104,86 @@ export default async function CursosPage({
           <Link
             key={c.id}
             href={`/cursos/${c.id}`}
-            className="surface rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:scale-[1.02] flex flex-col group"
+            className="
+              surface rounded-xl overflow-hidden 
+              shadow-md hover:shadow-2xl 
+              transition-all duration-300 
+              hover:scale-[1.02] hover:-translate-y-1
+              flex flex-col group
+              border border-transparent hover:border-primary/20
+            "
           >
+            {/* Image with overlay */}
             <div className="relative h-48 bg-muted flex items-center justify-center text-tertiary overflow-hidden">
               {c.imageUrl ? (
-                <Image
-                  src={c.imageUrl}
-                  alt={c.name}
-                  fill
-                  className="object-cover transition-transform duration-300 group-hover:scale-110"
-                  sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                />
+                <>
+                  <Image
+                    src={c.imageUrl}
+                    alt={c.name}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                  />
+                  {/* Gradient overlay on hover */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                </>
               ) : (
                 <span className="text-sm">Sin imagen disponible</span>
               )}
+
+              {/* Badge - Disponible */}
+              <span className="absolute top-3 right-3 badge-success px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-lg">
+                Disponible
+              </span>
             </div>
-            <div className="p-5 flex flex-col flex-1 justify-between">
-              <div className="space-y-2">
-                <h2 className="text-xl font-semibold group-hover:text-primary transition-colors">{c.name}</h2>
-                <p className="text-sm text-secondary line-clamp-2">
+
+            {/* Content with better hierarchy */}
+            <div className="p-6 flex flex-col flex-1 justify-between gap-4">
+              <div className="space-y-3">
+                {/* Title */}
+                <h2 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors leading-tight">
+                  {c.name}
+                </h2>
+
+                {/* Description */}
+                <p className="text-sm text-foreground-secondary leading-relaxed line-clamp-2">
                   {c.description}
                 </p>
               </div>
-              <div className="mt-4 text-sm text-secondary flex justify-between items-center">
-                <span className="font-semibold text-foreground">{currency.format(c.price || 0)}</span>
-                <span className="text-sm">
-                  {c.begining_date} - {c.end_date}
-                </span>
-              </div>
-              <div className="mt-3 text-sm text-primary text-right">
-                Ver más →
+
+              {/* Footer Info */}
+              <div className="space-y-3 pt-2 border-t border-border">
+                {/* Price - destacado */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-foreground-tertiary text-sm">
+                    <DollarSign className="w-4 h-4" />
+                    <span className="text-xs uppercase tracking-wide">Precio</span>
+                  </div>
+                  <span className="text-2xl font-bold text-primary">
+                    {currency.format(c.price || 0)}
+                  </span>
+                </div>
+
+                {/* Dates with icon */}
+                <div className="flex items-center gap-2 text-sm text-foreground-secondary">
+                  <Calendar className="w-4 h-4 flex-shrink-0" />
+                  <span className="text-xs">
+                    {c.begining_date} - {c.end_date}
+                  </span>
+                </div>
+
+                {/* CTA */}
+                <div className="flex items-center justify-end gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
+                  <span>Ver detalles</span>
+                  <ArrowRight className="w-4 h-4" />
+                </div>
               </div>
             </div>
           </Link>
         ))}
-        {!cursosWithImages?.length && (
-          <p className="text-secondary col-span-full text-center py-12">
-            No se han encontrado cursos disponibles con los filtros seleccionados.
-          </p>
-        )}
+
+        {/* Empty state with animation */}
+        {!cursosWithImages?.length && <EmptyCoursesState />}
       </div>
     </div>
   );

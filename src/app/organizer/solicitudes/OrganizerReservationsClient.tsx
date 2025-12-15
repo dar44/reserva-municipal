@@ -527,7 +527,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
             <p className="text-sm text-tertiary mt-2">Crea una nueva solicitud arriba para comenzar</p>
           </div>
         ) : (
-          <div className="surface rounded-lg border overflow-hidden">
+          <div className="surface rounded-lg border overflow-x-auto -mx-4 sm:mx-0">
             <Table>
               <TableHeader>
                 <TableRow>

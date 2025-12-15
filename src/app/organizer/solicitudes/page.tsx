@@ -43,6 +43,17 @@ export default async function OrganizerReservationsPage() {
 
     return (
         <section className="container-padding section-spacing max-w-5xl mx-auto">
+            {/* Header con gradient - Estética-Usabilidad */}
+            <div className="relative mb-8">
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-2" />
+                <div className="relative">
+                    <h1 className="mb-2">Solicitudes de Recintos</h1>
+                    <p className="text-foreground-secondary">
+                        Gestiona las solicitudes de uso de recintos para tus cursos y consulta su estado de aprobación
+                    </p>
+                </div>
+            </div>
+
             <OrganizerReservationsClient
                 courses={courses}
                 recintos={recintos}

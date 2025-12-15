@@ -1,7 +1,7 @@
 import PendingRequestsTable from './PendingRequestsTable'
 import HistoryTable from './HistoryTable'
 import { createSupabaseServer } from '@/lib/supabaseServer'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 
 export const dynamic = 'force-dynamic'
 
@@ -111,39 +111,43 @@ export default async function WorkerSolicitudesPage() {
 
   return (
     <div className="container-padding section-spacing">
-      <section className="mb-8">
-        <h1>Solicitudes de recintos</h1>
-        <p className="text-secondary mt-2">
-          Revisa y gestiona las solicitudes de uso de recintos por organizadores
-        </p>
-      </section>
+      {/* Header with gradient */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-4" />
+        <div className="relative">
+          <h1 className="mb-2">Solicitudes de recintos</h1>
+          <p className="text-secondary mt-2">
+            Revisa y gestiona las solicitudes de uso de recintos por organizadores
+          </p>
+        </div>
+      </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-secondary">Total de solicitudes</CardTitle>
+        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
+          <CardHeader className="pb-2">
+            <CardDescription>Total de solicitudes</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold">{totalRequests}</div>
+            <div className="text-3xl font-bold tracking-tight">{totalRequests}</div>
           </CardContent>
         </Card>
 
-        <Card className="border-warning">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-secondary">Pendientes de revisión</CardTitle>
+        <Card className="border-warning shadow-md bg-gradient-to-br from-background to-surface">
+          <CardHeader className="pb-2">
+            <CardDescription>Pendientes de revisión</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-warning">{pendingCount}</div>
+            <div className="text-3xl font-bold tracking-tight text-warning">{pendingCount}</div>
           </CardContent>
         </Card>
 
-        <Card className="border-success">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-secondary">Aprobadas</CardTitle>
+        <Card className="border-success shadow-md bg-gradient-to-br from-background to-surface">
+          <CardHeader className="pb-2">
+            <CardDescription>Aprobadas</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-success">{approvedCount}</div>
+            <div className="text-3xl font-bold tracking-tight text-success">{approvedCount}</div>
           </CardContent>
         </Card>
       </div>

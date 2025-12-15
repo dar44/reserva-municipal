@@ -86,7 +86,7 @@ describe('AdminReservasPage', () => {
     expect(screen.getByText('Usuario')).toBeInTheDocument()
     expect(screen.getByText('Tipo')).toBeInTheDocument()
     expect(screen.getByText('Ítem')).toBeInTheDocument()
-    expect(screen.getByText(/fecha y hora/i)).toBeInTheDocument()
+    expect(screen.getByText('Fecha')).toBeInTheDocument()
     expect(screen.getByText('Horario')).toBeInTheDocument()
     expect(screen.getByText('Total')).toBeInTheDocument()
     expect(screen.getByText('Estado')).toBeInTheDocument()

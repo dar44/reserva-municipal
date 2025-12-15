@@ -11,6 +11,7 @@ import OrganizerCourseImagePicker from '@/components/OrganizerCourseImagePicker'
 import LocationPicker from '@/components/LocationPicker'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Loader2 } from 'lucide-react'
 
 type OrganizerCourse = {
   id: number
@@ -441,7 +442,14 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
               className="w-full md:w-auto bg-success hover:bg-success/90"
               disabled={creatingCourse}
             >
-              {creatingCourse ? 'Creando…' : 'Crear curso'}
+              {creatingCourse ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creando…
+                </>
+              ) : (
+                'Crear curso'
+              )}
             </Button>
           </div>
         </form>

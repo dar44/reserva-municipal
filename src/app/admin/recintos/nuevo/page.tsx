@@ -6,6 +6,7 @@ import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { revalidatePath } from 'next/cache'
 import { processRecintoImageInput } from '@/lib/recintoImages'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -79,7 +80,7 @@ export default async function NewRecintoPage() {
         <RecintoImagePicker />
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Crear Recinto</Button>
+          <SubmitButton loadingText="Creando...">Crear Recinto</SubmitButton>
           <Button asChild variant="outline">
             <Link href="/admin/recintos">Cancelar</Link>
           </Button>

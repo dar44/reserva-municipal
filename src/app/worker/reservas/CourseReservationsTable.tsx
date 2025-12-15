@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
 
 type ReservationStatus = 'pendiente' | 'aprobada' | 'rechazada' | 'cancelada'
 
@@ -167,36 +168,39 @@ export default function CourseReservationsTable({ reservations }: Props) {
                 <td className="px-4 py-2">
                   {row.status === 'pendiente' ? (
                     <div className="flex flex-wrap gap-2">
-                      <button
+                      <Button
                         onClick={() => openDecisionModal(row.id, 'aprobada')}
-                        className="rounded bg-emerald-600 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        size="sm"
                         disabled={loadingId === row.id}
                       >
                         Aprobar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => openDecisionModal(row.id, 'rechazada')}
-                        className="rounded bg-red-600 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        variant="destructive"
+                        size="sm"
                         disabled={loadingId === row.id}
                       >
                         Rechazar
-                      </button>
-                      <button
+                      </Button>
+                      <Button
                         onClick={() => openDecisionModal(row.id, 'cancelada')}
-                        className="rounded bg-gray-700 px-3 py-1 text-xs text-white disabled:opacity-60"
+                        variant="secondary"
+                        size="sm"
                         disabled={loadingId === row.id}
                       >
                         Cancelar
-                      </button>
+                      </Button>
                     </div>
                   ) : row.status === 'aprobada' ? (
-                    <button
+                    <Button
                       onClick={() => openDecisionModal(row.id, 'cancelada')}
-                      className="rounded bg-gray-700 px-3 py-1 text-xs text-white disabled:opacity-60"
+                      variant="secondary"
+                      size="sm"
                       disabled={loadingId === row.id}
                     >
                       Cancelar
-                    </button>
+                    </Button>
                   ) : (
                     <span className="text-xs text-gray-500">—</span>
                   )}
@@ -226,23 +230,22 @@ export default function CourseReservationsTable({ reservations }: Props) {
               value={decisionNote}
               onChange={event => setDecisionNote(event.target.value)}
             />
-            <div className="mt-4 flex justify-end gap-2 text-sm">
-              <button
+            <div className="mt-4 flex justify-end gap-2">
+              <Button
                 type="button"
                 onClick={closeDecisionModal}
-                className="rounded border border-gray-600 px-4 py-2 text-gray-200 transition hover:bg-gray-800"
+                variant="outline"
                 disabled={isModalProcessing}
               >
                 Cerrar
-              </button>
-              <button
+              </Button>
+              <Button
                 type="button"
                 onClick={confirmDecision}
-                className="rounded bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500 disabled:opacity-60"
                 disabled={isModalProcessing}
               >
                 {isModalProcessing ? 'Guardando…' : decisionCopy[decisionTarget.status].confirm}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

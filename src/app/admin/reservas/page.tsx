@@ -190,34 +190,45 @@ export default async function AdminReservasPage({
 
   return (
     <div className="container-padding section-spacing">
-      <h1 className="mb-8">Reservas e Inscripciones</h1>
+      {/* Header with gradient */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-2" />
+        <div className="relative">
+          <h1 className="mb-2">Reservas e Inscripciones</h1>
+          <p className="text-foreground-secondary">
+            Consulta y gestiona todas las reservas de recintos e inscripciones a cursos
+          </p>
+        </div>
+      </div>
 
       {/* Filters */}
-      <form method="get" className="flex gap-3 items-center mb-8">
-        <input
-          type="text"
-          name="search"
-          defaultValue={search}
-          placeholder="Buscar por usuario o ítem..."
-          className="input-base flex-1 max-w-md"
-        />
-        <select
-          name="status"
-          defaultValue={status ?? 'all'}
-          className="input-base"
-        >
-          <option value="all">Todos los estados</option>
-          <option value="confirmada">Confirmada</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="cancelada">Cancelada</option>
-        </select>
-        <Button type="submit">
-          Filtrar
-        </Button>
+      <form method="get" className="mb-8">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <input
+            type="text"
+            name="search"
+            defaultValue={search}
+            placeholder="Buscar por usuario o ítem..."
+            className="input-base flex-1"
+          />
+          <select
+            name="status"
+            defaultValue={status ?? 'all'}
+            className="input-base sm:w-64"
+          >
+            <option value="all">Todos los estados</option>
+            <option value="confirmada">Confirmada</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="cancelada">Cancelada</option>
+          </select>
+          <Button type="submit" className="sm:w-auto">
+            Filtrar
+          </Button>
+        </div>
       </form>
 
       {/* Table */}
-      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+      <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
@@ -228,13 +239,13 @@ export default async function AdminReservasPage({
               <TableHead>Horario</TableHead>
               <TableHead>Total</TableHead>
               <TableHead>Estado</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
+              <TableHead className="text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filteredItems.length > 0 ? (
               filteredItems.map((item) => (
-                <TableRow key={item.id}>
+                <TableRow key={item.id} className="hover:bg-muted/50 transition-colors">
                   <TableCell className="font-medium">{item.usuario}</TableCell>
                   <TableCell>
                     <Badge variant="outline">
@@ -257,7 +268,7 @@ export default async function AdminReservasPage({
                       {item.estado}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-right">
+                  <TableCell className="text-center">
                     <div className="flex items-center justify-end gap-2">
                       <Button asChild size="sm" variant="ghost">
                         <Link

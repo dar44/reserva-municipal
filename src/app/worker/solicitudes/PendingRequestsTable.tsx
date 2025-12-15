@@ -132,7 +132,7 @@ export default function PendingRequestsTable({ requests }: Props) {
 
     return (
         <>
-            <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+            <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
                 <Table>
                     <TableHeader>
                         <TableRow>
@@ -142,7 +142,7 @@ export default function PendingRequestsTable({ requests }: Props) {
                             <TableHead>Horario</TableHead>
                             <TableHead>Motivo</TableHead>
                             <TableHead>Estado</TableHead>
-                            <TableHead className="text-right">Acciones</TableHead>
+                            <TableHead className="text-center">Acciones</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -165,7 +165,7 @@ export default function PendingRequestsTable({ requests }: Props) {
                                         Pendiente
                                     </Badge>
                                 </TableCell>
-                                <TableCell className="text-right">
+                                <TableCell className="text-center">
                                     <div className="flex justify-end gap-2">
                                         <Button
                                             onClick={() => openDecisionModal(row.id, 'aprobada')}
@@ -211,22 +211,21 @@ export default function PendingRequestsTable({ requests }: Props) {
                             onChange={event => setDecisionNote(event.target.value)}
                         />
                         <div className="mt-4 flex justify-end gap-2 text-sm">
-                            <button
+                            <Button
                                 type="button"
                                 onClick={closeDecisionModal}
-                                className="rounded border border-gray-600 px-4 py-2 text-gray-200 transition hover:bg-gray-800"
+                                variant="outline"
                                 disabled={isModalProcessing}
                             >
                                 Cerrar
-                            </button>
-                            <button
+                            </Button>
+                            <Button
                                 type="button"
                                 onClick={confirmDecision}
-                                className="rounded bg-emerald-600 px-4 py-2 text-white transition hover:bg-emerald-500 disabled:opacity-60"
                                 disabled={isModalProcessing}
                             >
                                 {isModalProcessing ? 'Guardando…' : decisionCopy[decisionTarget.status].confirm}
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

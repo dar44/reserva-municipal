@@ -2,31 +2,30 @@
 
 import { useState } from 'react'
 import ConfirmModal from '@/components/ConfirmModal'
-import { useToast } from '@/components/Toast'
+import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
 
-export default function CancelButton ({ id }: { id: number }) {
+export default function CancelButton({ id }: { id: number }) {
   const [open, setOpen] = useState(false)
-  const toast = useToast()
-
   const cancel = async () => {
     const res = await fetch(`/api/inscripciones/${id}`, { method: 'DELETE' })
     if (res.ok) {
-      toast({ type: 'success', message: 'Inscripción cancelada' })
+      toast.success('Inscripción cancelada correctamente')
       location.reload()
     } else {
       const data = await res.json().catch(() => ({}))
-      toast({ type: 'error', message: data.error || 'Error al cancelar' })
+      toast.error(data?.error || 'Error al cancelar la inscripción')
     }
   }
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="bg-red-600 px-2 py-1 rounded text-xs">
-        Cancelar Inscripción
-      </button>
+      <Button onClick={() => setOpen(true)} variant="destructive" size="sm">
+        Cancelar inscripción
+      </Button>
       <ConfirmModal
         open={open}
-        message="¿Cancelar inscripción?"
+        message="¿Cancelar la inscripción?"
         onCancel={() => setOpen(false)}
         onConfirm={() => {
           setOpen(false)

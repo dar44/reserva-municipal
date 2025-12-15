@@ -11,6 +11,7 @@ import {
 } from '@/lib/cursoImages'
 import { listBucketPrefix } from '@/lib/storage'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -96,7 +97,7 @@ export default async function NuevoCursoPage() {
   }
 
   return (
-    <div className="container-padding section-spacing max-w-3xl">
+    <div className="container-padding section-spacing max-w-3xl mx-auto">
       <div className="mb-8">
         <Link href="/admin/cursos" className="text-sm text-primary hover:underline mb-4 inline-block">
           ← Volver a Cursos
@@ -239,7 +240,7 @@ export default async function NuevoCursoPage() {
         <CourseImagePicker defaultImages={defaultImages} />
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Crear Curso</Button>
+          <SubmitButton loadingText="Creando...">Crear Curso</SubmitButton>
           <Button asChild variant="outline">
             <Link href="/admin/cursos">Cancelar</Link>
           </Button>

@@ -4,6 +4,8 @@ import { getConfiguredCurrency } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
+import { EmptyWorkerReservasState } from "@/components/ui/empty-state"
+import { Calendar, DollarSign } from "lucide-react"
 
 export const dynamic = "force-dynamic";
 
@@ -35,57 +37,68 @@ export default async function WorkerReservasPage() {
 
   return (
     <section className="container-padding section-spacing">
-      <header className="mb-8">
-        <h1>Listado de Reservas de Ciudadanos</h1>
-        <p className="text-secondary mt-2">
-          Administra las reservas realizadas por los ciudadanos y controla su estado de pago.
-        </p>
-      </header>
-
-      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>ID</TableHead>
-              <TableHead>Usuario</TableHead>
-              <TableHead>Recinto</TableHead>
-              <TableHead>Fecha y Hora</TableHead>
-              <TableHead>Precio</TableHead>
-              <TableHead>Pago</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {(reservas ?? []).map(r => (
-              <TableRow key={r.id}>
-                <TableCell className="font-medium">#{r.id}</TableCell>
-                <TableCell className="text-secondary">{r.users?.email ?? '—'}</TableCell>
-                <TableCell className="text-secondary">{r.recintos?.name ?? '—'}</TableCell>
-                <TableCell className="text-secondary text-xs">
-                  <div>{formatDate(r.start_at)}</div>
-                  <div>{formatDate(r.end_at)}</div>
-                </TableCell>
-                <TableCell className="font-medium">{formatPrice(Number(r.price ?? 0))}</TableCell>
-                <TableCell>
-                  <Badge className={r.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
-                    {r.paid ? 'Pagado' : 'Pendiente'}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right">
-                  <DeleteButton id={r.id} />
-                </TableCell>
-              </TableRow>
-            ))}
-            {(!reservas || reservas.length === 0) && (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-secondary py-8">
-                  No hay reservas registradas.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+      {/* Header with gradient - Estética-Usabilidad Effect */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-4" />
+        <div className="relative">
+          <h1 className="mb-2">Listado de Reservas de Ciudadanos</h1>
+          <p className="text-secondary mt-2">
+            Administra las reservas realizadas por los ciudadanos y controla su estado de pago.
+          </p>
+        </div>
       </div>
+
+      {(reservas && reservas.length > 0) ? (
+        <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>ID</TableHead>
+                <TableHead>Usuario</TableHead>
+                <TableHead>Recinto</TableHead>
+                <TableHead>
+                  <div className="flex items-center gap-2">
+                    <Calendar className="w-4 h-4" />
+                    <span>Fecha y Hora</span>
+                  </div>
+                </TableHead>
+                <TableHead>
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4" />
+                    <span>Precio</span>
+                  </div>
+                </TableHead>
+                <TableHead>Pago</TableHead>
+                <TableHead className="text-center">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {reservas.map(r => (
+                <TableRow key={r.id} className="hover:bg-muted/50 transition-colors">
+                  <TableCell className="font-medium">#{r.id}</TableCell>
+                  <TableCell className="text-secondary">{r.users?.email ?? '—'}</TableCell>
+                  <TableCell className="text-secondary">{r.recintos?.name ?? '—'}</TableCell>
+                  <TableCell className="text-secondary text-sm">
+                    <div>{formatDate(r.start_at)}</div>
+                    <div>{formatDate(r.end_at)}</div>
+                  </TableCell>
+                  <TableCell className="font-medium">{formatPrice(Number(r.price ?? 0))}</TableCell>
+                  <TableCell>
+                    <Badge className={r.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
+                      {r.paid ? 'Pagado' : 'Pendiente'}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <DeleteButton id={r.id} />
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <EmptyWorkerReservasState />
+      )}
     </section>
   );
 }

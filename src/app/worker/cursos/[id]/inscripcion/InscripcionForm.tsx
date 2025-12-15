@@ -3,13 +3,16 @@
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 import { Button } from "@/components/ui/button"
+import { Loader2 } from 'lucide-react'
 
 export default function InscripcionForm({ cursoId }: { cursoId: number }) {
   const [isNew, setIsNew] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const form = e.currentTarget
     const formData = new FormData(form)
     const payload = {
@@ -39,6 +42,7 @@ export default function InscripcionForm({ cursoId }: { cursoId: number }) {
     } else if (!res.ok) {
       toast({ type: 'error', message: data.error || 'Error al crear la inscripción' })
     }
+    setIsSubmitting(false)
   }
 
   return (
@@ -82,8 +86,15 @@ export default function InscripcionForm({ cursoId }: { cursoId: number }) {
         </>
       )}
 
-      <Button className="w-full bg-success hover:bg-success/90" type="submit">
-        Confirmar Inscripción
+      <Button className="w-full bg-success hover:bg-success/90" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Confirmando...
+          </>
+        ) : (
+          'Confirmar Inscripción'
+        )}
       </Button>
     </form>
   )

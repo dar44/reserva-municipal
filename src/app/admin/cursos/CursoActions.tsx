@@ -4,6 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import ConfirmModal from '@/components/ConfirmModal'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
 
 export default function CursoActions({ id }: { id: number }) {
   const [open, setOpen] = useState(false)
@@ -19,10 +20,16 @@ export default function CursoActions({ id }: { id: number }) {
   }
 
   return (
-    <div className="space-x-2">
-      <Link className="text-blue-400" href={`/admin/cursos/${id}`}>Ver</Link>
-      <Link className="text-yellow-400" href={`/admin/cursos/${id}/editar`}>Modificar</Link>
-      <button onClick={() => setOpen(true)} className="text-red-400">Eliminar</button>
+    <div className="flex gap-2 justify-center">
+      <Button asChild size="sm" variant="outline">
+        <Link href={`/admin/cursos/${id}`}>Ver</Link>
+      </Button>
+      <Button asChild size="sm" variant="secondary">
+        <Link href={`/admin/cursos/${id}/editar`}>Modificar</Link>
+      </Button>
+      <Button onClick={() => setOpen(true)} size="sm" variant="destructive">
+        Eliminar
+      </Button>
       <ConfirmModal
         open={open}
         title="Eliminar curso"

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 import { Button } from "@/components/ui/button"
+import { Loader2 } from 'lucide-react'
 
 const slots = Array.from({ length: 12 }, (_, i) => {
   const start = 8 + i
@@ -16,10 +17,12 @@ const slots = Array.from({ length: 12 }, (_, i) => {
 
 export default function ReservationForm({ recintoId }: { recintoId: number }) {
   const [isNew, setIsNew] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const toast = useToast()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setIsSubmitting(true)
     const form = e.currentTarget
     const formData = new FormData(form)
     const payload = {
@@ -54,6 +57,7 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
         : 'Error al crear la reserva')
       toast({ type: 'error', message })
     }
+    setIsSubmitting(false)
   }
 
   return (
@@ -118,8 +122,15 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
         )}
       </div>
 
-      <Button className="w-full bg-success hover:bg-success/90" type="submit">
-        Confirmar Reserva
+      <Button className="w-full bg-success hover:bg-success/90" type="submit" disabled={isSubmitting}>
+        {isSubmitting ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Confirmando...
+          </>
+        ) : (
+          'Confirmar Reserva'
+        )}
       </Button>
     </form>
   )

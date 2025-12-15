@@ -6,6 +6,7 @@ import LocationPicker from '@/components/LocationPicker'
 import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { processRecintoImageInput } from '@/lib/recintoImages'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -106,7 +107,7 @@ export default async function EditRecintoPage({ params }: Props) {
         <RecintoImagePicker initialImage={recinto.image ?? null} />
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Guardar Cambios</Button>
+          <SubmitButton loadingText="Guardando...">Guardar Cambios</SubmitButton>
           <Button asChild variant="outline">
             <Link href={`/admin/recintos/${id}`}>Cancelar</Link>
           </Button>

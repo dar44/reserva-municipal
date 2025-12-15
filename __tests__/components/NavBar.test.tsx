@@ -56,7 +56,7 @@ describe('NavBar', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: /Ada/ })).toBeInTheDocument())
 
     const reservasLink = screen.getByRole('link', { name: 'Reservas' })
-    expect(reservasLink.className).toContain('bg-blue-600')
+    expect(reservasLink.className).toContain('bg-primary')
 
     expect(selectMock).toHaveBeenCalledWith('name')
     expect(eqMock).toHaveBeenCalledWith('uid', 'uid-1')

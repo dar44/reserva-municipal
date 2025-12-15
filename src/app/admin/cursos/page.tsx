@@ -27,11 +27,22 @@ export default async function AdminCursosPage() {
 
   return (
     <div className="container-padding section-spacing">
-      <div className="flex justify-between items-center mb-8">
-        <h1>Cursos</h1>
-        <Button asChild>
-          <Link href="/admin/cursos/nuevo">+ Nuevo Curso</Link>
-        </Button>
+      {/* Header with gradient */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-2" />
+        <div className="relative flex flex-col gap-2">
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="mb-2">Cursos</h1>
+              <p className="text-foreground-secondary">
+                Administra los cursos, su programación y estado de disponibilidad
+              </p>
+            </div>
+            <Button asChild>
+              <Link href="/admin/cursos/nuevo">+ Nuevo Curso</Link>
+            </Button>
+          </div>
+        </div>
       </div>
 
       {!cursosWithImages?.length && (
@@ -39,7 +50,7 @@ export default async function AdminCursosPage() {
       )}
 
       {!!cursosWithImages?.length && (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm">
+        <div className="overflow-x-auto -mx-4 sm:mx-0 rounded-lg border border-border bg-card shadow-sm">
           <Table>
             <TableHeader>
               <TableRow>
@@ -48,14 +59,14 @@ export default async function AdminCursosPage() {
                 <TableHead>Descripción</TableHead>
                 <TableHead>Fecha Inicio</TableHead>
                 <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
+                <TableHead className="text-center">Acciones</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {cursosWithImages.map(c => {
                 const isDisponible = c.state === 'Disponible'
                 return (
-                  <TableRow key={c.id}>
+                  <TableRow key={c.id} className="hover:bg-muted/50 transition-colors">
                     <TableCell>
                       {c.imageUrl ? (
                         <Image
@@ -84,7 +95,7 @@ export default async function AdminCursosPage() {
                         {c.state}
                       </Badge>
                     </TableCell>
-                    <TableCell className="text-right">
+                    <TableCell className="text-center">
                       <CursoActions id={c.id} />
                     </TableCell>
                   </TableRow>

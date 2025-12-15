@@ -11,6 +11,7 @@ import {
 import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
+import { SubmitButton } from "@/components/SubmitButton"
 
 export const dynamic = 'force-dynamic'
 
@@ -169,7 +170,7 @@ export default async function EditUsuarioPage({ params }: Props) {
         </div>
 
         <div className="flex gap-3 pt-4">
-          <Button type="submit">Guardar Cambios</Button>
+          <SubmitButton loadingText="Guardando...">Guardar Cambios</SubmitButton>
           <Button asChild variant="outline">
             <Link href={`/admin/usuarios/${id}`}>Cancelar</Link>
           </Button>

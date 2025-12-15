@@ -8,6 +8,7 @@ import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { EmptyReservasState } from "@/components/ui/empty-state"
 
 export const dynamic = "force-dynamic";
 
@@ -143,12 +144,18 @@ export default async function ReservasPage({
 
   return (
     <div className="container-padding section-spacing">
-      <h1 className="mb-4">Mis reservas</h1>
-      <p className="text-secondary mb-8">Gestiona tus reservas de recintos e inscripciones a cursos</p>
+      {/* Header with gradient */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-4" />
+        <div className="relative">
+          <h1 className="mb-4">Mis reservas</h1>
+          <p className="text-secondary mb-4">Gestiona tus reservas de recintos e inscripciones a cursos</p>
+        </div>
+      </div>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="shadow-md">
+        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
           <CardHeader className="pb-2">
             <CardDescription>Total de reservas</CardDescription>
           </CardHeader>
@@ -156,7 +163,7 @@ export default async function ReservasPage({
             <div className="text-3xl font-bold tracking-tight">{totalReservas}</div>
           </CardContent>
         </Card>
-        <Card className="shadow-md">
+        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium text-secondary">Reservas activas</CardTitle>
           </CardHeader>
@@ -164,7 +171,7 @@ export default async function ReservasPage({
             <div className="text-3xl font-bold">{reservasActivas}</div>
           </CardContent>
         </Card>
-        <Card className="shadow-md">
+        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
           <CardHeader className="pb-2">
             <CardDescription>Total invertido</CardDescription>
           </CardHeader>
@@ -176,22 +183,22 @@ export default async function ReservasPage({
 
       {/* Active Reservations */}
       <h2 className="text-xl font-semibold mb-4">Reservas activas</h2>
-      <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm mb-8">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Tipo</TableHead>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Fecha inicio</TableHead>
-              <TableHead>Fecha fin</TableHead>
-              <TableHead>Total</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead className="text-right">Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {activeItems.length > 0 ? (
-              activeItems.map(item => (
+      {activeItems.length > 0 ? (
+        <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm mb-8">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Tipo</TableHead>
+                <TableHead>Nombre</TableHead>
+                <TableHead>Fecha inicio</TableHead>
+                <TableHead>Fecha fin</TableHead>
+                <TableHead>Total</TableHead>
+                <TableHead>Estado</TableHead>
+                <TableHead className="text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {activeItems.map(item => (
                 <Fragment key={`${item.type}-${item.id}`}>
                   <TableRow>
                     <TableCell>
@@ -255,17 +262,15 @@ export default async function ReservasPage({
                     </TableRow>
                   )}
                 </Fragment>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell colSpan={7} className="text-center text-secondary py-8">
-                  No tienes reservas activas en este momento.
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      ) : (
+        <div className="mb-8">
+          <EmptyReservasState />
+        </div>
+      )}
 
       {/* History Section */}
       <h2 className="text-xl font-semibold mb-4">Historial</h2>

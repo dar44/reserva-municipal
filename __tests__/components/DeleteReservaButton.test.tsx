@@ -33,9 +33,8 @@ describe('DeleteReservaButton with Toastify', () => {
     it('renderiza el botón de eliminar correctamente', () => {
         render(<DeleteReservaButton id={1} tipo="Recinto" />)
 
-        const deleteButton = screen.getByTitle('Eliminar')
+        const deleteButton = screen.getByRole('button', { name: /eliminar/i })
         expect(deleteButton).toBeInTheDocument()
-        expect(deleteButton).toHaveTextContent('🗑️')
     })
 
     it('muestra modal de confirmación al hacer clic', async () => {
@@ -43,9 +42,9 @@ describe('DeleteReservaButton with Toastify', () => {
 
         render(<DeleteReservaButton id={1} tipo="Recinto" />)
 
-        await user.click(screen.getByTitle('Eliminar'))
+        await user.click(screen.getByRole('button', { name: /eliminar/i }))
 
-        expect(screen.getByText(/confirmar eliminación/i)).toBeInTheDocument()
+        expect(screen.getByText(/confirmar/i)).toBeInTheDocument()
         expect(screen.getByText(/¿estás seguro de que quieres eliminar esta reserva\?/i)).toBeInTheDocument()
     })
 
@@ -54,11 +53,11 @@ describe('DeleteReservaButton with Toastify', () => {
 
         render(<DeleteReservaButton id={1} tipo="Recinto" />)
 
-        await user.click(screen.getByTitle('Eliminar'))
+        await user.click(screen.getByRole('button', { name: /eliminar/i }))
         await user.click(screen.getByRole('button', { name: /cancelar/i }))
 
         await waitFor(() => {
-            expect(screen.queryByText(/confirmar eliminación/i)).not.toBeInTheDocument()
+            expect(screen.queryByText(/confirmar/i)).not.toBeInTheDocument()
         })
     })
 })

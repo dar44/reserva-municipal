@@ -3,6 +3,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'react-toastify'
+import { Button } from '@/components/ui/button'
+import ConfirmModal from '@/components/ConfirmModal'
 
 type Props = {
     id: number
@@ -40,41 +42,24 @@ export default function DeleteReservaButton({ id, tipo }: Props) {
 
     return (
         <>
-            <button
+            <Button
                 onClick={() => setShowConfirm(true)}
-                className="text-red-400 hover:text-red-300"
-                title="Eliminar"
+                variant="destructive"
+                size="sm"
                 disabled={isDeleting}
             >
-                🗑️
-            </button>
+                Eliminar
+            </Button>
 
-            {showConfirm && (
-                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-gray-800 p-6 rounded-lg shadow-xl max-w-md">
-                        <h3 className="text-lg font-bold mb-4">Confirmar eliminación</h3>
-                        <p className="text-gray-300 mb-6">
-                            ¿Estás seguro de que quieres eliminar esta {tipo === 'Recinto' ? 'reserva' : 'inscripción'}?
-                        </p>
-                        <div className="flex gap-3 justify-end">
-                            <button
-                                onClick={() => setShowConfirm(false)}
-                                className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600"
-                                disabled={isDeleting}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                onClick={handleDelete}
-                                className="px-4 py-2 bg-red-600 rounded hover:bg-red-700"
-                                disabled={isDeleting}
-                            >
-                                {isDeleting ? 'Eliminando...' : 'Eliminar'}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            )}
+            <ConfirmModal
+                open={showConfirm}
+                message={`¿Estás seguro de que quieres eliminar esta ${tipo === 'Recinto' ? 'reserva' : 'inscripción'}?`}
+                onCancel={() => setShowConfirm(false)}
+                onConfirm={() => {
+                    setShowConfirm(false)
+                    handleDelete()
+                }}
+            />
         </>
     )
 }
