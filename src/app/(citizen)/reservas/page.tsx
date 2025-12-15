@@ -7,8 +7,9 @@ import { formatCurrency } from "@/lib/currency";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { EmptyReservasState } from "@/components/ui/empty-state"
+import { MetricCard } from "@/components/ui/metric-card"
+import { CalendarCheck, TrendingUp, DollarSign } from "lucide-react"
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +46,30 @@ type UnifiedItem = {
   status: string
   paid: boolean
   ubication?: string
+}
+
+// Zona horaria de Madrid
+function formatMadridDateTime(isoString: string): string {
+  const date = new Date(isoString)
+  return date.toLocaleString('es-ES', {
+    timeZone: 'Europe/Madrid',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit'
+  })
+}
+
+function formatMadridDate(isoString: string): string {
+  const date = new Date(isoString)
+  return date.toLocaleDateString('es-ES', {
+    timeZone: 'Europe/Madrid',
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  })
 }
 
 export default async function ReservasPage({
@@ -148,37 +173,34 @@ export default async function ReservasPage({
       <div className="relative mb-8">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-4" />
         <div className="relative">
-          <h1 className="mb-4">Mis reservas</h1>
-          <p className="text-secondary mb-4">Gestiona tus reservas de recintos e inscripciones a cursos</p>
+          <h1 className="mb-2">Mis reservas</h1>
+          <p className="text-foreground-secondary">Gestiona tus reservas de recintos e inscripciones a cursos</p>
         </div>
       </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
-          <CardHeader className="pb-2">
-            <CardDescription>Total de reservas</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold tracking-tight">{totalReservas}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium text-secondary">Reservas activas</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{reservasActivas}</div>
-          </CardContent>
-        </Card>
-        <Card className="shadow-md bg-gradient-to-br from-background to-surface">
-          <CardHeader className="pb-2">
-            <CardDescription>Total invertido</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold tracking-tight">{formatCurrency(totalInvertido, currency)}</div>
-          </CardContent>
-        </Card>
+      {/* Dashboard Metrics - Ley de la Región Común */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+        <MetricCard
+          title="Total de reservas"
+          value={totalReservas}
+          icon={CalendarCheck}
+          description="Reservas y cursos combinados"
+          variant="default"
+        />
+        <MetricCard
+          title="Reservas activas"
+          value={reservasActivas}
+          icon={TrendingUp}
+          description="Pagadas y vigentes"
+          variant={reservasActivas > 0 ? "success" : "default"}
+        />
+        <MetricCard
+          title="Total invertido"
+          value={formatCurrency(totalInvertido, currency)}
+          icon={DollarSign}
+          description="En reservas confirmadas"
+          variant="info"
+        />
       </div>
 
       {/* Active Reservations */}
@@ -207,8 +229,8 @@ export default async function ReservasPage({
                       </Badge>
                     </TableCell>
                     <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-secondary text-xs">{new Date(item.startAt).toLocaleString()}</TableCell>
-                    <TableCell className="text-secondary text-xs">{new Date(item.endAt).toLocaleString()}</TableCell>
+                    <TableCell className="text-secondary text-xs">{formatMadridDateTime(item.startAt)}</TableCell>
+                    <TableCell className="text-secondary text-xs">{formatMadridDateTime(item.endAt)}</TableCell>
                     <TableCell className="font-medium">
                       {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
                     </TableCell>
@@ -295,7 +317,7 @@ export default async function ReservasPage({
                     </Badge>
                   </TableCell>
                   <TableCell className="font-medium text-tertiary">{item.name}</TableCell>
-                  <TableCell className="text-secondary text-xs">{new Date(item.startAt).toLocaleDateString()}</TableCell>
+                  <TableCell className="text-secondary text-xs">{formatMadridDate(item.startAt)}</TableCell>
                   <TableCell className="font-medium text-secondary">
                     {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
                   </TableCell>

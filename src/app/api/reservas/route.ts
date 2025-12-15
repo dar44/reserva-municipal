@@ -12,7 +12,7 @@ import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 
 export const dynamic = 'force-dynamic'
 
-function getIsoRangeFromDateTime (date: string, time: string) {
+function getIsoRangeFromDateTime(date: string, time: string) {
   const [yearStr, monthStr, dayStr] = date.split('-')
   const [hourStr, minuteStr] = time.split(':')
 
@@ -30,7 +30,17 @@ function getIsoRangeFromDateTime (date: string, time: string) {
     return null
   }
 
-  const startAt = new Date(Date.UTC(year, month - 1, day, hour, minute))
+  // Create a date object in Madrid timezone
+  // We'll use the Intl API to properly handle DST
+  const madridDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`
+
+  // Create date assuming it's in Madrid timezone
+  // To convert Madrid time to UTC, we need to determine the offset
+  const testDate = new Date(madridDateStr)
+  const madridOffset = new Date(testDate.toLocaleString('en-US', { timeZone: 'Europe/Madrid' })).getTime() - new Date(testDate.toLocaleString('en-US', { timeZone: 'UTC' })).getTime()
+
+  // Create the actual Madrid time by parsing with explicit offset
+  const startAt = new Date(Date.UTC(year, month - 1, day, hour, minute) - madridOffset)
   const endAt = new Date(startAt.getTime() + 60 * 60 * 1000)
 
   return {
@@ -39,7 +49,7 @@ function getIsoRangeFromDateTime (date: string, time: string) {
   }
 }
 
-async function checkRecintoAvailability (recintoId: number, startIso: string, endIso: string) {
+async function checkRecintoAvailability(recintoId: number, startIso: string, endIso: string) {
   return hasRecintoConflicts({
     supabase: supabaseAdmin,
     recintoId,
@@ -49,7 +59,7 @@ async function checkRecintoAvailability (recintoId: number, startIso: string, en
   })
 }
 
-export async function POST (req: Request) {
+export async function POST(req: Request) {
   try {
     const { origin } = new URL(req.url)
 
@@ -58,7 +68,7 @@ export async function POST (req: Request) {
     const amountMinorUnits = toMinorUnits(reservaPrice, currency)
 
     if (req.headers.get('content-type')?.includes('application/json')) {
-      const { email, date, time, recinto_id, newUser, name, surname, dni, phone} = await req.json()
+      const { email, date, time, recinto_id, newUser, name, surname, dni, phone } = await req.json()
 
       const recintoId = Number(recinto_id)
       if (Number.isNaN(recintoId)) {

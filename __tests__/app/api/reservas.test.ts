@@ -64,6 +64,21 @@ describe('POST /api/reservas (JSON)', () => {
   let jsonSpy: jest.Mock
   let POST: (req: Request) => Promise<any>
 
+  // Helper to create expected ISO string for Madrid timezone
+  // Dynamically calculates offset to handle both winter (UTC+1) and summer (UTC+2) time
+  function toMadridISO(dateStr: string, timeStr: string): string {
+    const [year, month, day] = dateStr.split('-').map(Number)
+    const [hour, minute] = timeStr.split(':').map(Number)
+
+    // Create a test date to determine the Madrid offset for this specific date
+    const madridDateStr = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`
+    const testDate = new Date(madridDateStr)
+    const madridOffset = new Date(testDate.toLocaleString('en-US', { timeZone: 'Europe/Madrid' })).getTime() - new Date(testDate.toLocaleString('en-US', { timeZone: 'UTC' })).getTime()
+
+    const utcDate = new Date(Date.UTC(year, month - 1, day, hour, minute) - madridOffset)
+    return utcDate.toISOString()
+  }
+
 
   beforeEach(async () => {
     jest.resetModules()
@@ -204,8 +219,8 @@ describe('POST /api/reservas (JSON)', () => {
     expect(hasRecintoConflictsMock).toHaveBeenCalledWith({
       supabase: expect.anything(),
       recintoId: 12,
-      startAt: '2025-01-15T10:30:00.000Z',
-      endAt: '2025-01-15T11:30:00.000Z',
+      startAt: toMadridISO('2025-01-15', '10:30'),
+      endAt: toMadridISO('2025-01-15', '11:30'),
       courseStatuses: ['pendiente', 'aprobada'],
     })
     expect(jsonSpy).toHaveBeenCalledWith(
@@ -289,8 +304,8 @@ describe('POST /api/reservas (JSON)', () => {
       user_uid: 'existing-1',
       recinto_id: 12,
       price: 75,
-      start_at: '2025-01-15T10:30:00.000Z',
-      end_at: '2025-01-15T11:30:00.000Z',
+      start_at: toMadridISO('2025-01-15', '10:30'),
+      end_at: toMadridISO('2025-01-15', '11:30'),
     })
     expect(pagosTable.insert).toHaveBeenCalledWith({
       user_uid: 'existing-1',
@@ -515,8 +530,8 @@ describe('POST /api/reservas (JSON)', () => {
       user_uid: 'auth-1',
       recinto_id: 44,
       price: 75,
-      start_at: '2025-06-01T12:30:00.000Z',
-      end_at: '2025-06-01T13:30:00.000Z',
+      start_at: toMadridISO('2025-06-01', '12:30'),
+      end_at: toMadridISO('2025-06-01', '13:30'),
     })
     expect(pagosTable.insert).toHaveBeenCalledWith({
       user_uid: 'auth-1',
