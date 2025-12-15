@@ -11,6 +11,7 @@ import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -97,10 +98,14 @@ export default async function NewUsuarioPage() {
 
   return (
     <div className="container-padding section-spacing max-w-2xl mx-auto">
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Usuarios', href: '/admin/usuarios' },
+          { label: 'Nuevo usuario' }
+        ]}
+      />
       <div className="mb-8">
-        <Link href="/admin/usuarios" className="text-sm text-primary hover:underline mb-4 inline-block">
-          ← Volver a Usuarios
-        </Link>
         <h1>Nuevo Usuario</h1>
       </div>
 

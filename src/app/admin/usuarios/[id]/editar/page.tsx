@@ -12,6 +12,7 @@ import UserImagePicker from '@/components/UserImagePicker'
 import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -102,9 +103,14 @@ export default async function EditUsuarioPage({ params }: Props) {
 
   return (
     <div className="container-padding section-spacing max-w-3xl mx-auto">
-      <Link href={`/admin/usuarios/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver al Detalle
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Usuarios', href: '/admin/usuarios' },
+          { label: `${usuario.name} ${usuario.surname}`, href: `/admin/usuarios/${id}` },
+          { label: 'Editar' }
+        ]}
+      />
 
       <h1 className="mb-8">Editar Usuario</h1>
 

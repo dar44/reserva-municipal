@@ -9,6 +9,7 @@ import { getPublicStorageUrl } from '@/lib/storage'
 import OpenStreetMapView from '@/components/OpenStreetMapView'
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -52,9 +53,13 @@ export default async function CursoDetail({ params }: { params: Promise<{ id: st
 
   return (
     <div className="container-padding section-spacing">
-      <Link href="/cursos" className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver
-      </Link>
+      <Breadcrumbs
+        homeHref="/recintos"
+        items={[
+          { label: 'Cursos', href: '/cursos' },
+          { label: curso.name }
+        ]}
+      />
 
       <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface">
         <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center text-tertiary">

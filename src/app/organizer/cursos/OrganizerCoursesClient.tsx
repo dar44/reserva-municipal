@@ -11,7 +11,8 @@ import OrganizerCourseImagePicker from '@/components/OrganizerCourseImagePicker'
 import LocationPicker from '@/components/LocationPicker'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Loader2 } from 'lucide-react'
+import { Tooltip } from '@/components/ui/tooltip'
+import { Loader2, HelpCircle } from 'lucide-react'
 
 type OrganizerCourse = {
   id: number
@@ -411,21 +412,33 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
           </div>
 
           <label className="block">
-            <span className="text-sm font-medium mb-2 block">Precio (€)</span>
+            <span className="text-sm font-medium mb-2 block flex items-center gap-2">
+              Precio (€)
+              <Tooltip content="Precio del curso en pesos chilenos (CLP). Déjalo vacío si es gratuito">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </span>
             <input
               type="number"
               step="0.01"
               name="price"
               className="input-base w-full"
+              placeholder="Ej: 25.00"
             />
           </label>
 
           <label className="block">
-            <span className="text-sm font-medium mb-2 block">Capacidad</span>
+            <span className="text-sm font-medium mb-2 block flex items-center gap-2">
+              Capacidad
+              <Tooltip content="Número máximo de inscritos permitidos para este curso">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </span>
             <input
               type="number"
               name="capacity"
               className="input-base w-full"
+              placeholder="Ej: 20"
             />
           </label>
 
@@ -583,22 +596,34 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     </div>
 
                     <label className="text-sm">
-                      Precio (€)
+                      <span className="flex items-center gap-2">
+                        Precio (€)
+                        <Tooltip content="Precio del curso en pesos chilenos (CLP). Déjalo vacío si es gratuito">
+                          <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                        </Tooltip>
+                      </span>
                       <input
                         type="number"
                         step="0.01"
                         name="price"
                         defaultValue={course.price ?? undefined}
                         className="input-base w-full"
+                        placeholder="Ej: 25.00"
                       />
                     </label>
                     <label className="text-sm">
-                      Capacidad
+                      <span className="flex items-center gap-2">
+                        Capacidad
+                        <Tooltip content="Número máximo de inscritos permitidos para este curso">
+                          <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                        </Tooltip>
+                      </span>
                       <input
                         type="number"
                         name="capacity"
                         defaultValue={course.capacity ?? undefined}
                         className="input-base w-full"
+                        placeholder="Ej: 20"
                       />
                     </label>
 

@@ -5,6 +5,7 @@ import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Badge } from "@/components/ui/badge"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -71,9 +72,13 @@ export default async function EditReservaPage({ params }: Props) {
 
     return (
         <div className="container-padding section-spacing max-w-2xl mx-auto">
-            <Link href="/admin/reservas" className="text-sm text-primary hover:underline mb-6 inline-block">
-                ← Volver a Reservas
-            </Link>
+            <Breadcrumbs
+                homeHref="/admin/panel"
+                items={[
+                    { label: 'Reservas', href: '/admin/reservas' },
+                    { label: `Reserva #${reserva.id}` }
+                ]}
+            />
 
             <h1 className="mb-8">Editar reserva #{reserva.id}</h1>
 

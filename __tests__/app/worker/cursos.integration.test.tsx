@@ -64,10 +64,12 @@ describe('WorkerCursosPage', () => {
 
     expect(screen.getByText('Natación')).toBeInTheDocument()
     expect(screen.getByText('Piscina temperada')).toBeInTheDocument()
-    expect(screen.getByText((content, element) => element?.textContent === '8/20')).toBeInTheDocument()
+    const natacionSeats = screen.getAllByText((content, element) => element?.textContent === '8/20')
+    expect(natacionSeats.length).toBeGreaterThan(0)
 
     expect(screen.getByText('Tenis')).toBeInTheDocument()
-    expect(screen.getByText((content, element) => element?.textContent === '16/16')).toBeInTheDocument()
+    const tenisSeats = screen.getAllByText((content, element) => element?.textContent === '16/16')
+    expect(tenisSeats.length).toBeGreaterThan(0)
 
     expect(screen.getAllByText(/acciones/i).length).toBeGreaterThan(0)
   })

@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 import { Button } from "@/components/ui/button"
-import { Loader2 } from 'lucide-react'
+import { Tooltip } from "@/components/ui/tooltip"
+import { Loader2, HelpCircle } from 'lucide-react'
 
 const slots = Array.from({ length: 12 }, (_, i) => {
   const start = 8 + i
@@ -63,7 +64,12 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-2">Fecha</label>
+        <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+          Fecha *
+          <Tooltip content="Selecciona la fecha de la reserva">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </label>
         <input
           type="date"
           name="date"
@@ -73,7 +79,12 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">Hora inicio – fin</label>
+        <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+          Hora inicio – fin *
+          <Tooltip content="Elige el bloque horario (1 hora de duración)">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </label>
         <select name="time" className="input-base w-full" required>
           {slots.map((slot) => (
             <option key={slot.value} value={slot.value}>
@@ -104,20 +115,50 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
           </Button>
         </div>
 
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          className="input-base w-full"
-          required
-        />
+        <div>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Correo electrónico *
+            <Tooltip content="El sistema buscará si ya existe una cuenta con este email">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
+          <input
+            type="email"
+            name="email"
+            placeholder="email@ejemplo.com"
+            className="input-base w-full"
+            required
+          />
+        </div>
 
         {isNew && (
           <>
-            <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
-            <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
-            <input type="text" name="dni" placeholder="DNI" className="input-base w-full" required />
-            <input type="text" name="phone" placeholder="Teléfono" className="input-base w-full" required />
+            <div>
+              <label className="block text-sm font-medium mb-2">Nombre *</label>
+              <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Apellido *</label>
+              <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                DNI *
+                <Tooltip content="Formato: 12345678A (8 dígitos + letra)">
+                  <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                </Tooltip>
+              </label>
+              <input type="text" name="dni" placeholder="12345678A" className="input-base w-full" required />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+                Teléfono *
+                <Tooltip content="Formato: +34 600 000 000">
+                  <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                </Tooltip>
+              </label>
+              <input type="text" name="phone" placeholder="+34 600 000 000" className="input-base w-full" required />
+            </div>
           </>
         )}
       </div>

@@ -76,7 +76,7 @@ describe('RecintosPage (ciudadanía)', () => {
 
         expect(screen.getByRole('heading', { name: /recintos disponibles/i })).toBeInTheDocument()
 
-        const cards = screen.getAllByRole('link', { name: /ver más/i })
+        const cards = screen.getAllByRole('link').filter(link => link.getAttribute('href')?.startsWith('/recintos/'))
         expect(cards).toHaveLength(sampleRecintos.length)
 
         expect(screen.getByText('Polideportivo Municipal')).toBeInTheDocument()
@@ -120,6 +120,6 @@ describe('RecintosPage (ciudadanía)', () => {
         const ui = await RecintosPage({ searchParams: Promise.resolve({}) })
         render(ui)
 
-        expect(screen.getByText(/no se han encontrado recintos/i)).toBeInTheDocument()
+        expect(screen.getByText(/no se encontraron recintos/i)).toBeInTheDocument()
     })
 })

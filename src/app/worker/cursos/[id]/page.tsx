@@ -6,6 +6,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { User, ArrowLeft, UserX } from "lucide-react"
 import { EmptyState } from "@/components/ui/empty-state"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -61,14 +62,14 @@ export default async function CursoDetallePage({
 
   return (
     <div className="container-padding section-spacing">
-      {/* Back link con mejor estilo - Ley de Fitts */}
-      <Link
-        href="/worker/cursos"
-        className="inline-flex items-center gap-2 text-sm text-primary hover:underline mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Volver a cursos
-      </Link>
+      {/* Breadcrumbs - Jakob's Law */}
+      <Breadcrumbs
+        homeHref="/worker/panel"
+        items={[
+          { label: 'Cursos', href: '/worker/cursos' },
+          { label: curso.name }
+        ]}
+      />
 
       {/* Header con gradient - consistencia visual */}
       <div className="relative mb-8">

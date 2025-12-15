@@ -13,6 +13,7 @@ import {
 import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -135,9 +136,14 @@ export default async function EditarCursoPage({
 
   return (
     <div className="container-padding section-spacing max-w-3xl mx-auto">
-      <Link href={`/admin/cursos/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver al Detalle
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Cursos', href: '/admin/cursos' },
+          { label: curso.name, href: `/admin/cursos/${id}` },
+          { label: 'Editar' }
+        ]}
+      />
 
       <h1 className="mb-8">Editar Curso</h1>
 

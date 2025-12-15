@@ -68,7 +68,7 @@ describe('CursosPage (ciudadanía)', () => {
     expect(screen.getByDisplayValue('2026-01-01')).toHaveAttribute('name', 'from')
     expect(screen.getByDisplayValue('2026-12-31')).toHaveAttribute('name', 'to')
 
-    const cards = screen.getAllByRole('link', { name: /ver más/i })
+    const cards = screen.getAllByRole('link').filter(link => link.getAttribute('href')?.startsWith('/cursos/'))
     expect(cards).toHaveLength(sampleCourses.length)
 
     expect(screen.getByText('Taller de pintura')).toBeInTheDocument()
@@ -106,6 +106,6 @@ describe('CursosPage (ciudadanía)', () => {
     const ui = await CursosPage({ searchParams: Promise.resolve({}) })
     render(ui)
 
-    expect(screen.getByText(/no se han encontrado cursos/i)).toBeInTheDocument()
+    expect(screen.getByText(/no se encontraron cursos/i)).toBeInTheDocument()
   })
 })

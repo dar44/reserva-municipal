@@ -9,6 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge"
 import { EmptyReservasState } from "@/components/ui/empty-state"
 import { MetricCard } from "@/components/ui/metric-card"
+import { ProgressBar } from "@/components/ui/progress-bar"
+import { Tooltip } from "@/components/ui/tooltip"
 import { CalendarCheck, TrendingUp, DollarSign } from "lucide-react"
 
 export const dynamic = "force-dynamic";
@@ -70,6 +72,20 @@ function formatMadridDate(isoString: string): string {
     month: '2-digit',
     year: 'numeric'
   })
+}
+
+// Calculate course progress based on dates (0-100%)
+function calculateCourseProgress(startDate: string, endDate: string): number {
+  const now = new Date()
+  const start = new Date(startDate)
+  const end = new Date(endDate)
+
+  if (now < start) return 0
+  if (now > end) return 100
+
+  const total = end.getTime() - start.getTime()
+  const elapsed = now.getTime() - start.getTime()
+  return Math.round((elapsed / total) * 100)
 }
 
 export default async function ReservasPage({
@@ -215,6 +231,7 @@ export default async function ReservasPage({
                 <TableHead>Fecha inicio</TableHead>
                 <TableHead>Fecha fin</TableHead>
                 <TableHead>Total</TableHead>
+                <TableHead>Progreso</TableHead>
                 <TableHead>Estado</TableHead>
                 <TableHead className="text-right">Acciones</TableHead>
               </TableRow>
@@ -235,9 +252,24 @@ export default async function ReservasPage({
                       {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
                     </TableCell>
                     <TableCell>
-                      <Badge className={item.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
-                        {item.paid ? 'Pagado' : 'Pendiente'}
-                      </Badge>
+                      {item.type === 'Curso' ? (
+                        <ProgressBar
+                          value={calculateCourseProgress(item.startAt, item.endAt)}
+                          showPercentage
+                          size="sm"
+                        />
+                      ) : (
+                        <Tooltip content="El progreso solo se muestra para cursos inscritos">
+                          <span className="text-xs text-muted-foreground cursor-help">—</span>
+                        </Tooltip>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip content={item.paid ? "Reserva confirmada y pagada" : "Pago pendiente de confirmación"}>
+                        <Badge className={item.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
+                          {item.paid ? 'Pagado' : 'Pendiente'}
+                        </Badge>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex items-center gap-3">

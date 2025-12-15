@@ -5,6 +5,7 @@ import { getPublicStorageUrl } from '@/lib/storage'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { EmptyCoursesState } from "@/components/ui/empty-state"
+import { Tooltip } from "@/components/ui/tooltip"
 import { Users } from "lucide-react"
 
 export const dynamic = "force-dynamic";
@@ -103,12 +104,14 @@ export default async function WorkerCursosPage() {
                       </span>
                     </TableCell>
                     <TableCell>
-                      <Badge
-                        variant={isDisponible ? "default" : "secondary"}
-                        className={isDisponible ? "bg-success text-success-foreground" : ""}
-                      >
-                        {c.state}
-                      </Badge>
+                      <Tooltip content={isDisponible ? "Curso abierto para inscripciones" : "Curso no disponible para nuevas inscripciones"}>
+                        <Badge
+                          variant={isDisponible ? "default" : "secondary"}
+                          className={isDisponible ? "bg-success text-success-foreground cursor-help" : "cursor-help"}
+                        >
+                          {c.state}
+                        </Badge>
+                      </Tooltip>
                     </TableCell>
                     <TableCell className="text-center">
                       <CursoActions id={c.id} state={c.state} />

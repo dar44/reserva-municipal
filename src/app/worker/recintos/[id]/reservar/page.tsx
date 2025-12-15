@@ -5,6 +5,7 @@ import ReservationForm from "./ReservationForm";
 import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { ArrowLeft, MapPin, DollarSign } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -34,15 +35,16 @@ export default async function ReservarRecinto({
   const isDisponible = recinto.state === 'Disponible';
 
   return (
-    <div className="container-padding section-spacing max-w-2xl mx-auto">
-      {/* Back link - consistencia con otras páginas */}
-      <Link
-        href="/worker/recintos"
-        className="inline-flex items-center gap-2 text-sm text-primary hover:underline mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Volver al listado
-      </Link>
+    <div className="container-padding section-spacing">
+      {/* Breadcrumbs - Jakob's Law */}
+      <Breadcrumbs
+        homeHref="/worker/panel"
+        items={[
+          { label: 'Recintos', href: '/worker/recintos' },
+          { label: recinto.name },
+          { label: 'Nueva reserva' }
+        ]}
+      />
 
       {/* Header con gradient y metadata */}
       <div className="relative mb-8">

@@ -7,6 +7,7 @@ import { revalidatePath } from 'next/cache'
 import { processRecintoImageInput } from '@/lib/recintoImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -38,10 +39,14 @@ export default async function NewRecintoPage() {
 
   return (
     <div className="container-padding section-spacing max-w-2xl mx-auto">
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Recintos', href: '/admin/recintos' },
+          { label: 'Nuevo recinto' }
+        ]}
+      />
       <div className="mb-8">
-        <Link href="/admin/recintos" className="text-sm text-primary hover:underline mb-4 inline-block">
-          ← Volver a Recintos
-        </Link>
         <h1>Nuevo Recinto</h1>
       </div>
 

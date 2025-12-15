@@ -9,15 +9,16 @@ interface BreadcrumbItem {
 interface BreadcrumbsProps {
     items: BreadcrumbItem[]
     showHome?: boolean
+    homeHref?: string // Custom home link for different roles
 }
 
-export function Breadcrumbs({ items, showHome = true }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, showHome = true, homeHref = '/' }: BreadcrumbsProps) {
     return (
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm mb-6">
             {showHome && (
                 <>
                     <Link
-                        href="/"
+                        href={homeHref}
                         className="text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1"
                         aria-label="Inicio"
                     >

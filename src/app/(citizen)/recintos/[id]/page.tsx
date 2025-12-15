@@ -7,6 +7,7 @@ import ReservationForm from "./ReservationForm";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
 import { Badge } from "@/components/ui/badge";
+import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 
 export const dynamic = "force-dynamic";
 
@@ -49,9 +50,13 @@ export default async function RecintoDetail({
 
   return (
     <div className="container-padding section-spacing">
-      <Link href="/recintos" className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver al listado
-      </Link>
+      <Breadcrumbs
+        homeHref="/recintos"
+        items={[
+          { label: 'Recintos', href: '/recintos' },
+          { label: recinto.name }
+        ]}
+      />
 
       <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface">
         <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center text-tertiary">

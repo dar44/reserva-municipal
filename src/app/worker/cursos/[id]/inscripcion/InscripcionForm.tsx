@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { useToast } from '@/components/Toast'
 import { Button } from "@/components/ui/button"
-import { Loader2 } from 'lucide-react'
+import { Tooltip } from "@/components/ui/tooltip"
+import { Loader2, HelpCircle } from 'lucide-react'
 
 export default function InscripcionForm({ cursoId }: { cursoId: number }) {
   const [isNew, setIsNew] = useState(false)
@@ -69,20 +70,50 @@ export default function InscripcionForm({ cursoId }: { cursoId: number }) {
         </div>
       </div>
 
-      <input
-        type="email"
-        name="email"
-        placeholder="Correo electrónico"
-        className="input-base w-full"
-        required
-      />
+      <div>
+        <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+          Correo electrónico *
+          <Tooltip content="El sistema buscará si ya existe una cuenta con este email">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </label>
+        <input
+          type="email"
+          name="email"
+          placeholder="email@ejemplo.com"
+          className="input-base w-full"
+          required
+        />
+      </div>
 
       {isNew && (
         <>
-          <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
-          <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
-          <input type="text" name="dni" placeholder="DNI" className="input-base w-full" required />
-          <input type="text" name="phone" placeholder="Teléfono" className="input-base w-full" required />
+          <div>
+            <label className="block text-sm font-medium mb-2">Nombre *</label>
+            <input type="text" name="name" placeholder="Nombre" className="input-base w-full" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Apellido *</label>
+            <input type="text" name="surname" placeholder="Apellido" className="input-base w-full" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              DNI *
+              <Tooltip content="Formato:12345678A (8 dígitos + letra)">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
+            <input type="text" name="dni" placeholder="12345678A" className="input-base w-full" required />
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Teléfono *
+              <Tooltip content="Formato: +34 600 000 000">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
+            <input type="text" name="phone" placeholder="+34 600 000 000" className="input-base w-full" required />
+          </div>
         </>
       )}
 

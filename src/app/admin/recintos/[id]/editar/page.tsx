@@ -7,6 +7,7 @@ import RecintoImagePicker from '@/components/RecintoImagePicker'
 import { processRecintoImageInput } from '@/lib/recintoImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -61,9 +62,14 @@ export default async function EditRecintoPage({ params }: Props) {
 
   return (
     <div className="container-padding section-spacing max-w-3xl mx-auto">
-      <Link href={`/admin/recintos/${id}`} className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver al Detalle
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Recintos', href: '/admin/recintos' },
+          { label: recinto.name, href: `/admin/recintos/${id}` },
+          { label: 'Editar' }
+        ]}
+      />
 
       <h1 className="mb-8">Editar Recinto</h1>
 

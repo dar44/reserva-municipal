@@ -6,6 +6,7 @@ import DeleteButton from './DeleteButton'
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from '@/lib/recintoImages'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -31,9 +32,13 @@ export default async function RecintoDetailPage({ params }: Props) {
 
   return (
     <div className="container-padding section-spacing max-w-4xl mx-auto">
-      <Link href="/admin/recintos" className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver a Recintos
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Recintos', href: '/admin/recintos' },
+          { label: recinto.name }
+        ]}
+      />
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">

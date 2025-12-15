@@ -12,6 +12,9 @@ import {
 import { listBucketPrefix } from '@/lib/storage'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -98,10 +101,14 @@ export default async function NuevoCursoPage() {
 
   return (
     <div className="container-padding section-spacing max-w-3xl mx-auto">
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Cursos', href: '/admin/cursos' },
+          { label: 'Nuevo curso' }
+        ]}
+      />
       <div className="mb-8">
-        <Link href="/admin/cursos" className="text-sm text-primary hover:underline mb-4 inline-block">
-          ← Volver a Cursos
-        </Link>
         <h1>Nuevo Curso</h1>
       </div>
 

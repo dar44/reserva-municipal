@@ -7,6 +7,7 @@ import { createSupabaseServer } from '@/lib/supabaseServer'
 import DeleteButton from './DeleteButton'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -39,9 +40,13 @@ export default async function UsuarioDetailPage({ params }: Props) {
 
   return (
     <div className="container-padding section-spacing max-w-4xl mx-auto">
-      <Link href="/admin/usuarios" className="text-sm text-primary hover:underline mb-6 inline-block">
-        ← Volver a Usuarios
-      </Link>
+      <Breadcrumbs
+        homeHref="/admin/panel"
+        items={[
+          { label: 'Usuarios', href: '/admin/usuarios' },
+          { label: `${usuario.name} ${usuario.surname}` }
+        ]}
+      />
 
       <div className="mb-8">
         <div className="flex items-center gap-3 mb-4">

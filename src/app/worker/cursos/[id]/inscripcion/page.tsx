@@ -2,7 +2,8 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import InscripcionForm from './InscripcionForm'
-import { ArrowLeft } from 'lucide-react'
+import { ArrowLeft } from "lucide-react"
+import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 
 export const dynamic = 'force-dynamic'
 
@@ -18,15 +19,16 @@ export default async function InscripcionCurso({ params }: { params: Promise<{ i
   if (!curso) return notFound()
 
   return (
-    <div className="container-padding section-spacing max-w-2xl mx-auto">
-      {/* Back link - Ley de Fitts: target grande */}
-      <Link
-        href="/worker/cursos"
-        className="inline-flex items-center gap-2 text-sm text-primary hover:underline mb-6 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        Volver al listado
-      </Link>
+    <div className="container-padding section-spacing">
+      {/* Breadcrumbs - Jakob's Law */}
+      <Breadcrumbs
+        homeHref="/worker/panel"
+        items={[
+          { label: 'Cursos', href: '/worker/cursos' },
+          { label: curso.name, href: `/worker/cursos/${id}` },
+          { label: 'Nueva inscripción' }
+        ]}
+      />
 
       {/* Header con gradient */}
       <div className="relative mb-8">
