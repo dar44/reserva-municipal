@@ -12,9 +12,9 @@ import { ThemeToggle } from './ThemeToggle'
 export default function OrganizerNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) =>
-    `px-4 py-2.5 rounded-md text-sm font-medium transition-all duration-200 ${pathname.startsWith(href)
-      ? "bg-primary text-primary-foreground shadow-sm"
-      : "text-foreground-secondary hover:bg-accent hover:text-accent-foreground"
+    `rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+      ? "px-4 py-2.5 bg-primary text-primary-foreground shadow-sm"
+      : "px-2 py-1 text-foreground/70 hover:px-4 hover:py-2.5 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`
 
   const [profileName, setProfileName] = useState<string | null>(null)
