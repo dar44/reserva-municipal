@@ -3,7 +3,6 @@ import { NextRequest, NextResponse } from 'next/server'
 const PUBLIC_PATHS = new Set(['/', '/login', '/signup'])
 const PUBLIC_PREFIXES = ['/public', '/api']
 const ASSET_PREFIXES = ['/_next', '/static', '/favicon.ico', '/images', '/fonts']
-const AUTH_COOKIE_NAMES = ['sb-access-token', 'sb-refresh-token', 'sb:token']
 
 function isAssetPath(pathname: string) {
   return ASSET_PREFIXES.some(prefix => pathname.startsWith(prefix)) || /\.[^/]+$/.test(pathname)
@@ -33,8 +32,13 @@ export function middleware(req: NextRequest) {
     return NextResponse.next()
   }
 
-  const hasAuthCookie = AUTH_COOKIE_NAMES.some(name => req.cookies.get(name))
-  if (!hasAuthCookie) {
+  // Check for sm_role cookie (set by login API) or any Supabase cookie
+  const hasRoleCookie = req.cookies.get('sm_role')
+  const hasSupabaseCookie = Array.from(req.cookies.getAll()).some(cookie =>
+    cookie.name.startsWith('sb-') || cookie.name.includes('auth-token')
+  )
+
+  if (!hasRoleCookie && !hasSupabaseCookie) {
     return buildLoginRedirect(req)
   }
 
