@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 const PUBLIC_PATHS = new Set(['/', '/login', '/signup'])
-const PUBLIC_PREFIXES = ['/public', '/api/auth']
+const PUBLIC_PREFIXES = ['/public', '/api']
 const ASSET_PREFIXES = ['/_next', '/static', '/favicon.ico', '/images', '/fonts']
 const AUTH_COOKIE_NAMES = ['sb-access-token', 'sb-refresh-token', 'sb:token']
 
