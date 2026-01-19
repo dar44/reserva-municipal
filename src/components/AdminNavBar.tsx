@@ -12,9 +12,9 @@ import { ThemeToggle } from './ThemeToggle'
 export default function AdminNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) =>
-    `rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
-      ? "px-4 py-2.5 bg-primary text-primary-foreground shadow-sm"
-      : "px-2 py-1 text-foreground/70 hover:px-4 hover:py-2.5 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
+    `h-full flex items-center justify-center px-4 text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+      ? "bg-primary text-primary-foreground shadow-sm"
+      : "text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`
 
   const [profileName, setProfileName] = useState<string | null>(null)
@@ -50,7 +50,7 @@ export default function AdminNavBar() {
             </Link>
 
             {/* Desktop Navigation - Hidden on mobile */}
-            <div className="hidden md:flex items-center gap-3">
+            <div className="hidden md:flex h-full items-center gap-3">
               <Link href="/admin/panel" className={linkClass('/admin/panel')}>Panel</Link>
               <Link href="/admin/recintos" className={linkClass('/admin/recintos')}>Recintos</Link>
               <Link href="/admin/cursos" className={linkClass('/admin/cursos')}>Cursos</Link>

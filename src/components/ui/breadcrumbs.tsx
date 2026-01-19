@@ -9,7 +9,7 @@ interface BreadcrumbItem {
 interface BreadcrumbsProps {
     items: BreadcrumbItem[]
     showHome?: boolean
-    homeHref?: string // Custom home link for different roles
+    homeHref?: string // link a casa dependerá del rol
 }
 
 export function Breadcrumbs({ items, showHome = true, homeHref = '/' }: BreadcrumbsProps) {

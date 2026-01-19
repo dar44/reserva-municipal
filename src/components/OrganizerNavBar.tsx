@@ -12,9 +12,9 @@ import { ThemeToggle } from './ThemeToggle'
 export default function OrganizerNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) =>
-    `rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
-      ? "px-4 py-2.5 bg-primary text-primary-foreground shadow-sm"
-      : "px-2 py-1 text-foreground/70 hover:px-4 hover:py-2.5 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
+    `h-full flex items-center justify-center px-4 text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+      ? "bg-primary text-primary-foreground shadow-sm"
+      : "text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`
 
   const [profileName, setProfileName] = useState<string | null>(null)
@@ -48,7 +48,7 @@ export default function OrganizerNavBar() {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-3">
+          <div className="hidden md:flex h-full items-center gap-3">
             <Link href="/organizer/panel" className={linkClass('/organizer/panel')}>Panel</Link>
             <Link href="/organizer/recintos" className={linkClass('/organizer/recintos')}>Recintos</Link>
             <Link href="/organizer/cursos" className={linkClass('/organizer/cursos')}>Cursos</Link>

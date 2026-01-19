@@ -77,10 +77,10 @@ export default async function OrganizerPanelPage() {
       {/* Sección de cabecera - Jerarquía tipográfica mejorada */}
       <section className="space-y-6">
         <header className="space-y-3">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-white via-gray-100 to-gray-300 bg-clip-text text-transparent">
+          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
             Panel de Organizadores
           </h1>
-          <p className="text-base text-gray-400 max-w-2xl leading-relaxed">
+          <p className="text-base text-foreground-secondary max-w-2xl leading-relaxed">
             Bienvenido de nuevo, gestiona tus cursos y solicitudes desde este panel principal.
           </p>
         </header>
@@ -89,7 +89,7 @@ export default async function OrganizerPanelPage() {
         <article className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-emerald-600/5 to-transparent backdrop-blur-sm p-6 shadow-lg shadow-emerald-500/5">
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-transparent pointer-events-none" />
           <div className="relative flex items-start gap-4">
-            <p className="text-sm text-emerald-100/90 leading-relaxed">
+            <p className="text-sm text-foreground/80 leading-relaxed">
               Usa la barra superior para crear cursos y gestionar tus solicitudes. Desde la sección de reservas podrás
               consultar los recintos disponibles y enviar nuevos bloques de horarios en un solo paso.
             </p>
@@ -107,14 +107,14 @@ export default async function OrganizerPanelPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-violet-300/80">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-violet-400">
                 Cursos publicados
               </h2>
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-violet-200 to-violet-400 bg-clip-text text-transparent">
+            <p className="text-5xl font-bold bg-gradient-to-br from-violet-400 to-violet-600 bg-clip-text text-transparent">
               {coursesCount}
             </p>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-foreground-secondary leading-relaxed">
               Gestiona tus programas desde la sección de cursos.
             </p>
           </div>
@@ -128,14 +128,14 @@ export default async function OrganizerPanelPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-blue-300/80">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-blue-400">
                 Solicitudes enviadas
               </h2>
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-blue-200 to-blue-400 bg-clip-text text-transparent">
+            <p className="text-5xl font-bold bg-gradient-to-br from-blue-400 to-blue-600 bg-clip-text text-transparent">
               {reservationsCount}
             </p>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-foreground-secondary leading-relaxed">
               Consulta el estado de cada solicitud en la vista de reservas.
             </p>
           </div>
@@ -149,14 +149,14 @@ export default async function OrganizerPanelPage() {
           <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="relative space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-300/80">
+              <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
                 Recintos disponibles
               </h2>
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-emerald-200 to-emerald-400 bg-clip-text text-transparent">
+            <p className="text-5xl font-bold bg-gradient-to-br from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
               {availableRecintos}
             </p>
-            <p className="text-xs text-gray-400 leading-relaxed">
+            <p className="text-xs text-foreground-secondary leading-relaxed">
               Consulta la lista actualizada en la sección de recintos.
             </p>
           </div>
@@ -167,14 +167,14 @@ export default async function OrganizerPanelPage() {
       <section className="space-y-5">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Últimas Solicitudes</h2>
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-secondary">
             Resumen de las últimas peticiones enviadas.
           </p>
         </div>
 
         {latestReservations.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-gray-700/50 bg-gray-900/30 p-12 text-center">
-            <p className="text-sm text-gray-500">Todavía no has enviado solicitudes de reserva.</p>
+          <div className="rounded-2xl border border-dashed border-border bg-surface/30 p-12 text-center">
+            <p className="text-sm text-foreground-secondary">Todavía no has enviado solicitudes de reserva.</p>
           </div>
         ) : (
           <ul className="space-y-3">
@@ -215,20 +215,20 @@ export default async function OrganizerPanelPage() {
                 <li key={reservation.id}>
                   <Link
                     href="/organizer/solicitudes"
-                    className="group relative block overflow-hidden rounded-xl border border-gray-700/50 bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-5 backdrop-blur-sm transition-all duration-300 hover:border-gray-600/50 hover:shadow-xl hover:shadow-gray-900/20 hover:scale-[1.01]"
+                    className="group relative block overflow-hidden rounded-xl border border-border bg-gradient-to-br from-surface/50 to-surface/80 p-5 backdrop-blur-sm transition-all duration-300 hover:border-border/80 hover:shadow-xl hover:shadow-primary/5 hover:scale-[1.01]"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div className="relative space-y-3">
                       {/* Cabecera con curso y estado */}
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div className="flex-1 space-y-1">
                           <div className="flex items-center gap-2">
-                            <h3 className="text-base font-bold text-gray-100">
+                            <h3 className="text-base font-bold text-foreground">
                               {cursoName}
                             </h3>
                           </div>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-foreground-secondary">
                             Solicitud #{reservation.id}
                           </p>
                         </div>
@@ -251,16 +251,16 @@ export default async function OrganizerPanelPage() {
                         {/* Recinto */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
-                            <span className="text-gray-500">Recinto</span>
-                            <span className="font-medium text-gray-300">{recintoName}</span>
+                            <span className="text-foreground-secondary">Recinto</span>
+                            <span className="font-medium text-foreground">{recintoName}</span>
                           </div>
                         </div>
 
                         {/* Fecha y hora */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
-                            <span className="text-gray-500">Fecha y hora</span>
-                            <span className="font-medium text-gray-300">
+                            <span className="text-foreground-secondary">Fecha y hora</span>
+                            <span className="font-medium text-foreground">
                               {startDate && !Number.isNaN(startDate.getTime())
                                 ? startDate.toLocaleString('es-ES', {
                                   day: '2-digit',
@@ -276,8 +276,8 @@ export default async function OrganizerPanelPage() {
                         {/* Duración */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
-                            <span className="text-gray-500">Duración</span>
-                            <span className="font-medium text-gray-300">
+                            <span className="text-foreground-secondary">Duración</span>
+                            <span className="font-medium text-foreground">
                               {duration || '—'}
                             </span>
                           </div>
@@ -285,7 +285,7 @@ export default async function OrganizerPanelPage() {
                       </div>
 
                       {/* Indicador de hover */}
-                      <div className="flex items-center gap-1.5 text-xs text-blue-400 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                      <div className="flex items-center gap-1.5 text-xs text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <span>Ver detalles</span>
                         <span>→</span>
                       </div>
