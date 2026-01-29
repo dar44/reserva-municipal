@@ -11,7 +11,7 @@ import { ThemeToggle } from "./ThemeToggle";
 export default function WorkerNavBar() {
   const pathname = usePathname();
   const linkClass = (href: string) =>
-    `h-full flex items-center justify-center px-4 text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+    `h-full flex items-center justify-center px-4 my-2 rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
       ? "bg-primary text-primary-foreground shadow-sm"
       : "text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`;
