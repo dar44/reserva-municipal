@@ -160,46 +160,28 @@ export async function sendReservaPagoConfirmadoEmail(
   const recipientName = getRecipientName(user);
   const currency = getConfiguredCurrency();
   const amount = Number(reserva.price ?? 0);
-  const priceLabel = amount > 0 ? formatCurrency(amount, currency) : "Gratis";
-  const startLabel = formatDateTime(reserva.start_at);
-  const endLabel = formatDateTime(reserva.end_at);
+  const priceLabel = formatCurrency(amount, currency);
+  const startLabel = formatDateTime(reserva.start_at) ?? reserva.start_at;
+  const endLabel = formatDateTime(reserva.end_at) ?? reserva.end_at;
   const recintoName = reserva.recintos?.name ?? "tu reserva";
-  const recintoAddress = reserva.recintos?.ubication;
+  const recintoAddress = reserva.recintos?.ubication ?? "";
 
-  const subject = `Pago confirmado - ${recintoName}`;
-  const htmlLines = [
-    `<p>Hola ${recipientName || ""},</p>`,
-    "<p>Hemos recibido el pago de tu reserva. Estos son los detalles:</p>",
-    "<ul>",
-    `<li><strong>Recinto:</strong> ${recintoName}</li>`,
-    startLabel ? `<li><strong>Inicio:</strong> ${startLabel}</li>` : null,
-    endLabel ? `<li><strong>Término:</strong> ${endLabel}</li>` : null,
-    recintoAddress ? `<li><strong>Dirección:</strong> ${recintoAddress}</li>` : null,
-    `<li><strong>Monto:</strong> ${priceLabel}</li>`,
-    "</ul>",
-    "<p>Te recomendamos llegar con unos minutos de anticipación y tener a mano esta confirmación.</p>",
-    "<p>¡Gracias por utilizar los servicios municipales!</p>"
-  ].filter(Boolean);
-
-  const html = `<div style="font-family: Arial, sans-serif; color: #1f2937;">${htmlLines.join("")}</div>`;
-
-  const textParts = [
-    `Hola ${recipientName || ""},`,
-    "",
-    "Hemos recibido el pago de tu reserva. Estos son los detalles:",
-    `- Recinto: ${recintoName}`
-  ];
-  if (startLabel) textParts.push(`- Inicio: ${startLabel}`);
-  if (endLabel) textParts.push(`- Término: ${endLabel}`);
-  if (recintoAddress) textParts.push(`- Dirección: ${recintoAddress}`);
-  textParts.push(`- Monto: ${priceLabel}`, "", "¡Gracias por utilizar los servicios municipales!");
+  const html = await render(ReservaConfirmada({
+    recipientName,
+    recintoName,
+    startDateTime: startLabel,
+    endDateTime: endLabel,
+    ubicacion: recintoAddress,
+    monto: priceLabel,
+  }));
 
   await sendEmailMessage({
     to: user.email,
-    subject,
+    subject: `Reserva confirmada - ${recintoName}`,
     html,
-    text: textParts.join("\n")
+    text: "Confirmación de tu reserva",
   });
+  console.log(`[EMAIL] Resend OK: reserva confirmada enviado a ${user.email}`);
 }
 
 export async function sendInscripcionPagoConfirmadoEmail(
@@ -248,47 +230,29 @@ export async function sendInscripcionPagoConfirmadoEmail(
   const recipientName = getRecipientName(user);
   const curso = inscripcion.cursos;
   const cursoName = curso.name ?? "tu curso";
-  const location = curso.location;
-  const startDate = formatDate(curso.begining_date);
-  const endDate = formatDate(curso.end_date);
+  const location = curso.location ?? "";
+  const startDate = formatDate(curso.begining_date) ?? "";
+  const endDate = formatDate(curso.end_date) ?? "";
   const amount = Number(curso.price ?? 0);
   const currency = getConfiguredCurrency();
-  const priceLabel = amount > 0 ? formatCurrency(amount, currency) : "Gratis";
+  const priceLabel = formatCurrency(amount, currency);
 
-  const subject = `Pago confirmado - ${cursoName}`;
-  const htmlLines = [
-    `<p>Hola ${recipientName || ""},</p>`,
-    "<p>Tu inscripción ha quedado confirmada. Toma nota de la información del curso:</p>",
-    "<ul>",
-    `<li><strong>Curso:</strong> ${cursoName}</li>`,
-    startDate ? `<li><strong>Comienzo:</strong> ${startDate}</li>` : null,
-    endDate ? `<li><strong>Finaliza:</strong> ${endDate}</li>` : null,
-    location ? `<li><strong>Lugar:</strong> ${location}</li>` : null,
-    `<li><strong>Monto:</strong> ${priceLabel}</li>`,
-    "</ul>",
-    "<p>Si necesitas reprogramar o cancelar, ponte en contacto con nosotros con anticipación.</p>",
-    "<p>¡Te esperamos!</p>"
-  ].filter(Boolean);
-
-  const html = `<div style="font-family: Arial, sans-serif; color: #1f2937;">${htmlLines.join("")}</div>`;
-
-  const textParts = [
-    `Hola ${recipientName || ""},`,
-    "",
-    "Tu inscripción ha quedado confirmada. Información del curso:",
-    `- Curso: ${cursoName}`
-  ];
-  if (startDate) textParts.push(`- Comienzo: ${startDate}`);
-  if (endDate) textParts.push(`- Finaliza: ${endDate}`);
-  if (location) textParts.push(`- Lugar: ${location}`);
-  textParts.push(`- Monto: ${priceLabel}`, "", "¡Te esperamos!");
+  const html = await render(InscripcionConfirmada({
+    recipientName,
+    cursoName,
+    fechaInicio: startDate,
+    fechaFin: endDate,
+    ubicacion: location,
+    monto: priceLabel,
+  }));
 
   await sendEmailMessage({
     to: user.email,
-    subject,
+    subject: `Inscripción confirmada - ${cursoName}`,
     html,
-    text: textParts.join("\n")
+    text: "Confirmación de tu inscripción",
   });
+  console.log(`[EMAIL] Resend OK: inscripción confirmada enviado a ${user.email}`);
 }
 
 export async function notifyPagoSiPagadoOnce(opts: {
@@ -425,7 +389,7 @@ export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<voi
   // Obtener datos de la curso_reserva
   const { data: reserva, error } = await supabaseAdmin
     .from('curso_reservas')
-    .select('id,user_uid,recinto_id,start_at,end_at,observations,recintos(name)')
+    .select('id,organizer_uid,recinto_id,start_at,end_at,observations,recintos(name)')
     .eq('id', reservaId)
     .maybeSingle();
 
@@ -434,15 +398,15 @@ export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<voi
     return;
   }
 
-  if (!reserva || !reserva.user_uid) {
-    console.warn('No se pudo enviar email de aprobación: reserva sin usuario');
+  if (!reserva || !reserva.organizer_uid) {
+    console.warn('No se pudo enviar email de aprobación: reserva sin organizador');
     return;
   }
 
   const { data: user, error: userError } = await supabaseAdmin
     .from('users')
     .select('email,name,surname')
-    .eq('uid', reserva.user_uid)
+    .eq('uid', reserva.organizer_uid)
     .maybeSingle<UserRecord>();
 
   if (userError) {
@@ -493,7 +457,7 @@ export async function sendSolicitudRechazadaEmail(reservaId: number): Promise<vo
   // Obtener datos de la curso_reserva
   const { data: reserva, error } = await supabaseAdmin
     .from('curso_reservas')
-    .select('id,user_uid,recinto_id,start_at,end_at,observations,recintos(name)')
+    .select('id,organizer_uid,recinto_id,start_at,end_at,observations,recintos(name)')
     .eq('id', reservaId)
     .maybeSingle();
 
@@ -502,15 +466,15 @@ export async function sendSolicitudRechazadaEmail(reservaId: number): Promise<vo
     return;
   }
 
-  if (!reserva || !reserva.user_uid) {
-    console.warn('No se pudo enviar email de rechazo: reserva sin usuario');
+  if (!reserva || !reserva.organizer_uid) {
+    console.warn('No se pudo enviar email de rechazo: reserva sin organizador');
     return;
   }
 
   const { data: user, error: userError } = await supabaseAdmin
     .from('users')
     .select('email,name,surname')
-    .eq('uid', reserva.user_uid)
+    .eq('uid', reserva.organizer_uid)
     .maybeSingle<UserRecord>();
 
   if (userError) {

@@ -6,7 +6,7 @@ import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary/5 via-background to-success/5">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950/30 via-background to-blue-900/20">
       {/* Skip Link para accesibilidad */}
       <a
         href="#main-content"
@@ -48,7 +48,7 @@ export default function Home() {
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <motion.div
-              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
+              className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.5, 0.3],
@@ -64,7 +64,7 @@ export default function Home() {
               }}
             />
             <motion.div
-              className="absolute bottom-0 left-0 w-96 h-96 bg-success/20 rounded-full blur-3xl"
+              className="absolute bottom-0 left-0 w-96 h-96 bg-blue-700/15 rounded-full blur-3xl"
               animate={{
                 scale: [1.2, 1, 1.2],
                 opacity: [0.5, 0.3, 0.5],
@@ -88,7 +88,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-600 rounded-full mb-6 border border-blue-600/20"
                 role="status"
                 aria-label="Etiqueta del sistema"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -102,7 +102,7 @@ export default function Home() {
               {/* Jerarquía visual clara - Refactoring UI */}
               <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
                 Reserva tus espacios{" "}
-                <span className="bg-gradient-to-r from-primary via-success to-primary bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 bg-clip-text text-transparent">
                   de forma simple y rápida
                 </span>
               </h1>
@@ -163,22 +163,22 @@ export default function Home() {
                   icon: Calendar,
                   title: "Reservas Simplificadas",
                   description: "Reserva espacios y cursos en segundos. Sistema intuitivo que te guía paso a paso.",
-                  gradient: "from-primary/10 to-primary/5",
-                  iconColor: "text-primary",
+                  gradient: "from-blue-600/10 to-blue-600/5",
+                  iconColor: "text-blue-600",
                 },
                 {
                   icon: MapPin,
                   title: "Ubicaciones Precisas",
                   description: "Encuentra fácilmente recintos y ubicaciones con mapas interactivos integrados.",
-                  gradient: "from-success/10 to-success/5",
-                  iconColor: "text-success",
+                  gradient: "from-blue-500/10 to-blue-500/5",
+                  iconColor: "text-blue-500",
                 },
                 {
                   icon: Users,
                   title: "Multi-rol",
                   description: "Diferentes perfiles para ciudadanos, organizadores, trabajadores y administradores.",
-                  gradient: "from-info/10 to-info/5",
-                  iconColor: "text-info",
+                  gradient: "from-blue-700/10 to-blue-700/5",
+                  iconColor: "text-blue-700",
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -215,7 +215,7 @@ export default function Home() {
         <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="cta-heading">
           <div className="max-w-5xl mx-auto">
             <motion.div
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-success p-12 sm:p-16 text-center"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 p-12 sm:p-16 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
