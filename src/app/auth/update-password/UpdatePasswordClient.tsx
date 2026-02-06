@@ -24,10 +24,44 @@ export default function UpdatePasswordClient() {
 
       ; (async () => {
         try {
-          const type = sp.get('type')
-          const token_hash = sp.get('token_hash')
+          // Manejar errores que vienen en la URL (enlaces expirados, etc.)
+          const errorParam = sp.get('error')
+          const errorDescription = sp.get('error_description')
 
-          if (type === 'recovery' && token_hash) {
+          if (errorParam) {
+            const errorMsg = errorDescription
+              ? decodeURIComponent(errorDescription.replace(/\+/g, ' '))
+              : errorParam
+            throw new Error(errorMsg)
+          }
+
+          // Diferentes formatos de token que Supabase puede enviar  
+          const type = sp.get('type')
+          const token = sp.get('token')
+          const token_hash = sp.get('token_hash')
+          const access_token = sp.get('access_token')
+          const refresh_token = sp.get('refresh_token')
+
+          // Caso 1: Viene con access_token y refresh_token directamente (hash redirect)
+          if (access_token && refresh_token) {
+            const { error } = await supabase.auth.setSession({
+              access_token,
+              refresh_token,
+            })
+            if (error) throw error
+            setReady(true)
+          }
+          // Caso 2: Formato recovery con token
+          else if (type === 'recovery' && token) {
+            const { error } = await supabase.auth.verifyOtp({
+              type: 'recovery',
+              token_hash: token,
+            })
+            if (error) throw error
+            setReady(true)
+          }
+          // Caso 3: Formato antiguo con token_hash
+          else if (type === 'recovery' && token_hash) {
             const { error } = await supabase.auth.verifyOtp({
               type: 'recovery',
               token_hash,
@@ -35,7 +69,7 @@ export default function UpdatePasswordClient() {
             if (error) throw error
             setReady(true)
           } else {
-            throw new Error('Enlace inválido: falta token de recuperación.')
+            throw new Error('Enlace inválido: falta información de recuperación.')
           }
         } catch (e: unknown) {
           const msg =

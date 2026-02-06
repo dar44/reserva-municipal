@@ -10,7 +10,7 @@ import { getConfiguredCurrency } from '@/lib/config'
 
 export const dynamic = 'force-dynamic'
 
-export async function POST (req: Request) {
+export async function POST(req: Request) {
   try {
     const { curso_id, email, newUser, name, surname, dni, phone, fromWorker } = await req.json()
     const { origin } = new URL(req.url)
@@ -49,8 +49,16 @@ export async function POST (req: Request) {
           }, { status: 500 })
         }
 
-        await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
-    
+        // Enviar email de bienvenida personalizado para cuentas creadas por trabajadores
+        try {
+          const { sendCuentaCreadaPorTrabajadorEmail } = await import('@/lib/emailNotifications')
+          await sendCuentaCreadaPorTrabajadorEmail(auth.user.id, 'inscripcion')
+        } catch (emailError) {
+          console.error('Error sending worker-created account email:', emailError)
+          // Fall back to standard password reset if custom email fails
+          await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
+        }
+
         uid = auth.user.id
       } else {
         return NextResponse.json({ error: 'user_not_found' }, { status: 404 })

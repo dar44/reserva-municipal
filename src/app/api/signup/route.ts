@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
+import { sendRegistroConfirmadoEmail } from '@/lib/emailNotifications'
 
-export async function POST (req: Request) {
-  try {  
+export async function POST(req: Request) {
+  try {
     const { email, password, name, surname, dni, phone } = await req.json()
 
     /* 1) Crea usuario en Auth ------------------------------ */
@@ -17,13 +18,21 @@ export async function POST (req: Request) {
     if (authErr) return NextResponse.json(authErr, { status: 400 })
 
     const { error: updErr } = await supabaseAdmin.auth.admin.updateUserById(auth.user.id, {
-        app_metadata: { role: 'citizen' }
-      })
-      if (updErr) return NextResponse.json({ error: updErr.message }, { status: 400 })
-      
-      return NextResponse.json({ ok: true, uid: auth.user.id })
-      } catch (e: unknown) {
-      const message = (e as Error)?.message ?? 'signup_failed'
-      return NextResponse.json({ error: message }, { status: 500 })
+      app_metadata: { role: 'citizen' }
+    })
+    if (updErr) return NextResponse.json({ error: updErr.message }, { status: 400 })
+
+    // Enviar email de bienvenida
+    try {
+      await sendRegistroConfirmadoEmail(auth.user.id)
+    } catch (emailError) {
+      console.error('Error sending registration email:', emailError)
+      // No fallar el registro si el email falla
     }
+
+    return NextResponse.json({ ok: true, uid: auth.user.id })
+  } catch (e: unknown) {
+    const message = (e as Error)?.message ?? 'signup_failed'
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
 }

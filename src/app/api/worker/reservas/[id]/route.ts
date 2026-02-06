@@ -7,7 +7,7 @@ import { requireAuthAPI } from '@/lib/auth/guard'
 
 export const dynamic = 'force-dynamic'
 
-function parseReservationId (params: { id: string }): number {
+function parseReservationId(params: { id: string }): number {
   const id = Number(params.id)
   if (Number.isNaN(id)) {
     throw new AuthorizationError('Identificador inválido', 400)
@@ -15,7 +15,7 @@ function parseReservationId (params: { id: string }): number {
   return id
 }
 
-function sanitizeDecision (body: Partial<ReservationDecisionInput>): ReservationDecisionInput {
+function sanitizeDecision(body: Partial<ReservationDecisionInput>): ReservationDecisionInput {
   if (!body.status) {
     throw new AuthorizationError('El estado es obligatorio', 400)
   }
@@ -31,7 +31,7 @@ function sanitizeDecision (body: Partial<ReservationDecisionInput>): Reservation
   }
 }
 
-export async function PATCH (
+export async function PATCH(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -98,6 +98,19 @@ export async function PATCH (
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 400 })
+    }
+
+    // Enviar email de notificación al organizador
+    try {
+      const { sendSolicitudAprobadaEmail, sendSolicitudRechazadaEmail } = await import('@/lib/emailNotifications')
+      if (decision.status === 'aprobada') {
+        await sendSolicitudAprobadaEmail(id)
+      } else if (decision.status === 'rechazada') {
+        await sendSolicitudRechazadaEmail(id)
+      }
+    } catch (emailError) {
+      console.error('Error sending organizer notification email:', emailError)
+      // No fallar la actualización si el email falla
     }
 
     return NextResponse.json({ reserva: data as CourseReservation })
