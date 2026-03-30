@@ -285,9 +285,9 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
           <p className="text-secondary mt-1">Crea nuevos programas/cursos y administra los ya publicados.</p>
         </header>
 
-        <article className="rounded-lg border border-success/30 bg-success/5 p-4 shadow-lg">
+        <article className="rounded-lg border border-primary/30 bg-primary/5 p-4 shadow-lg">
           <div className="flex items-start gap-3">
-            <svg className="w-5 h-5 text-success flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div className="flex-1">
@@ -398,12 +398,12 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
               ].map(day => (
                 <label
                   key={day.value}
-                  className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-success cursor-pointer transition-colors border"
+                  className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-primary cursor-pointer transition-colors border"
                 >
                   <input
                     type="checkbox"
                     name={`day_${day.value}`}
-                    className="h-4 w-4 rounded border-border bg-background text-success focus:ring-success"
+                    className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                   />
                   {day.label}
                 </label>
@@ -413,7 +413,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
           <label className="block">
             <span className="text-sm font-medium mb-2 block flex items-center gap-2">
-              Precio (€)
+              Precio (CLP)
               <Tooltip content="Precio del curso en pesos chilenos (CLP). Déjalo vacío si es gratuito">
                 <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
               </Tooltip>
@@ -452,7 +452,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
           <div className="md:col-span-2">
             <Button
               type="submit"
-              className="w-full md:w-auto bg-success hover:bg-success/90"
+              className="w-full md:w-auto bg-primary hover:bg-primary/90"
               disabled={creatingCourse}
             >
               {creatingCourse ? (
@@ -597,7 +597,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
                     <label className="text-sm">
                       <span className="flex items-center gap-2">
-                        Precio (€)
+                        Precio (CLP)
                         <Tooltip content="Precio del curso en pesos chilenos (CLP). Déjalo vacío si es gratuito">
                           <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
                         </Tooltip>
@@ -678,7 +678,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <Badge
                         className={
                           course.state === 'Disponible'
-                            ? 'bg-success text-success-foreground'
+                            ? 'bg-primary text-primary-foreground'
                             : course.state === 'No disponible'
                               ? 'bg-warning text-warning-foreground'
                               : 'bg-error text-error-foreground'
@@ -739,7 +739,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
                       <div className="flex items-center gap-2 text-xs">
                         <span className="text-tertiary font-medium uppercase tracking-wider">Precio</span>
-                        <span className="text-success font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
+                        <span className="text-primary font-bold">{course.price != null ? formatCurrency(Number(course.price), currency) : 'Gratis'}</span>
                       </div>
                       <div className="flex items-center gap-2 text-xs">
                         <span className="text-tertiary font-medium uppercase tracking-wider">Capacidad</span>

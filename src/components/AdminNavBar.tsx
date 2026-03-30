@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import { supabase } from '@/lib/supabaseClient'
 import ProfileDropdown from './ProfileDropdown'
-import ProfileModal from './ProfileModal'
 import { ThemeToggle } from './ThemeToggle'
 
 export default function AdminNavBar() {
@@ -20,7 +19,6 @@ export default function AdminNavBar() {
   const [profileName, setProfileName] = useState<string | null>(null)
   const [menuOpen, setMenuOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [profileOpen, setProfileOpen] = useState(false)
 
   useEffect(() => {
     const loadUser = async () => {
@@ -73,7 +71,6 @@ export default function AdminNavBar() {
                 {menuOpen && (
                   <ProfileDropdown
                     onClose={() => setMenuOpen(false)}
-                    onViewProfile={() => setProfileOpen(true)}
                   />
                 )}
               </div>
@@ -144,10 +141,7 @@ export default function AdminNavBar() {
                 <div className="px-4 py-3 mt-2 border-t border-border">
                   <button
                     type="button"
-                    onClick={() => {
-                      setMobileMenuOpen(false)
-                      setProfileOpen(true)
-                    }}
+                    onClick={() => setMobileMenuOpen(false)}
                     className="text-sm text-foreground-secondary hover:text-foreground w-full text-left"
                   >
                     {profileName}
@@ -158,12 +152,6 @@ export default function AdminNavBar() {
           )}
         </div>
       </nav>
-      {profileOpen && (
-        <ProfileModal
-          onClose={() => setProfileOpen(false)}
-          onUpdated={setProfileName}
-        />
-      )}
     </>
   )
 }

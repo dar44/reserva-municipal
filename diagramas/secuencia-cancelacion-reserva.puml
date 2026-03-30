@@ -1,0 +1,30 @@
+@startuml secuencia-cancelacion-reserva
+
+actor "Ciudadano" as C
+participant "Frontend" as F
+participant "API / Reservas" as API
+database "Supabase DB" as DB
+
+autonumber
+
+C -> F: Clic en "Cancelar Reserva"
+F -> API: DELETE /api/reservas/{id}
+
+API -> DB: SELECT * FROM reservas WHERE id={id}
+DB --> API: Datos de la reserva
+
+alt Reserva no pagada
+    API -> DB: DELETE reserva
+    DB --> API: OK
+    API --> F: 200 OK "Cancelada"
+    F --> C: "Reserva eliminada"
+
+else Reserva pagada
+    API -> DB: UPDATE reservas SET status='cancelada'
+    DB --> API: OK
+    note right of API: El reembolso puede ser manual o automático\nsegún política
+    API --> F: 200 OK "Cancelada"
+    F --> C: "Reserva cancelada (revisar política reembolso)"
+end
+
+@enduml

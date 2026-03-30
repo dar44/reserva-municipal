@@ -1,0 +1,38 @@
+@startuml maquina-estados-reserva
+!theme plain
+
+[*] --> Borrador : Usuario inicia\nselección
+
+Borrador --> PendientePago : Confirma reserva\ny procede a checkout
+
+PendientePago --> Confirmada : Pago exitoso\n(webhook recibido)
+PendientePago --> Expirada : Timeout 10 min\nsin pago completado
+PendientePago --> CanceladaUsuario : Usuario cancela\nantes de pagar
+
+Confirmada --> CanceladaUsuario : Usuario cancela\n(con política de devolución)
+Confirmada --> CanceladaAyuntamiento : Personal municipal cancela\n(cierre excepcional)
+Confirmada --> Finalizada : Franja horaria\ncompletada
+
+CanceladaUsuario --> [*]
+CanceladaAyuntamiento --> [*]
+Expirada --> [*]
+Finalizada --> [*]
+
+note right of PendientePago
+  Bloqueo temporal de franja.
+  Si no se confirma pago en 10 min,
+  la franja se libera automáticamente.
+end note
+
+note right of Confirmada
+  Estado final exitoso.
+  Genera justificante PDF.
+  Envía email de confirmación.
+end note
+
+note right of CanceladaAyuntamiento
+  Devolución automática 100%.
+  Email explicativo al ciudadano.
+end note
+
+@enduml

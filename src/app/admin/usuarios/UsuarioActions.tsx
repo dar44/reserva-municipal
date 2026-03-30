@@ -21,10 +21,10 @@ export default function UsuarioActions({ id }: { id: string }) {
 
   return (
     <div className="flex gap-2 justify-center">
-      <Button asChild size="sm" variant="outline">
+      <Button asChild size="sm" variant="outline-primary">
         <Link href={`/admin/usuarios/${id}`}>Ver</Link>
       </Button>
-      <Button asChild size="sm" variant="secondary">
+      <Button asChild size="sm" variant="default">
         <Link href={`/admin/usuarios/${id}/editar`}>Modificar</Link>
       </Button>
       <Button onClick={() => setOpen(true)} size="sm" variant="destructive">

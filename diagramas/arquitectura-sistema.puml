@@ -1,0 +1,86 @@
+@startuml arquitectura-final-corregida
+' --- CONFIGURACIÓN VISUAL ---
+skinparam componentStyle uml2
+skinparam packageStyle rectangle
+skinparam componentBackgroundColor white
+skinparam componentBorderColor black
+skinparam arrowColor black
+skinparam defaultFontName Arial
+skinparam linetype ortho
+
+' --- CORRECCIÓN DE COLORES NOTAS ---
+' Fondo amarillo claro (estilo Post-it)
+skinparam noteBackgroundColor #FEFDD0
+' Borde naranja/dorado
+skinparam noteBorderColor #F9A825
+' Texto negro
+skinparam noteFontColor black
+
+title Arquitectura del Sistema
+
+' --- ACTOR ---
+actor "Usuario\n(Navegador)" as User
+
+' --- AGRUPACIÓN SUPERIOR (Frontend y Backend) ---
+package "Aplicación Next.js" {
+    
+    ' -- CLIENTE --
+    package "Cliente (Frontend)" {
+        [Componentes React\n(Client Side)] as Client
+        note left of Client
+          - Gestión de Estado
+          - Validaciones
+        end note
+    }
+
+    ' -- SERVIDOR --
+    package "Servidor (Backend)" {
+        component "Server Actions\n& Rutas API" as Controller
+        
+        package "Capa de Servicios (Lógica de Negocio)" {
+            [Gestor de Reservas\n(Detección de Conflictos)] as ServiceReserva
+            [Gestor de Pagos\n(SDK Lemon Squeezy)] as ServicePago
+            [Gestor de Emails\n(API Resend)] as ServiceEmail
+        }
+
+        component "Cliente Supabase\n(Capa Acceso a Datos)" as DAL
+    }
+}
+
+' --- AGRUPACIÓN INFERIOR (Nube) ---
+package "Infraestructura Externa (Cloud)" {
+    database "Supabase\n(BD + Auth + Storage)" as DB
+    [Resend\n(Proveedor de Email)] as Resend
+    [Lemon Squeezy\n(Pasarela de Pagos)] as Lemon
+}
+
+' --- RELACIONES ---
+
+' 1. Usuario al Cliente
+User -> Client : Interacción HTTPS
+
+' 2. Cliente al Servidor
+Client --> Controller : Fetch / Server Actions
+
+' 3. Controlador a Servicios
+Controller --> ServiceReserva : Validar
+Controller --> ServicePago : Checkout
+Controller --> ServiceEmail : Enviar
+
+' 4. Servicios a Implementación
+ServiceReserva --> DAL : Persistir
+ServicePago --> Lemon : API REST
+ServiceEmail --> Resend : API REST
+
+' 5. Acceso a Datos
+DAL --> DB : PostgREST
+
+' 6. WEBHOOK (Flecha con Nota)
+Lemon -[#blue]up-> Controller
+note on link
+  **Webhook (Callback)**
+  Confirmación asíncrona
+  del pago realizado
+end note
+
+@enduml

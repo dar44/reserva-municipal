@@ -3,9 +3,25 @@ import Link from 'next/link'
 import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Building2, GraduationCap, Users, CalendarDays } from 'lucide-react'
+import { createSupabaseServer } from '@/lib/supabaseServer'
+
 export const dynamic = 'force-dynamic'
 
 export default async function AdminPanelPage() {
+  const supabase = await createSupabaseServer()
+
+  const [recintosRes, cursosRes, usuariosRes, reservasRes] = await Promise.all([
+    supabase.from('recintos').select('id', { count: 'exact', head: true }),
+    supabase.from('cursos').select('id', { count: 'exact', head: true }),
+    supabase.from('users').select('uid', { count: 'exact', head: true }),
+    supabase.from('reservas').select('id', { count: 'exact', head: true }),
+  ])
+
+  const recintosCount = recintosRes.count ?? 0
+  const cursosCount = cursosRes.count ?? 0
+  const usuariosCount = usuariosRes.count ?? 0
+  const reservasCount = reservasRes.count ?? 0
+
   return (
     <div className="container-padding section-spacing">
       {/* Header with gradient */}
@@ -24,7 +40,10 @@ export default async function AdminPanelPage() {
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
               <Building2 className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle>Recintos</CardTitle>
+            <CardTitle>
+              Recintos
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({recintosCount})</span>
+            </CardTitle>
             <CardDescription>Administra los recintos disponibles para eventos y actividades.</CardDescription>
           </CardHeader>
           <CardFooter>
@@ -38,7 +57,10 @@ export default async function AdminPanelPage() {
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
               <GraduationCap className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle>Cursos</CardTitle>
+            <CardTitle>
+              Cursos
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({cursosCount})</span>
+            </CardTitle>
             <CardDescription>Administra los cursos disponibles y su programación.</CardDescription>
           </CardHeader>
           <CardFooter>
@@ -52,7 +74,10 @@ export default async function AdminPanelPage() {
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
               <Users className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle>Usuarios</CardTitle>
+            <CardTitle>
+              Usuarios
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({usuariosCount})</span>
+            </CardTitle>
             <CardDescription>Administra los usuarios y sus permisos del sistema.</CardDescription>
           </CardHeader>
           <CardFooter>
@@ -66,7 +91,10 @@ export default async function AdminPanelPage() {
             <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
               <CalendarDays className="w-6 h-6 text-primary" />
             </div>
-            <CardTitle>Reservas</CardTitle>
+            <CardTitle>
+              Reservas
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({reservasCount})</span>
+            </CardTitle>
             <CardDescription>Consulta todas las reservas realizadas y gestiona su estado.</CardDescription>
           </CardHeader>
           <CardFooter>

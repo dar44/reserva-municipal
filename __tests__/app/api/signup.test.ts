@@ -40,11 +40,18 @@ describe('POST /api/signup', () => {
     });
   };
 
+  const mockEmailNotifications = () => {
+    jest.doMock('@/lib/emailNotifications', () => ({
+      sendRegistroConfirmadoEmail: jest.fn().mockResolvedValue(undefined),
+    }));
+  };
+
   beforeEach(() => {
     jest.resetModules(); // importantísimo para re-evaluar con el nuevo env
     setEnv();
     mockNextServer();
     mockSupabaseAdmin();
+    mockEmailNotifications();
   });
 
   afterEach(() => {

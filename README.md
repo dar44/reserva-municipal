@@ -1,36 +1,155 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sistema de Reserva Municipal
 
-## Getting Started
+Plataforma integral para la gestión de recintos deportivos municipales, inscripción a cursos y control de acceso. Desarrollada con tecnologías modernas para garantizar escalabilidad, seguridad y una excelente experiencia de usuario.
 
-First, run the development server:
+![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizado-success)
+![Versión](https://img.shields.io/badge/Version-1.0.0-blue)
+![Licencia](https://img.shields.io/badge/Licencia-MIT-green)
+
+## Tecnologías Principales
+
+- **Frontend/Backend**: [Next.js 16 (App Router)](https://nextjs.org/)
+- **Lenguaje**: [TypeScript](https://www.typescriptlang.org/)
+- **Estilos**: [Tailwind CSS v4](https://tailwindcss.com/)
+- **Base de Datos & Auth**: [Supabase](https://supabase.com/)
+- **Pagos**: [Lemon Squeezy](https://www.lemonsqueezy.com/)
+- **Emails**: [Resend](https://resend.com/) + [React Email](https://react.email/)
+- **Mapas**: [Leaflet](https://leafletjs.com/)
+- **Testing**: [Jest](https://jestjs.io/) + [React Testing Library](https://testing-library.com/)
+
+---
+
+## Requisitos Previos
+
+- **Node.js**: v18.17.0 o superior
+- **npm**: v9.0.0 o superior
+- **Cuenta en Supabase**: Para la base de datos y autenticación.
+- **Cuenta en Lemon Squeezy**: En modo test para pagos.
+- **Cuenta en Resend**: Para envío de correos.
+
+---
+
+## Instalación y Configuración
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone https://github.com/tu-usuario/reserva-municipal.git
+   cd reserva-municipal
+   ```
+
+2. **Instalar dependencias**
+   ```bash
+   npm install
+   ```
+
+3. **Configurar variables de entorno**
+   Crea un archivo `.env.local` en la raíz del proyecto y añade las siguientes claves:
+
+   ```env
+   # Supabase (Base de datos y Auth)
+   NEXT_PUBLIC_SUPABASE_URL=https://tu-proyecto.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=tu-anon-key-publica
+   SUPABASE_SERVICE_ROLE_KEY=tu-service-role-key-secreta
+
+   # Lemon Squeezy (Pagos)
+   LEMON_SQUEEZY_API_KEY=tu-api-key
+   LEMON_SQUEEZY_WEBHOOK_SECRET=tu-webhook-secret
+   LEMON_SQUEEZY_STORE_ID=tu-store-id
+
+   # Resend (Emails)
+   RESEND_API_KEY=tu-resend-api-key
+
+   # Configuración General
+   NEXT_PUBLIC_BASE_URL=http://localhost:3000
+   ```
+
+4. **Inicializar Base de Datos**
+   Ejecuta los scripts SQL ubicados en `supabase/migrations/` en el editor SQL de tu panel de Supabase para crear las tablas y políticas RLS.
+
+---
+
+## Ejecución
+
+### Entorno de Desarrollo
+Para iniciar el servidor de desarrollo con hot-reloading:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+La aplicación estará disponible en `http://localhost:3000`.
+
+### Producción
+Para construir y probar la versión optimizada para producción:
+
+```bash
+npm run build
+npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Testing
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+El proyecto cuenta con una suite exhaustiva de **38 suites de tests** cubriendo API, componentes, integración y lógica de negocio.
 
-## Learn More
+- **Ejecutar todos los tests**:
+  ```bash
+  npm test
+  ```
 
-To learn more about Next.js, take a look at the following resources:
+- **Ejecutar en modo vigilancia (watch)**:
+  ```bash
+  npm run test:watch
+  ```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Generar reporte de cobertura**:
+  ```bash
+  npm run test:coverage
+  ```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Para más detalles sobre la metodología de pruebas, consulta [Docs: Estrategia de Testing](docs/estrategia-testing.md).
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Estructura del Proyecto
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```
+/src
+  /app              # Rutas y páginas (App Router)
+    /api            # API Routes (Backend)
+    /admin          # Panel de Administrador
+    /citizen        # Panel de Ciudadano
+    /worker         # Panel de Trabajador
+    /organizer      # Panel de Organizador
+  /components       # Componentes React reutilizables
+    /ui             # UI Kit base (Botones, Inputs, Cards)
+    /emails         # Plantillas React Email
+  /lib              # Lógica de negocio y utilidades
+    /reservas       # Lógica de conflictos y reservas
+    /supabase       # Cliente Supabase
+  /types            # Definiciones de tipos TypeScript
+/docs               # Documentación técnica
+/supabase           # Migraciones y configuración DB
+```
+
+---
+
+## Despliegue
+
+Este proyecto está optimizado para desplegarse en **Netlify**.
+
+1. Conecta tu repositorio de GitHub a Netlify.
+2. Configura las variables de entorno en el panel de Netlify (Site settings > Environment variables).
+3. El comando de build se detectará automáticamente (`npm run build`).
+4. ¡Despliegue automático con cada push a `main`!
+
+---
+
+## Seguridad
+
+Consulta el reporte de [Vulnerabilidades de Seguridad Corregidas](docs/vulnerabilidades-seguridad-corregidas.md) para ver cómo se han mitigado riesgos comunes (XSS, CSRF, Inyección SQL) en este desarrollo.
+
+---
+
+**Trabajo de Fin de Grado - Ingeniería Informática**
+*Autor: David*

@@ -1,0 +1,106 @@
+@startuml diagrama-actividad
+title Diagrama de Actividad - Sistema de Reserva Municipal
+
+' --- DEFINICIÓN DE CARRILES (SWIMLANES) ---
+|Ciudadano / Organizador|
+start
+:Inicia Sesión / Accede a Web;
+
+if (¿Qué desea hacer?) then (Reservar Espacio / Inscribirse)
+  |Ciudadano / Organizador|
+  if (Acción específica) then (Reservar Recinto)
+    :Seleccionar Recinto;
+    :Seleccionar Fecha y Hora;
+    |Sistema Web (Backend)|
+    :Verificar Disponibilidad;
+    if (¿Disponible?) then (No)
+      |Ciudadano / Organizador|
+      :Mostrar Error "Horario Ocupado";
+      stop
+    else (Sí)
+      |Sistema Web (Backend)|
+      :Bloquear Horario (Temporal);
+    endif
+  else (Inscribirse a Curso)
+    |Ciudadano / Organizador|
+    :Seleccionar Curso;
+    |Sistema Web (Backend)|
+    :Verificar Cupos;
+      if (¿Hay Cupos?) then (No)
+        |Ciudadano / Organizador|
+        :Mostrar "Agotado";
+        stop
+      else (Sí)
+         :Reservar Cupo (Temporal);
+      endif
+  endif
+
+  |Sistema Web (Backend)|
+  :Crear Registro "Pendiente de Pago";
+  :Redirigir a Pasarela de Pago;
+
+  |Lemon Squeezy (Pagos)|
+  :Procesar Pago;
+  if (¿Pago Exitoso?) then (No)
+    |Sistema Web (Backend)|
+    :Webhook: Pago Fallido/Cancelado;
+    :Liberar Recinto/Cupo;
+    |Ciudadano / Organizador|
+    :Mostrar Error de Pago;
+    stop
+  else (Sí)
+    |Lemon Squeezy (Pagos)|
+    :Confirmar Pago;
+    |Sistema Web (Backend)|
+    :Webhook: Pago Exitoso;
+    :Actualizar Estado a "Pagado";
+    :Generar Comprobante;
+    
+    |Resend (Emails)|
+    :Enviar Correo de Confirmación;
+    
+    |Ciudadano / Organizador|
+    :Ver Confirmación en Pantalla;
+    stop
+  endif
+
+else (Solicitar Espacio para Evento)
+  |Ciudadano / Organizador|
+  :Completar Formulario de Solicitud;
+  :Adjuntar Documentación (si aplica);
+  
+  |Sistema Web (Backend)|
+  :Validar Datos;
+  :Guardar Solicitud como "Pendiente";
+  :Notificar a Trabajadores (Opcional);
+  
+  |Trabajador Municipal|
+  :Revisar Solitud Pendiente;
+  :Verificar Disponibilidad y Requisitos;
+  
+  if (¿Aprobar?) then (Sí)
+    |Trabajador Municipal|
+    :Aprobar Solicitud;
+    |Sistema Web (Backend)|
+    :Actualizar Estado a "Aprobada";
+    :Crear Reserva Bloqueada;
+    
+    |Resend (Emails)|
+    :Enviar Email de Aprobación;
+  else (No)
+    |Trabajador Municipal|
+    :Rechazar Solicitud;
+    :Ingresar Motivo de Rechazo;
+    |Sistema Web (Backend)|
+    :Actualizar Estado a "Rechazada";
+    
+    |Resend (Emails)|
+    :Enviar Email de Rechazo;
+  endif
+  
+  |Ciudadano / Organizador|
+  :Recibir Notificación;
+  stop
+
+endif
+@enduml

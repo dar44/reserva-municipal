@@ -28,9 +28,12 @@ export default function RecintoActions({ id, state }: { id: number; state: strin
       ) : (
         <Button disabled size="sm" variant="secondary">Reservar</Button>
       )}
-      <Button onClick={() => setOpen(true)} size="sm" variant="outline">
+      <button
+        onClick={() => setOpen(true)}
+        className="px-3 py-1 text-xs font-semibold rounded-md border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-150"
+      >
         {state === 'Disponible' ? 'No disponible' : 'Disponible'}
-      </Button>
+      </button>
       <ConfirmModal
         open={open}
         message="¿Cambiar el estado del recinto?"

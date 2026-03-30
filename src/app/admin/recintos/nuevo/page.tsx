@@ -8,6 +8,8 @@ import { processRecintoImageInput } from '@/lib/recintoImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -74,7 +76,12 @@ export default async function NewRecintoPage() {
         />
 
         <div>
-          <label className="block text-sm font-medium mb-2">Estado</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Estado
+            <Tooltip content="Disponible: acepta nuevas reservas. No disponible: cerrado temporalmente. Bloqueado: reservado para uso exclusivo, sin reservas externas.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <select name="state" className="input-base w-full">
             <option value="Disponible">Disponible</option>
             <option value="No disponible">No disponible</option>

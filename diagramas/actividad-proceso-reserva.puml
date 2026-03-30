@@ -1,0 +1,36 @@
+@startuml actividad-proceso-reserva
+
+|Ciudadano|
+start
+:Selecciona Recinto Deportivo;
+:Visualiza calendario de disponibilidad;
+:Selecciona fecha y hora;
+
+|Sistema|
+if (¿Franja horaria libre?) then (No)
+  :Muestra error "Ocupado";
+  end
+else (Sí)
+  :Calcula precio total;
+  :Bloquea temporalmente la franja;
+endif
+
+|Ciudadano|
+:Confirma reserva;
+:Realiza pago en pasarela;
+
+|Sistema|
+if (¿Pago exitoso?) then (Sí)
+  :Confirma reserva en BD;
+  :Genera comprobante;
+  :Envía email de confirmación;
+else (No)
+  :Libera franja horaria;
+  :Muestra error de pago;
+endif
+
+|Ciudadano|
+:Recibe confirmación;
+
+stop
+@enduml

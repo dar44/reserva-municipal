@@ -12,6 +12,8 @@ import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -123,29 +125,54 @@ export default async function NewUsuarioPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Email</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Email
+            <Tooltip content="Correo electrónico que el usuario usará como credencial de acceso al sistema.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <input name="email" type="email" className="input-base w-full" placeholder="usuario@ejemplo.com" required />
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Contraseña</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Contraseña
+            <Tooltip content="Mínimo 8 caracteres. El usuario puede cambiarla desde su perfil una vez creada.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <input name="password" type="password" className="input-base w-full" placeholder="••••••••" required />
         </div>
 
         <div className="grid md:grid-cols-2 gap-6">
           <div>
-            <label className="block text-sm font-medium mb-2">Teléfono</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Teléfono
+              <Tooltip content="Formato recomendado: +34 600 000 000. Se usará para notificaciones.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input name="phone" className="input-base w-full" placeholder="+34 600 000 000" required />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">DNI</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              DNI
+              <Tooltip content="Documento Nacional de Identidad. Formato: 12345678A (8 dígitos seguidos de una letra).">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input name="dni" className="input-base w-full" placeholder="12345678A" required />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Rol</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Rol
+            <Tooltip content="Ciudadano: acceso al catálogo y reservas. Trabajador: gestión de solicitudes. Organizador: creación de cursos y solicitud de recintos. Administrador: acceso total al sistema.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <select name="role" className="input-base w-full">
             <option value="citizen">Ciudadano</option>
             <option value="worker">Trabajador Municipal</option>

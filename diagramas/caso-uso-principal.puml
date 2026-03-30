@@ -1,0 +1,56 @@
+@startuml caso-uso-principal
+left to right direction
+skinparam packageStyle rectangle
+
+actor "Ciudadano" as C
+actor "Organizador" as O
+actor "Personal\nMunicipal" as P
+actor "Administrador" as A
+
+rectangle "Sistema de Reservas Municipales" {
+  usecase "Registrarse/Login" as UC1
+  usecase "Consultar recintos\ndisponibles" as UC2
+  usecase "Crear reserva\nde recinto" as UC3
+  usecase "Pagar online" as UC4
+  usecase "Cancelar reserva" as UC5
+  
+  usecase "Consultar cursos" as UC6
+  usecase "Inscribirse a curso" as UC7
+  
+  usecase "Crear curso" as UC8
+  usecase "Gestionar\ninscripciones" as UC9
+  
+  usecase "Gestionar calendario\nunificado" as UC10
+  usecase "Aprobar solicitudes" as UC11
+  usecase "Configurar cierres\nexcepcionales" as UC12
+  
+  usecase "Configurar recintos" as UC13
+  usecase "Gestionar usuarios\ny roles" as UC14
+  usecase "Generar informes" as UC15
+}
+
+C --> UC1
+C --> UC2
+C --> UC3
+C --> UC5
+C --> UC6
+C --> UC7
+
+UC3 ..> UC4 : <<include>>
+UC7 ..> UC4 : <<include>>
+
+O --> UC1
+O --> UC8
+O --> UC9
+
+P --> UC1
+P --> UC10
+P --> UC11
+P --> UC12
+
+A --> UC13
+A --> UC14
+A --> UC15
+A --> UC10
+
+@enduml

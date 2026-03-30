@@ -163,7 +163,7 @@ export default function ReservationForm({ recintoId }: { recintoId: number }) {
         )}
       </div>
 
-      <Button className="w-full bg-success hover:bg-success/90" type="submit" disabled={isSubmitting}>
+      <Button className="w-full hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 transition-all" type="submit" disabled={isSubmitting}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

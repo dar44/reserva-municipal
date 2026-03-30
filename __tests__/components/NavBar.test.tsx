@@ -1,8 +1,11 @@
-import { act, render, screen, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+
+const pushMock = jest.fn()
 
 jest.mock('next/navigation', () => ({
   usePathname: jest.fn(() => '/reservas'),
+  useRouter: jest.fn(() => ({ push: pushMock })),
 }))
 
 const getUserMock = jest.fn()
@@ -19,27 +22,17 @@ jest.mock('@/lib/supabaseClient', () => ({
 
 jest.mock('@/components/ProfileDropdown', () => ({
   __esModule: true,
-  default: ({ onViewProfile, onClose }: { onViewProfile: () => void; onClose: () => void }) => (
+  default: ({ onClose }: { onClose: () => void }) => (
     <div>
-      <button onClick={onViewProfile}>Ver perfil</button>
+      <button onClick={() => { onClose() }}>Ver perfil</button>
       <button onClick={onClose}>Cerrar</button>
     </div>
   ),
 }))
 
-const onUpdatedHandlers: Array<(value: string) => void> = []
-
-jest.mock('@/components/ProfileModal', () => ({
-  __esModule: true,
-  default: ({ onUpdated }: { onUpdated: (value: string) => void }) => {
-    onUpdatedHandlers.push(onUpdated)
-    return <div>ProfileModalMock</div>
-  },
-}))
-
 describe('NavBar', () => {
   beforeEach(() => {
-    onUpdatedHandlers.length = 0
+    pushMock.mockClear()
     selectMock.mockClear()
     eqMock.mockClear()
     singleMock.mockClear()
@@ -62,21 +55,22 @@ describe('NavBar', () => {
     expect(eqMock).toHaveBeenCalledWith('uid', 'uid-1')
   })
 
-  it('abre el menú y el modal de perfil', async () => {
+  it('abre el menú y hace click en Ver perfil', async () => {
     const { NavBar } = await import('@/components/NavBar')
     const user = userEvent.setup()
 
     render(<NavBar />)
 
-    await user.click(await screen.findByRole('button', { name: /Ada/ }))
+    // Esperar a que cargue el nombre
+    await screen.findByRole('button', { name: /Ada/ })
+
+    // Abrir el dropdown de usuario
+    await user.click(screen.getByRole('button', { name: /Ada/ }))
+
+    // Hacer click en "Ver perfil"
     await user.click(screen.getByText('Ver perfil'))
 
-    expect(screen.getByText('ProfileModalMock')).toBeInTheDocument()
-
-    await act(async () => {
-      onUpdatedHandlers.forEach(handler => handler('Grace'))
-    })
-
-    await waitFor(() => expect(screen.getByRole('button', { name: /Grace/ })).toBeInTheDocument())
+    // El menú debería cerrarse tras hacer click
+    await waitFor(() => expect(screen.queryByText('Cerrar')).not.toBeInTheDocument())
   })
 })

@@ -1,0 +1,93 @@
+@startuml casos-uso-general
+left to right direction
+skinparam packageStyle rectangle
+
+' --- ACTORES HUMANOS ---
+actor "Ciudadano" as C
+actor "Organizador" as O
+actor "Trabajador" as W
+actor "Administrador" as A
+
+' --- SISTEMAS EXTERNOS ---
+actor "Lemon Squeezy\n(Pagos)" as Payment
+actor "Resend\n(Emails)" as Email
+
+package "Sistema de Reservas Municipal" {
+  
+  ' --- BLOQUE SUPERIOR: PAGOS Y RESERVAS ---
+  usecase "Inscribirse en Curso" as UC_Inscripcion
+  usecase "Reservar Recinto" as UC_Reserva
+  usecase "Consultar mis Reservas" as UC_CitizenReservas
+
+  ' --- BLOQUE MEDIO: GESTIÓN DE CURSOS Y SOLICITUDES ---
+  usecase "Solicitar Reserva Recinto" as UC_Solicitar
+  usecase "Aprobar o Denegar Solicitudes" as UC_Aprobar
+  usecase "Gestionar mis Cursos" as UC_GestCursos
+
+  ' --- BLOQUE INFERIOR: GESTIÓN MANUAL Y ADMIN ---
+  usecase "Gestión Manual por Trabajador\n(Reservar/Inscribir a Ciudadano)" as UC_Manual
+  usecase "Crear Cuenta Ciudadano" as UC_CreateAccountWorker
+  
+  usecase "Gestionar Recintos" as UC_Recintos
+  usecase "Gestionar Usuarios" as UC_Usuarios
+  usecase "Ver Reservas/Inscripciones" as UC_Transacciones
+  
+  ' --- AUTH ---
+  usecase "Registrarse" as UC_Register
+  usecase "Autenticarse" as UC_Auth
+}
+
+' --- TRUCOS DE LAYOUT (NO TOCAR) ---
+Payment -[hidden]- Email
+Payment -[hidden]- Email
+UC_Inscripcion -[hidden]right-> Payment
+UC_Register -[hidden]right-> Email
+
+' --- RELACIONES CIUDADANO ---
+C --> UC_Inscripcion
+C --> UC_Reserva
+C --> UC_CitizenReservas
+C --> UC_Auth
+C --> UC_Register
+
+' --- RELACIONES ORGANIZADOR ---
+O --> UC_GestCursos
+O --> UC_Solicitar
+O --> UC_Auth
+
+' --- RELACIONES TRABAJADOR ---
+W --> UC_Aprobar
+W --> UC_Manual
+W --> UC_Auth
+
+' Dependencia lógica: La gestión manual puede requerir crear cuenta
+UC_Manual ..> UC_CreateAccountWorker : <<include>>\n(Si no tiene cuenta)
+
+' Solicitud y Aprobación
+UC_Solicitar ..> UC_Aprobar : input para
+
+' --- RELACIONES ADMINISTRADOR ---
+A --> UC_Recintos
+A --> UC_Usuarios
+A --> UC_Transacciones
+A --> UC_Auth
+
+' --- INTEGRACIONES CON LEMON SQUEEZY (ARRIBA) ---
+UC_Inscripcion ..> Payment : Pagar
+UC_Reserva ..> Payment : Pagar
+
+' --- INTEGRACIONES CON RESEND (ABAJO) ---
+' 1. Notificaciones de Reserva/Inscripción
+UC_Reserva ..> Email : Confirmación
+UC_Inscripcion ..> Email : Confirmación
+
+' 2. Flujo Trabajador -> Ciudadano (Pass temporal)
+UC_CreateAccountWorker ..> Email : Enviar Cambio Contraseña
+
+' 3. Flujo Organizador
+UC_Aprobar ..> Email : Notificar resolución
+
+' 4. Registro normal del ciudadano
+UC_Register ..> Email : Bienvenida
+
+@enduml

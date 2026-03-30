@@ -187,16 +187,16 @@ const OpenStreetMapView = ({
   }, [error, status])
 
   return (
-    <div className={`space-y-2 rounded border border-gray-700 bg-gray-900 p-3 ${className}`}>
-      {title && <p className="text-sm font-semibold text-gray-200">{title}</p>}
+    <div className={`space-y-2 rounded border border-border bg-surface p-3 ${className}`}>
+      {title && <p className="text-sm font-semibold text-foreground">{title}</p>}
       <div
         ref={containerRef}
-        className="h-56 w-full overflow-hidden rounded border border-gray-700 bg-gray-800"
+        className="h-56 w-full overflow-hidden rounded border border-border bg-muted"
       />
       {effectiveAddress && (
-        <p className="text-xs text-gray-400">Dirección: {effectiveAddress}</p>
+        <p className="text-xs text-secondary">Dirección: {effectiveAddress}</p>
       )}
-      {statusMessage && <p className="text-xs text-yellow-300">{statusMessage}</p>}
+      {statusMessage && <p className="text-xs text-warning">{statusMessage}</p>}
     </div>
   )
 }

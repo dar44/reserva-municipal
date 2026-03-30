@@ -1,0 +1,23 @@
+@startuml casos-uso-admin
+
+left to right direction
+actor "Administrador" as A
+actor "Trabajador" as W
+actor "Resend\n(Emails)" as Email
+
+package "Gestión Interna" {
+  usecase "Gestionar Recintos" as UC_Recinto
+  usecase "Aprobar/Rechazar Cursos" as UC_Aprobacion
+  usecase "Gestionar Usuarios" as UC_Users
+  usecase "Ver Métricas" as UC_Stats
+}
+
+A --> UC_Recinto
+A --> UC_Users
+A --> UC_Stats
+A --|> W
+
+W --> UC_Aprobacion
+UC_Aprobacion ..> Email : notificar decisión
+
+@enduml

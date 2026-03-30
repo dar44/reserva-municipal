@@ -110,12 +110,12 @@
     /* slate-300 */
 
     /* Acciones Primarias */
-    --primary: rgb(16 185 129);
-    /* emerald-500 */
-    --primary-hover: rgb(5 150 105);
-    /* emerald-600 */
-    --primary-active: rgb(4 120 87);
-    /* emerald-700 */
+    --primary: rgb(var(--primary-500));
+    /* blue-500 */
+    --primary-hover: rgb(var(--primary-600));
+    /* blue-600 */
+    --primary-active: rgb(var(--primary-700));
+    /* blue-700 */
     --primary-foreground: rgb(255 255 255);
 
     /* Acciones Secundarias */
@@ -139,16 +139,16 @@
     --input: rgb(255 255 255);
     --input-border: rgb(203 213 225);
     /* slate-300 */
-    --input-focus-border: rgb(16 185 129);
-    /* emerald-500 */
+    --input-focus-border: rgb(var(--primary-500));
+    /* blue-500 */
 
     /* Acento (estados hover, resaltados) */
-    --accent: rgb(240 253 244);
-    /* emerald-50 */
-    --accent-hover: rgb(209 250 229);
-    /* emerald-100 */
-    --accent-foreground: rgb(4 120 87);
-    /* emerald-700 */
+    --accent: rgb(var(--primary-50));
+    /* blue-50 */
+    --accent-hover: rgb(var(--primary-100));
+    /* blue-100 */
+    --accent-foreground: rgb(var(--primary-700));
+    /* blue-700 */
 
     /* Apagado (deshabilitado, placeholder) */
     --muted: rgb(241 245 249);
@@ -197,8 +197,8 @@
     /* sky-800 */
 
     /* Anillo (foco) */
-    --ring: rgb(16 185 129 / 50%);
-    /* emerald-500/50 */
+    --ring: rgb(var(--primary-500) / 50%);
+    /* blue-500/50 */
 
     /* Popover */
     --popover: rgb(255 255 255);
@@ -210,8 +210,8 @@
     /* slate-50 */
     --sidebar-foreground: rgb(15 23 42);
     /* slate-900 */
-    --sidebar-primary: rgb(16 185 129);
-    /* emerald-500 */
+    --sidebar-primary: rgb(var(--primary-500));
+    /* blue-500 */
     --sidebar-primary-foreground: rgb(255 255 255);
     --sidebar-accent: rgb(241 245 249);
     /* slate-100 */
@@ -219,8 +219,8 @@
     /* slate-900 */
     --sidebar-border: rgb(226 232 240);
     /* slate-200 */
-    --sidebar-ring: rgb(16 185 129 / 50%);
-    /* emerald-500/50 */
+    --sidebar-ring: rgb(var(--primary-500) / 50%);
+    /* blue-500/50 */
 }
 
 /* ============================================
@@ -274,9 +274,11 @@
     --muted-foreground: rgb(var(--neutral-500));
 
     /* Destructivo */
-    --destructive: rgb(var(--error-500));
-    --destructive-hover: rgb(var(--error-400));
-    --destructive-foreground: rgb(var(--neutral-950));
+    --destructive: rgb(220 38 38);
+    /* red-700 - igual que modo claro */
+    --destructive-hover: rgb(185 28 28);
+    /* red-800 - igual que modo claro */
+    --destructive-foreground: rgb(255 255 255);
 
     /* Estados */
     --success: rgb(var(--success-500));

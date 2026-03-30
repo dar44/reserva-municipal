@@ -1,0 +1,40 @@
+@startuml casos-uso-cursos
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam nodesep 85
+skinparam ranksep 75
+
+actor "Organizador" as O
+actor "Trabajador" as W
+actor "Resend\n(Emails)" as Email
+
+rectangle "Solicitud de cursos" {
+
+  usecase "Gestionar Mis Cursos\n(Crear/Modificar/Eliminar)" as UC_ManageCourses
+
+  usecase "Ver Disponibilidad\nde Recinto" as UC_CheckAvailability
+  usecase "Solicitar Recinto\npara Curso" as UC_RequestVenue
+
+  usecase "Ver Solicitudes\nPendientes" as UC_ViewRequests
+  usecase "Aprobar/Rechazar\nSolicitud" as UC_DecideRequest
+}
+
+' --- Organizador ---
+O --> UC_ManageCourses
+O --> UC_CheckAvailability
+O --> UC_RequestVenue
+
+' Solicitar requiere comprobar disponibilidad (paso obligatorio)
+UC_RequestVenue ..> UC_CheckAvailability : <<include>>
+
+' --- Trabajador ---
+W --> UC_ViewRequests
+W --> UC_DecideRequest
+UC_DecideRequest ..> UC_ViewRequests : <<include>>
+
+' --- Emails (solo 2 líneas) ---
+UC_RequestVenue ..> Email : "notificar solicitud"
+UC_DecideRequest ..> Email : "notificar resolución"
+
+@enduml

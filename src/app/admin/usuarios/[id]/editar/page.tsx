@@ -13,6 +13,8 @@ import { processUserImageInput } from '@/lib/userImages'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -131,24 +133,44 @@ export default async function EditUsuarioPage({ params }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Email</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Email
+            <Tooltip content="Correo electrónico que el usuario usará como credencial de acceso al sistema.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <input name="email" defaultValue={usuario.email} className="input-base w-full" placeholder="Email" type="email" required />
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Teléfono</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Teléfono
+              <Tooltip content="Formato recomendado: +34 600 000 000. Se usará para notificaciones.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input name="phone" defaultValue={usuario.phone} className="input-base w-full" placeholder="Teléfono" />
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">DNI</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              DNI
+              <Tooltip content="Documento Nacional de Identidad. Formato: 12345678A (8 dígitos seguidos de una letra).">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input name="dni" defaultValue={usuario.dni} className="input-base w-full" placeholder="DNI" />
           </div>
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Rol</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Rol
+            <Tooltip content="Ciudadano: acceso al catálogo y reservas. Trabajador: gestión de solicitudes. Organizador: creación de cursos y solicitud de recintos. Administrador: acceso total al sistema.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <select name="role" defaultValue={usuario.role} className="input-base w-full">
             <option value="citizen">Ciudadano</option>
             <option value="worker">Trabajador</option>
@@ -158,7 +180,12 @@ export default async function EditUsuarioPage({ params }: Props) {
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Nueva contraseña (opcional)</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Nueva contraseña (opcional)
+            <Tooltip content="Si lo dejas en blanco se mantiene la contraseña actual. Si introduces una nueva debe tener mínimo 8 caracteres.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <input name="password" type="password" className="input-base w-full" placeholder="Dejar en blanco para no cambiar" />
         </div>
 

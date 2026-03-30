@@ -1,0 +1,53 @@
+@startuml secuencia-reserva-pago
+!theme plain
+
+actor "Ciudadano" as C
+participant "Frontend\n(Next.js)" as F
+participant "API Routes" as API
+database "Supabase\nPostgreSQL" as DB
+participant "Lemon Squeezy\n(Pasarela)" as LS
+participant "Resend\n(Email)" as Email
+
+autonumber
+
+C -> F: Selecciona recinto,\nfecha y franja
+F -> API: GET /api/recintos/{id}/disponibilidad
+API -> DB: SELECT reservas WHERE...
+DB --> API: Franjas disponibles
+API --> F: JSON con disponibilidad
+F --> C: Muestra calendario
+
+C -> F: Confirma reserva y\nprocede a pago
+F -> API: POST /api/reservas\n{recinto_id, fecha, franja, user_id}
+API -> DB: Valida disponibilidad\n(SELECT FOR UPDATE)
+alt Franja disponible
+    API -> DB: INSERT reserva\nEstado='Pendiente de pago'\nBloqueo temporal (10 min)
+    DB --> API: Reserva creada (ID=#123)
+    API -> LS: Crea checkout\n{importe, concepto, webhook_url}
+    LS --> API: Checkout URL
+    API --> F: {reserva_id, checkout_url}
+    F --> C: Redirección a Lemon Squeezy
+    
+    C -> LS: Completa pago\n(tarjeta/PayPal)
+    LS --> C: Confirmación visual
+    
+    LS -> API: POST /api/webhooks/payment\n{reserva_id, payment_id, status='completed'}
+    API -> DB: UPDATE reserva\nSET estado='Confirmada'\nWHERE id=#123
+    DB --> API: OK
+    
+    API -> Email: Enviar confirmación\ncon justificante PDF
+    Email --> API: Email enviado
+    API --> LS: 200 OK (webhook procesado)
+    
+    F -> API: GET /api/reservas/mis-reservas
+    API -> DB: SELECT reservas WHERE user_id=...
+    DB --> API: Lista de reservas
+    API --> F: JSON reservas
+    F --> C: Muestra reserva confirmada
+    
+else Franja ocupada
+    API --> F: 409 Conflict
+    F --> C: Error: "Franja ya reservada"
+end
+
+@enduml

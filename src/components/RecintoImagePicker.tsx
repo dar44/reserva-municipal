@@ -62,7 +62,7 @@ export default function RecintoImagePicker({ initialImage = null }: Props) {
               setMode('default')
             }}
             disabled={!hasDefaults || mode !== 'default'}
-            className="w-full p-2 rounded bg-gray-700"
+            className="input-base w-full"
            >
             {Number(RECINTO_DEFAULT_IMAGES.length) === 0 && <option value="">Sin opciones disponibles</option>}
             {RECINTO_DEFAULT_IMAGES.map(option => (
@@ -86,7 +86,7 @@ export default function RecintoImagePicker({ initialImage = null }: Props) {
             name="image_file"
             accept="image/*"
             disabled={mode !== 'upload'}
-            className="block w-full text-sm text-gray-200 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white"
+            className="block w-full text-sm text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white"
           />
         </label>
         <label className="flex items-center gap-2">

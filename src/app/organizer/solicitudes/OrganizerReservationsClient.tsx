@@ -5,6 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { toast } from 'react-toastify'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Tooltip } from '@/components/ui/tooltip'
+import { HelpCircle } from 'lucide-react'
 import {
   Table,
   TableBody,
@@ -296,9 +298,16 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
           <h1 className="text-3xl font-bold">Solicitudes de reserva</h1>
           <p className="text-secondary">Envía nuevas peticiones y consulta el historial de respuestas.</p>
         </header>
-        <article className="rounded-lg border border-success/30 bg-success/5 p-4 shadow-lg">
-          <p className="text-sm text-foreground/90">Selecciona un curso, el recinto deseado y programa los días y horarios en los que necesitas usarlo.</p>
-          <p className="text-sm text-foreground/90 mt-2">Cada solicitud puede generar varios bloques dentro del rango de fechas indicado.</p>
+        <article className="rounded-lg border border-primary/30 bg-primary/5 p-4 shadow-lg">
+          <div className="flex items-start gap-3">
+            <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <div className="flex-1">
+              <p className="text-sm text-foreground/90 font-medium">Selecciona un curso, el recinto deseado y programa los días y horarios en los que necesitas usarlo.</p>
+              <p className="text-sm text-foreground/90 mt-1">Cada solicitud puede generar varios bloques dentro del rango de fechas indicado.</p>
+            </div>
+          </div>
         </article>
       </section>
 
@@ -336,7 +345,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
           <form ref={formRef} onSubmit={handleReservationSubmit} className="surface p-6 rounded-lg border space-y-6">
             <div className="grid gap-4 md:grid-cols-2">
               <label className="block">
-                <span className="text-sm font-medium mb-2 block">Curso *</span>
+                <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                  Curso *
+                  <Tooltip content="Al seleccionar un curso, las fechas, horarios y días se completarán automáticamente con los datos del curso.">
+                    <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                  </Tooltip>
+                </span>
                 <p className="text-xs text-secondary mb-2">Los campos se completarán automáticamente</p>
                 <select
                   name="curso_id"
@@ -352,7 +366,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
               </label>
 
               <label className="block">
-                <span className="text-sm font-medium mb-2 block">Recinto *</span>
+                <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                  Recinto *
+                  <Tooltip content="Solo aparecen los recintos con estado Disponible. Si no ves el espacio que necesitas, contacta con el administrador.">
+                    <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                  </Tooltip>
+                </span>
                 <p className="text-xs text-secondary mb-2">Selecciona el espacio a reservar</p>
                 <select
                   name="recinto_id"
@@ -368,13 +387,13 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
             </div>
 
             {selectedCourse && (
-              <div className="rounded-lg border border-success/30 bg-success/10 p-4">
+              <div className="rounded-lg border border-primary/30 bg-primary/10 p-4">
                 <div className="flex items-start gap-2">
-                  <svg className="w-5 h-5 text-success mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                   <div className="flex-1">
-                    <h3 className="font-semibold text-success mb-2">Horario del curso: {selectedCourse.name}</h3>
+                    <h3 className="font-semibold text-primary mb-2">Horario del curso: {selectedCourse.name}</h3>
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       {selectedCourse.begining_date && (
                         <div>
@@ -403,7 +422,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                         </div>
                       )}
                     </div>
-                    <p className="text-xs text-success mt-2">Los campos del formulario se han completado automáticamente</p>
+                    <p className="text-xs text-primary mt-2">Los campos del formulario se han completado automáticamente</p>
                   </div>
                 </div>
               </div>
@@ -413,7 +432,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
               <h3 className="text-sm font-medium border-b pb-2">Rango de fechas</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium mb-2 block">Fecha de inicio *</span>
+                  <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                    Fecha de inicio *
+                    <Tooltip content="Primera fecha en la que el recinto debe estar reservado. Se crearán bloques desde este día hasta la fecha de término.">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                    </Tooltip>
+                  </span>
                   <input
                     type="date"
                     name="start_date"
@@ -423,7 +447,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium mb-2 block">Fecha de término *</span>
+                  <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                    Fecha de término *
+                    <Tooltip content="Última fecha en la que el recinto debe estar reservado. Debe ser igual o posterior a la fecha de inicio.">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                    </Tooltip>
+                  </span>
                   <input
                     type="date"
                     name="end_date"
@@ -436,7 +465,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
               <h3 className="text-sm font-medium border-b pb-2">Horario</h3>
               <div className="grid gap-4 md:grid-cols-2">
                 <label className="block">
-                  <span className="text-sm font-medium mb-2 block">Hora de inicio *</span>
+                  <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                    Hora de inicio *
+                    <Tooltip content="Hora a la que empieza la sesión cada día reservado. Debe ser anterior a la hora de término.">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                    </Tooltip>
+                  </span>
                   <input
                     type="time"
                     name="start_time"
@@ -446,7 +480,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </label>
 
                 <label className="block">
-                  <span className="text-sm font-medium mb-2 block">Hora de término *</span>
+                  <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                    Hora de término *
+                    <Tooltip content="Hora a la que finaliza la sesión cada día reservado. Debe ser posterior a la hora de inicio.">
+                      <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                    </Tooltip>
+                  </span>
                   <input
                     type="time"
                     name="end_time"
@@ -456,20 +495,25 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
                 </label>
               </div>
 
-              <h3 className="text-sm font-medium border-b pb-2">Días de la semana</h3>
+              <h3 className="text-sm font-medium border-b pb-2 flex items-center gap-2">
+                Días de la semana
+                <Tooltip content="Se creará un bloque de reserva por cada día seleccionado dentro del rango de fechas indicado.">
+                  <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                </Tooltip>
+              </h3>
               <fieldset>
                 <p className="text-xs text-secondary mb-3">Selecciona los días en los que se debe reservar el recinto.</p>
                 <div className="flex flex-wrap gap-2">
                   {DAY_OPTIONS.map(day => (
                     <label
                       key={day.value}
-                      className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-success cursor-pointer transition-colors border"
+                      className="flex items-center gap-2 surface rounded px-3 py-2 text-xs uppercase tracking-wide hover:border-primary cursor-pointer transition-colors border"
                     >
                       <input
                         type="checkbox"
                         name="days_of_week"
                         value={day.value}
-                        className="h-4 w-4 rounded border-border bg-background text-success focus:ring-success"
+                        className="h-4 w-4 rounded border-border bg-background text-primary focus:ring-primary"
                       />
                       {day.label}
                     </label>
@@ -479,7 +523,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
             </div>
 
             <label className="block">
-              <span className="text-sm font-medium mb-2 block">Observaciones</span>
+              <span className="text-sm font-medium mb-2 flex items-center gap-2">
+                Observaciones
+                <Tooltip content="Mensaje opcional para el trabajador municipal que revisará la solicitud. Puedes indicar necesidades especiales como proyector, sillas extra, etc.">
+                  <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                </Tooltip>
+              </span>
               <p className="text-xs text-secondary mb-2">Información adicional para el trabajador municipal (opcional)</p>
               <textarea
                 name="observations"
@@ -492,7 +541,7 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
             <div>
               <Button
                 type="submit"
-                className="w-full md:w-auto bg-success hover:bg-success/90"
+                className="w-full md:w-auto bg-primary hover:bg-primary/90"
                 disabled={submittingReservation}
               >
                 {submittingReservation ? (

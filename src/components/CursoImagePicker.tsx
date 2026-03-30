@@ -74,7 +74,7 @@ export default function CourseImagePicker({
               setMode('default')
             }}
             disabled={!hasDefaults || mode !== 'default'}
-            className="w-full p-2 rounded bg-gray-700"
+            className="input-base w-full"
           >
             {defaultImages.length === 0 && <option value="">Sin opciones disponibles</option>}
             {defaultImages.map(option => (
@@ -101,7 +101,7 @@ export default function CourseImagePicker({
             name="image_file"
             accept="image/*"
             disabled={mode !== 'upload'}
-            className="block w-full text-sm text-gray-200 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white"
+            className="block w-full text-sm text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white"
           />
         </label>
 
@@ -116,7 +116,7 @@ export default function CourseImagePicker({
           Sin imagen
         </label>
       </div>
-      <p className="text-xs text-gray-400">
+      <p className="text-xs text-muted-foreground">
         Si no seleccionas ninguna opción se usará la imagen predeterminada disponible.
       </p>
     </fieldset>

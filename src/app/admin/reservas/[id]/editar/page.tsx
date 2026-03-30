@@ -6,6 +6,8 @@ import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Badge } from "@/components/ui/badge"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -120,8 +122,11 @@ export default async function EditReservaPage({ params }: Props) {
                 {/* Form con dropdown de estado */}
                 <form action={updateReserva} className="space-y-4 pt-4 border-t border-border">
                     <div>
-                        <label className="block text-sm font-medium mb-2">
+                        <label className="block text-sm font-medium mb-2 flex items-center gap-2">
                             Nuevo estado
+                            <Tooltip content="Confirmada: reserva pagada y activa. Pendiente: a la espera de pago. Cancelada: la reserva queda anulada definitivamente.">
+                              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+                            </Tooltip>
                         </label>
                         <select
                             name="estado"

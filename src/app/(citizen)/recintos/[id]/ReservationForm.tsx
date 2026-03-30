@@ -3,6 +3,8 @@
 import { FormEvent, useState } from 'react'
 import { useToast } from '@/components/Toast'
 import { Button } from '@/components/ui/button'
+import { Tooltip } from '@/components/ui/tooltip'
+import { HelpCircle } from 'lucide-react'
 
 interface ReservationFormProps {
   recintoId: number
@@ -13,6 +15,9 @@ interface ReservationFormProps {
 export default function ReservationForm({ recintoId, slots, priceLabel }: ReservationFormProps) {
   const toast = useToast()
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Fecha mínima: hoy (no se permiten fechas pasadas)
+  const today = new Date().toISOString().split('T')[0]
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -59,15 +64,28 @@ export default function ReservationForm({ recintoId, slots, priceLabel }: Reserv
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
       <input type="hidden" name="recinto_id" value={recintoId} />
-      <label className="block text-sm">Fecha de reserva
+      <label className="block text-sm">
+        <span className="flex items-center gap-2 mb-1">
+          Fecha de reserva
+          <Tooltip content="Solo se admiten fechas futuras. Las fechas anteriores a hoy están bloqueadas.">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </span>
         <input
           type="date"
           name="date"
           className="input-base block w-full mt-1"
+          min={today}
           required
         />
       </label>
-      <label className="block text-sm">Hora inicio – fin
+      <label className="block text-sm">
+        <span className="flex items-center gap-2 mb-1">
+          Hora inicio – fin
+          <Tooltip content="Cada bloque tiene una duración de 1 hora. Si el horario ya está reservado, el sistema lo notificará al intentar confirmar.">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </span>
         <select name="slot" className="input-base block w-full mt-1">
           {slots.map((slot) => (
             <option key={slot} value={slot}>

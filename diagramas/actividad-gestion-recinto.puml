@@ -1,0 +1,29 @@
+@startuml actividad-gestion-recinto
+
+|Administrador|
+start
+:Accede al panel de gestión de recintos;
+if (¿Acción deseada?) then (Crear Nuevo)
+  :Introduce datos del recinto
+  (Nombre, Descripción, Precio, Ubicación);
+  :Sube imagen del recinto;
+else (Editar Existente)
+  :Selecciona recinto de la lista;
+  :Modifica datos necesarios;
+endif
+
+|Sistema|
+:Valida datos (Campos obligatorios);
+if (¿Datos válidos?) then (Sí)
+  :Guarda/Actualiza en Base de Datos;
+  :Muestra mensaje de éxito "Recinto Guardado";
+else (No)
+  :Muestra errores de validación;
+  end
+endif
+
+|Administrador|
+:Visualiza recinto actualizado en lista;
+
+stop
+@enduml

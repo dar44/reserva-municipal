@@ -1,0 +1,60 @@
+@startuml casos-uso-autenticacion
+left to right direction
+skinparam packageStyle rectangle
+
+' ===== Actores =====
+actor "Usuario" as User
+actor "Ciudadano" as Citizen
+actor "Organizador" as Organizer
+actor "Administrador" as Admin
+actor "Trabajador" as Worker
+actor "Resend (Emails)" as Resend
+
+' Herencia de roles (evita 100 líneas)
+User <|-- Citizen
+User <|-- Organizer
+User <|-- Admin
+User <|-- Worker
+
+rectangle "Sistema de Autenticación" {
+
+  usecase "Registrarse" as Register
+  usecase "Iniciar Sesión" as Login
+  usecase "Cerrar Sesión" as Logout
+  usecase "Recuperar Contraseña" as ForgotPassword
+  usecase "Establecer Contraseña\n si cuenta creada por Trabajador" as SetPassword
+  usecase "Gestionar Perfil" as ManageProfile
+
+  usecase "Crear Cuenta a ciudadano" as StaffCreateAccount
+
+  ' Redirecciones por rol tras login
+  usecase "Redirigir a reservas" as RedirectCitizen
+  usecase "Redirigir a Panel\nOrganizador" as RedirectOrganizer
+  usecase "Redirigir a Panel\nAdministrador" as RedirectAdmin
+  usecase "Redirigir a Panel\nTrabajador" as RedirectWorker
+}
+
+' ===== Casos comunes (solo UNA vez) =====
+User --> Login
+User --> Logout
+User --> ForgotPassword
+User --> ManageProfile
+User --> Register
+
+' ===== Casos específicos =====
+Citizen --> SetPassword
+Admin --> StaffCreateAccount
+Worker --> StaffCreateAccount
+
+' ===== Redirecciones post-login =====
+Login ..> RedirectCitizen : <<include>> (si rol=Ciudadano)
+Login ..> RedirectOrganizer : <<include>> (si rol=Organizador)
+Login ..> RedirectAdmin : <<include>> (si rol=Administrador)
+Login ..> RedirectWorker : <<include>> (si rol=Trabajador)
+
+' ===== Emails (flecha discontinua directa a Resend) =====
+Register ..> Resend : "Confirmación registro / Bienvenida"
+ForgotPassword ..> Resend : "Email reset contraseña"
+StaffCreateAccount ..> Resend : "Email activar cuenta (set password)"
+
+@enduml

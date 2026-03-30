@@ -1,0 +1,29 @@
+@startuml actividad-aprobacion-curso
+
+|Organizador|
+start
+:Organizador envía solicitud de curso;
+:Estado del curso = "Pendiente";
+
+|Trabajador|
+:Recibe notificación de nueva solicitud;
+:Revisa detalles (Horario, Recinto, Contenido);
+
+if (¿Recinto disponible y contenido adecuado?) then (Sí)
+  :Aprueba solicitud;
+  :Cambia estado a "Aprobado";
+  :Sistema bloquea horario en Recinto;
+  :Envía email de aprobación;
+else (No)
+  :Rechaza solicitud;
+  :Registra motivo del rechazo;
+  :Cambia estado a "Rechazado";
+  :Envía email de rechazo con motivo;
+endif
+
+|Organizador|
+:Recibe email con resultado;
+
+stop
+
+@enduml

@@ -1,0 +1,116 @@
+@startuml diagrama-secuencia-global
+title Diagrama de Secuencia Global - Reserva Municipal
+
+autonumber
+skinparam maxMessageSize 140
+skinparam ParticipantPadding 18
+skinparam BoxPadding 10
+skinparam sequenceMessageAlign center
+skinparam responseMessageBelowArrow true
+
+actor "Ciudadano" as Citizen
+actor "Organizador" as Organizer
+actor "Trabajador" as Worker
+actor "Administrador" as Admin
+
+box "Aplicación Web Reserva Municipal" #F8F8F8
+participant "Frontend\n(Next.js App Router)" as UI
+participant "Backend\n(API Routes / Server Actions)" as API
+participant "Supabase Auth" as Auth
+database "Supabase PostgreSQL\n(DB y Storage)" as DB
+end box
+
+participant "Lemon Squeezy\n(Pagos en CLP)" as Lemon
+participant "Resend\n(Emails transaccionales)" as Email
+
+== Fase 1: Autenticación y Control de Acceso (RBAC) ==
+
+Organizer -> UI : Enviar credenciales (login)
+UI -> Auth : Autenticar usuario con Supabase Auth
+Auth --> UI : Sesión válida (JWT en cookies HTTP-only)
+UI -> API : Solicitar datos de perfil
+API -> DB : Consultar tabla 'users'
+DB --> API : Devolver rol (organizer)
+API --> UI : Renderizar panel correspondiente (/organizer/panel)
+
+== Fase 2: Organizador crea un Curso ==
+
+Organizer -> UI : Completar formulario de nuevo curso (fechas, recinto, plazas)
+UI -> API : POST /api/organizer/cursos
+API -> Auth : Verificar sesión y rol
+Auth --> API : Rol 'organizer' autorizado
+API -> DB : Insertar registro en tabla 'cursos' (estado: pendiente)
+DB --> API : Curso creado
+API --> UI : Confirmación de creación
+UI --> Organizer : Mostrar curso en listado (Pendiente de aprobación)
+
+== Fase 3: Trabajador Municipal aprueba el Curso ==
+
+Worker -> UI : Acceder a listado de solicitudes pendientes
+UI -> API : Solicitar cursos pendientes
+API -> DB : Consultar 'cursos' donde estado='pendiente'
+DB --> API : Devolver listado
+API --> UI : Mostrar tabla de revisión
+Worker -> UI : Aprobar curso
+UI -> API : PATCH para actualizar estado del curso
+API -> DB : Actualizar 'cursos' (estado='aprobado') y asegurar reserva de recinto
+DB --> API : Curso publicado exitosamente
+API -> Email : Notificar resolución al Organizador
+Email --> API : Confirmación de envío
+API --> UI : Curso aprobado
+UI --> Worker : Actualizar interfaz
+
+== Fase 4: Ciudadano reserva Recinto o se inscribe en Curso ==
+
+Citizen -> UI : Explorar catálogo público y seleccionar opción
+UI -> API : POST /api/reservas o POST /api/inscripciones
+API -> Auth : Verificar sesión (rol citizen)
+Auth --> API : Sesión válida
+alt Reserva de Recinto
+    API -> DB : Validar conflictos de horario (hasRecintoConflicts)
+    DB --> API : Sin conflictos
+    API -> DB : Insertar en 'reservas' y 'pagos' (estado='pendiente', moneda='CLP')
+else Inscripción a Curso
+    API -> DB : Comprobar aforo disponible
+    DB --> API : Plazas libres
+    API -> DB : Insertar en 'inscripciones' y 'pagos' (estado='pendiente', moneda='CLP')
+end
+API -> Lemon : createCheckout() con metadatos (pago_id)
+Lemon --> API : URL de checkout
+API --> UI : Redirigir
+UI --> Citizen : Mostrar pasarela Lemon Squeezy
+
+Citizen -> Lemon : Introducir datos de tarjeta y confirmar pago
+Lemon -> Lemon : Procesar transacción monetaria
+
+== Fase 5: Conciliación Asíncrona (Webhook) y Notificaciones ==
+
+Lemon -> API : POST /api/lemon/webhook (event: order_paid)
+API -> API : Verificar firma criptográfica del webhook
+alt Firma válida
+    API -> DB : Buscar pago por pago_id (metadatos)
+    DB --> API : Registro del pago encontrado
+    API -> DB : Actualizar 'pagos' (estado='pagado')
+    alt Es Reserva
+        API -> DB : Actualizar 'reservas' (paid = true)
+    else Es Inscripción
+        API -> DB : Actualizar 'inscripciones' (paid = true)
+    end
+    API -> Email : Enviar comprobante al Ciudadano (React Email)
+    Email --> API : Email enviado
+    API --> Lemon : 200 OK (Webhook procesado)
+else Firma inválida
+    API --> Lemon : 401 Unauthorized
+end
+
+== Fase 6: Consulta en Paneles Consolidados ==
+
+Citizen -> UI : Acceder a /reservas (Panel ciudadano)
+UI -> DB : Consultar reservas e inscripciones activas e historial
+DB --> UI : Mostrar resumen al ciudadano
+
+Admin -> UI : Acceder a /admin/reservas (Panel administración)
+UI -> DB : Consultar vista consolidada de todas las transacciones
+DB --> UI : Mostrar tabla global y métricas del sistema
+
+@enduml

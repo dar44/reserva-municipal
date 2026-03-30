@@ -1,0 +1,104 @@
+@startuml diagrama-clases-dominio
+
+skinparam classAttributeIconSize 0
+skinparam style strictuml
+skinparam linetype ortho
+
+enum UserRole {
+  ADMIN
+  WORKER
+  CITIZEN
+  ORGANIZER
+}
+
+enum ReservaStatus {
+  ACTIVA
+  PENDIENTE
+  CANCELADA
+  CONFIRMADA
+}
+
+enum RecintoStatus {
+  DISPONIBLE
+  MANTENIMIENTO
+  BLOQUEADO
+}
+
+class User {
+  - uid: UUID
+  - email: String
+  - password_hash: String
+  - name: String
+  - surname: String
+  - dni: String
+  - phone: String
+  - role: UserRole
+  + register()
+  + login()
+  + updateProfile()
+}
+
+class Recinto {
+  - id: Long
+  - name: String
+  - description: String
+  - ubication: String
+  - pricePerHour: Decimal
+  - capacity: Integer
+  - state: RecintoStatus
+  + checkAvailability(date, time)
+}
+
+class Reserva {
+  - id: Long
+  - price: Decimal
+  - startAt: DateTime
+  - endAt: DateTime
+  - status: ReservaStatus
+  - paid: Boolean
+  + calculateTotal()
+  + confirmPayment()
+  + cancel()
+}
+
+class Curso {
+  - id: Long
+  - name: String
+  - description: String
+  - startDate: Date
+  - endDate: Date
+  - schedule: TimeRange[]
+  - price: Decimal
+  - capacity: Integer
+  + isFull(): Boolean
+  + addInscription()
+}
+
+class Inscripcion {
+  - id: Long
+  - status: String
+  - paid: Boolean
+  - createdAt: DateTime
+}
+
+class Pago {
+  - id: String
+  - amount: Decimal
+  - gatewayReference: String
+  - status: String
+  + process()
+}
+
+User "1" -- "0..*" Reserva : makes >
+User "1" -- "0..*" Inscripcion : signs up >
+User "1" -- "0..*" Curso : organizes >
+
+Recinto "1" -- "0..*" Reserva : reserved in <
+Recinto "1" -- "0..*" Curso : hosts >
+
+Curso "1" -- "0..*" Inscripcion : has >
+
+Reserva "1" -- "1" Pago : generates >
+Inscripcion "1" -- "1" Pago : generates >
+
+@enduml

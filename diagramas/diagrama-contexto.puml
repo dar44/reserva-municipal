@@ -1,0 +1,38 @@
+@startuml
+!define C4Container
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+LAYOUT_WITH_LEGEND()
+
+title Diagrama de Contenedores - Sistema de Reserva Municipal
+
+Person(user, "Usuario", "Ciudadano, Organizador, Worker o Admin")
+
+System_Boundary(sistema, "Sistema de Reserva Municipal") {
+    Container(webapp, "Next.js Web App", "TypeScript, React 19, Tailwind CSS v4", "Aplicación híbrida con Server Components y Client Components")
+    Container(api, "API Routes", "Next.js Serverless Functions", "Endpoints REST para auth, CRUD y webhooks")
+    ContainerDb(storage_local, "Assets", "Static Files", "CSS, JS, Imágenes optimizadas")
+}
+
+System_Ext(supabase_auth, "Supabase Auth", "Autenticación JWT")
+System_Ext(supabase_db, "Supabase PostgreSQL", "Base de datos relacional con RLS")
+System_Ext(supabase_storage, "Supabase Storage", "Almacenamiento de imágenes")
+System_Ext(lemon, "Lemon Squeezy", "Payment Gateway")
+System_Ext(resend, "Resend", "Transactional Email API")
+System_Ext(netlify, "Netlify CDN", "Global Edge Network")
+
+Rel(user, webapp, "Navega, interactúa con formularios", "HTTPS")
+Rel(user, lemon, "Completa pago", "HTTPS Redirect")
+
+Rel(webapp, api, "Llamadas SSR/CSR", "HTTP")
+Rel(webapp, netlify, "Sirve assets estáticos", "CDN")
+
+Rel(api, supabase_auth, "Valida sesiones, gestiona usuarios", "JWT/HTTPS")
+Rel(api, supabase_db, "Queries SQL con RLS", "PostgreSQL Protocol")
+Rel(api, supabase_storage, "Upload/download imágenes", "HTTPS API")
+Rel(api, lemon, "Crea checkouts, valida webhooks", "REST API/HMAC")
+Rel(api, resend, "Envía emails React Email", "REST API")
+
+Rel(lemon, api, "Webhook POST tras pago", "HTTPS + HMAC Signature")
+
+@enduml

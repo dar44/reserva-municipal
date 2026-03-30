@@ -1,0 +1,25 @@
+@startuml secuencia-propuesta-curso
+
+actor "Organizador" as Org
+participant "API\n(Cursos)" as API
+participant "Servicio\nNotificaciones" as Notif
+database "Base de Datos" as DB
+actor "Trabajador" as Worker
+
+autonumber
+
+Org -> API: POST /api/cursos/propose\n{titulo, horario, recinto}
+API -> DB: INSERT curso (state='pendiente')
+DB --> API: Curso ID
+
+API -> Notif: notificarNuevaPropuesta(curso)
+Notif -> DB: SELECT emails FROM users WHERE role='worker'
+DB --> Notif: [emails...]
+Notif -> Worker: Enviar Email "Nueva propuesta pendiente"
+
+Worker -> API: PUT /api/cursos/{id}/approve
+API -> DB: UPDATE curso SET state='abierto'
+API -> Notif: notificarResolucion(organizador, 'aprobado')
+Notif -> Org: Enviar Email "Curso Aprobado"
+
+@enduml

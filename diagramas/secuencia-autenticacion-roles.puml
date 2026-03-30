@@ -1,0 +1,32 @@
+@startuml secuencia-autenticacion-roles
+
+actor "Usuario" as User
+participant "Frontend\n(Middleware)" as Middle
+participant "Supabase Auth" as Auth
+participant "Router\n(Next.js)" as Router
+database "DB (public.users)" as DB
+
+autonumber
+
+User -> Middle: Accede a ruta protegida\n(/admin/dashboard)
+Middle -> Auth: Verifica sesión (JWT)
+
+alt Token inválido / No existe
+    Auth --> Middle: 401 Unauthorized
+    Middle --> User: Redirige a /login
+else Token válido
+    Auth --> Middle: Session OK (User UID)
+    
+    Middle -> DB: SELECT role FROM users WHERE uid = ...
+    DB --> Middle: Role = 'citizen'
+    
+    alt Role coincide con ruta
+        Middle -> Router: next() (Permitir acceso)
+        Router --> User: Renderiza página
+    else Role no autorizado
+        Middle -> Router: Rewrite /unauthorized
+        Router --> User: Error 403 Forbidden
+    end
+end
+
+@enduml

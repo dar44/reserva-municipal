@@ -1,0 +1,33 @@
+@startuml actividad-login-roles
+
+|Usuario|
+start
+:Introduce Email y Contraseña;
+
+|Sistema|
+:Verifica credenciales en Supabase Auth;
+
+if (¿Credenciales correctas?) then (No)
+  :Muestra error "Usuario/Pass incorrecto";
+  stop
+else (Sí)
+  :Recupera perfil y Rol del usuario;
+  
+  if (Rol == Admin?) then (Sí)
+    :Redirige a /admin/dashboard;
+  elseif (Rol == Worker?) then (Sí)
+    :Redirige a /worker/panel;
+  elseif (Rol == Organizer?) then (Sí)
+    :Redirige a /organizer/cursos;
+  else (Citizen)
+    :Redirige a /citizen/reservas;
+  endif
+  
+  :Establece cookie de sesión;
+endif
+
+|Usuario|
+:Visualiza pantalla de inicio correspondiente;
+
+stop
+@enduml

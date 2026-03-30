@@ -77,7 +77,7 @@ export default function OrganizerCourseImagePicker({
                             value="keep"
                             checked={mode === 'keep'}
                             onChange={() => handleModeChange('keep')}
-                            className="accent-emerald-600"
+                            className="accent-[hsl(var(--primary))]"
                         />
                         Mantener imagen actual
                     </label>
@@ -92,7 +92,7 @@ export default function OrganizerCourseImagePicker({
                             checked={mode === 'default'}
                             onChange={() => handleModeChange('default')}
                             disabled={!hasDefaults}
-                            className="accent-emerald-600"
+                            className="accent-[hsl(var(--primary))]"
                         />
                         Usar imagen predeterminada
                     </span>
@@ -100,7 +100,7 @@ export default function OrganizerCourseImagePicker({
                         value={selectedDefault}
                         onChange={(e) => handleDefaultChange(e.target.value)}
                         disabled={!hasDefaults || mode !== 'default'}
-                        className="w-full rounded border border-gray-700 bg-gray-900 p-2"
+                        className="input-base w-full"
                     >
                         {defaultImages.length === 0 && <option value="">Sin opciones disponibles</option>}
                         {defaultImages.map(option => (
@@ -119,7 +119,7 @@ export default function OrganizerCourseImagePicker({
                             value="upload"
                             checked={mode === 'upload'}
                             onChange={() => handleModeChange('upload')}
-                            className="accent-emerald-600"
+                            className="accent-[hsl(var(--primary))]"
                         />
                         Subir nueva imagen
                     </span>
@@ -128,7 +128,7 @@ export default function OrganizerCourseImagePicker({
                         accept="image/*"
                         disabled={mode !== 'upload'}
                         onChange={(e) => handleFileChange(e.target.files?.[0] || null)}
-                        className="block w-full text-sm text-gray-200 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-emerald-600 file:text-white disabled:opacity-50"
+                        className="block w-full text-sm text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-primary file:text-primary-foreground disabled:opacity-50"
                     />
                 </label>
 
@@ -145,7 +145,7 @@ export default function OrganizerCourseImagePicker({
                 </label>
             </div>
 
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-muted-foreground">
                 Si no seleccionas ninguna opción se usará la imagen predeterminada disponible.
             </p>
         </fieldset>

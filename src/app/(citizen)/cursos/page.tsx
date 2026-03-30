@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getPublicStorageUrl } from '@/lib/storage'
 import { createSupabaseServerReadOnly } from '@/lib/supabaseServer'
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { EmptyCoursesState } from '@/components/ui/empty-state'
 import { Calendar, DollarSign, ArrowRight } from 'lucide-react'
 
@@ -23,12 +24,15 @@ export default async function CursosPage({
 
   const params = await searchParams;
 
+  const today = new Date().toISOString().split('T')[0]
+
   let query = supabase
     .from('cursos')
     .select(
       'id,name,description,price,begining_date,end_date,image,image_bucket,state'
     )
     .eq('state', 'Disponible')
+    .gte('end_date', today)
     .order('begining_date', { ascending: true })
 
   if (params.from) {
@@ -132,9 +136,9 @@ export default async function CursosPage({
               )}
 
               {/* Badge - Disponible */}
-              <span className="absolute top-3 right-3 badge-success px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-lg">
-                Disponible
-              </span>
+              <Badge className="absolute top-3 right-3 px-3 py-1 text-xs font-bold uppercase tracking-wider shadow-lg bg-success text-success-foreground">
+                {c.state}
+              </Badge>
             </div>
 
             {/* Content with better hierarchy */}

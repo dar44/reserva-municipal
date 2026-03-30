@@ -4,7 +4,8 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
 import { motion } from 'framer-motion'
-import { Mail, Lock, User, Phone, CreditCard, Loader2, ArrowRight } from 'lucide-react'
+import { Mail, Lock, User, Phone, CreditCard, Loader2, ArrowRight, HelpCircle } from 'lucide-react'
+import { Tooltip } from '@/components/ui/tooltip'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -102,7 +103,24 @@ export default function SignupPage() {
                   className={`relative group ${key === 'email' || key === 'password' ? 'md:col-span-2' : ''}`}
                 >
                   <label className="block text-sm font-medium text-foreground-secondary mb-2">
-                    {getLabel(key)}
+                    <span className="flex items-center gap-1.5">
+                      {getLabel(key)}
+                      {(key === 'dni') && (
+                        <Tooltip content="Documento Nacional de Identidad. Formato: 12345678A (8 dígitos seguidos de una letra)." side="right">
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                        </Tooltip>
+                      )}
+                      {(key === 'phone') && (
+                        <Tooltip content="Formato recomendado: +34 600 000 000. Se usará para notificaciones." side="right">
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                        </Tooltip>
+                      )}
+                      {(key === 'password') && (
+                        <Tooltip content="Mínimo 8 caracteres. Usa letras, números y símbolos para mayor seguridad." side="right">
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
+                        </Tooltip>
+                      )}
+                    </span>
                   </label>
                   <div className="relative">
                     <div className="absolute left-3 top-1/2 -translate-y-1/2 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200">

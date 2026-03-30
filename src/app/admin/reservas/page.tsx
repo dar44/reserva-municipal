@@ -270,7 +270,7 @@ export default async function AdminReservasPage({
                   </TableCell>
                   <TableCell className="text-center">
                     <div className="flex items-center justify-end gap-2">
-                      <Button asChild size="sm" variant="ghost">
+                      <Button asChild size="sm" variant="outline-primary">
                         <Link
                           href={
                             item.tipo === 'Recinto'

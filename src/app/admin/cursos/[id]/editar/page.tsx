@@ -14,6 +14,8 @@ import { getPublicStorageUrl, listBucketPrefix } from '@/lib/storage'
 import { Button } from "@/components/ui/button"
 import { SubmitButton } from "@/components/SubmitButton"
 import { Breadcrumbs } from "@/components/ui/breadcrumbs"
+import { Tooltip } from "@/components/ui/tooltip"
+import { HelpCircle } from "lucide-react"
 
 export const dynamic = 'force-dynamic'
 
@@ -187,7 +189,12 @@ export default async function EditarCursoPage({
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Fecha de inicio</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Fecha de inicio
+              <Tooltip content="Día en que comienza el curso. Las inscripciones estarán activas desde esta fecha.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input
               type="date"
               name="begining_date"
@@ -197,7 +204,12 @@ export default async function EditarCursoPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Fecha de fin</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Fecha de fin
+              <Tooltip content="Último día del curso. Debe ser igual o posterior a la fecha de inicio.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input
               type="date"
               name="end_date"
@@ -208,7 +220,12 @@ export default async function EditarCursoPage({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Horario del curso</label>
+          <label className="block text-sm font-medium flex items-center gap-2">
+            Horario del curso
+            <Tooltip content="Franja horaria diaria de cada sesión. Se aplicará a todos los días seleccionados abajo.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
@@ -232,7 +249,12 @@ export default async function EditarCursoPage({
         </div>
 
         <div className="space-y-2">
-          <label className="block text-sm font-medium">Días de la semana</label>
+          <label className="block text-sm font-medium flex items-center gap-2">
+            Días de la semana
+            <Tooltip content="Días en los que se imparte el curso cada semana dentro del rango de fechas indicado.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <div className="grid grid-cols-4 gap-2">
             {[
               { value: 1, label: 'Lun' },
@@ -258,7 +280,12 @@ export default async function EditarCursoPage({
 
         <div className="grid md:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-medium mb-2">Precio (€)</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Precio (CLP)
+              <Tooltip content="Precio de inscripción al curso. Introduce 0 si el curso es gratuito.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input
               type="number"
               step="0.01"
@@ -270,7 +297,12 @@ export default async function EditarCursoPage({
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-2">Capacidad</label>
+            <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+              Capacidad
+              <Tooltip content="Número máximo de participantes que pueden inscribirse en este curso.">
+                <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+              </Tooltip>
+            </label>
             <input
               type="number"
               name="capacity"
@@ -282,7 +314,12 @@ export default async function EditarCursoPage({
         </div>
 
         <div>
-          <label className="block text-sm font-medium mb-2">Estado</label>
+          <label className="block text-sm font-medium mb-2 flex items-center gap-2">
+            Estado
+            <Tooltip content="Disponible: inscripciones abiertas. No disponible: cerrado temporalmente. Cancelado: el curso no se realizará.">
+              <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+            </Tooltip>
+          </label>
           <select
             name="state"
             defaultValue={curso.state}

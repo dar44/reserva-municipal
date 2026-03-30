@@ -1,0 +1,34 @@
+@startuml actividad-inscripcion-curso
+
+|Ciudadano|
+start
+:Navega al catálogo de cursos;
+:Selecciona un curso de interés;
+
+|Sistema|
+:Verifica disponibilidad de plazas;
+
+if (¿Hay plazas libres?) then (No)
+  :Muestra "Curso Completo";
+  :Ofrece lista de espera (opcional);
+  stop
+else (Sí)
+  :Muestra formulario de inscripción;
+endif
+
+|Ciudadano|
+:Completa datos de inscripción;
+:Procede al pago;
+
+|Sistema|
+:Procesa transacción de pago;
+if (¿Pago correcto?) then (Sí)
+  :Registra inscripción;
+  :Decrementa plazas disponibles;
+  :Envía email de bienvenida;
+else (No)
+  :Cancela operación;
+endif
+
+stop
+@enduml

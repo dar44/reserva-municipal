@@ -49,7 +49,12 @@ export default function InscripcionForm({ cursoId }: { cursoId: number }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div>
-        <p className="text-sm font-medium mb-2">¿El participante tiene cuenta en el sistema?</p>
+        <p className="text-sm font-medium mb-2 flex items-center gap-2">
+          ¿El participante tiene cuenta en el sistema?
+          <Tooltip content="Si ya tiene cuenta se busca por email y se vincula la inscripción. Si no la tiene, se crea automáticamente con los datos que introduzcas.">
+            <HelpCircle className="w-4 h-4 text-muted-foreground cursor-help" />
+          </Tooltip>
+        </p>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -117,7 +122,7 @@ export default function InscripcionForm({ cursoId }: { cursoId: number }) {
         </>
       )}
 
-      <Button className="w-full bg-success hover:bg-success/90" type="submit" disabled={isSubmitting}>
+      <Button className="w-full hover:-translate-y-0.5 hover:shadow-md active:translate-y-0 transition-all" type="submit" disabled={isSubmitting}>
         {isSubmitting ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />

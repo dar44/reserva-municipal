@@ -67,8 +67,8 @@ export default function UserImagePicker ({
   }
 
   return (
-    <fieldset className={`space-y-2 text-xs text-gray-300 ${className}`}>
-      <legend className="text-sm font-semibold text-gray-200">{legend}</legend>
+    <fieldset className={`space-y-2 text-xs text-foreground-secondary ${className}`}>
+      <legend className="text-sm font-semibold text-foreground">{legend}</legend>
       <input type="hidden" name="image_mode" value={mode} />
       {hasExisting && (
         <label className="flex items-center gap-2">
@@ -104,7 +104,7 @@ export default function UserImagePicker ({
           value={selectedDefault}
           onChange={event => handleSelectDefault(event.target.value)}
           disabled={!hasDefaults || mode !== 'default'}
-          className="w-full p-2 rounded bg-gray-700 text-xs"
+          className="input-base w-full text-xs"
         >
           {hasDefaults ? (
             defaultImages.map(option => (
@@ -133,7 +133,7 @@ export default function UserImagePicker ({
           name="image_file"
           accept="image/*"
           disabled={mode !== 'upload'}
-          className="block w-full text-xs text-gray-200 file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white disabled:opacity-70"
+          className="block w-full text-xs text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white disabled:opacity-70"
         />
       </label>
       <label className="flex items-center gap-2">
@@ -149,7 +149,7 @@ export default function UserImagePicker ({
         />
         <span>Sin imagen</span>
       </label>
-      {helpText && <p className="text-[11px] text-gray-400">{helpText}</p>}
+      {helpText && <p className="text-[11px] text-muted-foreground">{helpText}</p>}
     </fieldset>
   )
 }

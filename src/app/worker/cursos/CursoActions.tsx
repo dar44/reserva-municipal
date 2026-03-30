@@ -28,9 +28,12 @@ export default function CursoActions({ id, state }: { id: number; state: string 
       ) : (
         <Button disabled size="sm" variant="secondary">Inscribir</Button>
       )}
-      <Button asChild size="sm" variant="outline">
-        <Link href={`/worker/cursos/${id}`}>Ver detalles</Link>
-      </Button>
+      <Link
+        href={`/worker/cursos/${id}`}
+        className="inline-flex items-center px-3 py-1 text-xs font-semibold rounded-md border border-primary text-primary hover:bg-primary hover:text-primary-foreground transition-colors duration-150"
+      >
+        Ver detalles
+      </Link>
       <Button
         onClick={() => setOpen(true)}
         size="sm"

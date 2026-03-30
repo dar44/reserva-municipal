@@ -1,6 +1,10 @@
+// app/organizer/panel/page.tsx
 import { createSupabaseServer } from '@/lib/supabaseServer'
 import { getSessionProfile } from '@/lib/auth/roles'
 import Link from 'next/link'
+import { Card, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { GraduationCap, Building2, FileText, CalendarCheck } from 'lucide-react'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,7 +59,6 @@ export default async function OrganizerPanelPage() {
 
   const latestReservations = (latestReservationsResponse.data ?? []) as unknown as LatestReservation[]
 
-  // Función auxiliar para calcular la duración
   const calculateDuration = (start: string, end: string) => {
     const startDate = new Date(start)
     const endDate = new Date(end)
@@ -72,99 +75,85 @@ export default async function OrganizerPanelPage() {
     }
   }
 
+  const statusClass: Record<string, string> = {
+    aprobada: 'bg-success text-success-foreground',
+    rechazada: 'bg-error text-error-foreground',
+    cancelada: 'bg-muted text-muted-foreground',
+    pendiente: 'bg-warning text-warning-foreground',
+  }
+
   return (
-    <div className="container-padding section-spacing space-y-10 pb-8">
-      {/* Sección de cabecera - Jerarquía tipográfica mejorada */}
-      <section className="space-y-6">
-        <header className="space-y-3">
-          <h1 className="text-4xl font-bold tracking-tight bg-gradient-to-r from-primary via-primary/80 to-primary/60 bg-clip-text text-transparent">
-            Panel de Organizadores
-          </h1>
-          <p className="text-base text-foreground-secondary max-w-2xl leading-relaxed">
-            Bienvenido de nuevo, gestiona tus cursos y solicitudes desde este panel principal.
+    <div className="container-padding section-spacing">
+      {/* Header */}
+      <div className="relative mb-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent pointer-events-none rounded-lg -mx-4 -my-2" />
+        <div className="relative">
+          <h1 className="mb-2">Panel de Organizadores</h1>
+          <p className="text-foreground-secondary">
+            Gestiona tus cursos, solicitudes de recintos y reservas desde este panel
           </p>
-        </header>
+        </div>
+      </div>
 
-        {/* Banner informativo - Efecto glassmorphism */}
-        <article className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-emerald-600/5 to-transparent backdrop-blur-sm p-6 shadow-lg shadow-emerald-500/5">
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-400/5 to-transparent pointer-events-none" />
-          <div className="relative flex items-start gap-4">
-            <p className="text-sm text-foreground/80 leading-relaxed">
-              Usa la barra superior para crear cursos y gestionar tus solicitudes. Desde la sección de reservas podrás
-              consultar los recintos disponibles y enviar nuevos bloques de horarios en un solo paso.
-            </p>
-          </div>
-        </article>
-      </section>
-
-      {/* Tarjetas de estadísticas - Diseño premium con gradientes */}
-      <section className="grid gap-6 md:grid-cols-3">
-        {/* Tarjeta de Cursos */}
-        <Link
-          href="/organizer/cursos"
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-violet-600/20 via-violet-700/10 to-transparent border border-violet-500/20 p-6 shadow-xl shadow-violet-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-violet-500/10 hover:scale-[1.02] hover:border-violet-400/30 cursor-pointer block"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-violet-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-violet-400">
-                Cursos publicados
-              </h2>
+      {/* Navigation Cards */}
+      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Card className="flex flex-col shadow-md bg-gradient-to-br from-background to-surface hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-border hover:border-primary/20">
+          <CardHeader className="flex-1">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <Building2 className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-violet-400 to-violet-600 bg-clip-text text-transparent">
-              {coursesCount}
-            </p>
-            <p className="text-xs text-foreground-secondary leading-relaxed">
-              Gestiona tus programas desde la sección de cursos.
-            </p>
-          </div>
-        </Link>
+            <CardTitle>
+              Recintos
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({availableRecintos})</span>
+            </CardTitle>
+            <CardDescription>Consulta los recintos disponibles y envía nuevas solicitudes de reserva.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/organizer/recintos">Ver Recintos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
 
-        {/* Tarjeta de Solicitudes */}
-        <Link
-          href="/organizer/solicitudes"
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600/20 via-blue-700/10 to-transparent border border-blue-500/20 p-6 shadow-xl shadow-blue-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-blue-500/10 hover:scale-[1.02] hover:border-blue-400/30 cursor-pointer block"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-blue-400">
-                Solicitudes enviadas
-              </h2>
+        <Card className="flex flex-col shadow-md bg-gradient-to-br from-background to-surface hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-border hover:border-primary/20">
+          <CardHeader className="flex-1">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <GraduationCap className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-blue-400 to-blue-600 bg-clip-text text-transparent">
-              {reservationsCount}
-            </p>
-            <p className="text-xs text-foreground-secondary leading-relaxed">
-              Consulta el estado de cada solicitud en la vista de reservas.
-            </p>
-          </div>
-        </Link>
+            <CardTitle>
+              Mis Cursos
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({coursesCount})</span>
+            </CardTitle>
+            <CardDescription>Gestiona tus programas y crea nuevos cursos para los ciudadanos.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/organizer/cursos">Ver Cursos</Link>
+            </Button>
+          </CardFooter>
+        </Card>
 
-        {/* Tarjeta de Recintos */}
-        <Link
-          href="/organizer/recintos"
-          className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-emerald-600/20 via-emerald-700/10 to-transparent border border-emerald-500/20 p-6 shadow-xl shadow-emerald-500/5 transition-all duration-300 hover:shadow-2xl hover:shadow-emerald-500/10 hover:scale-[1.02] hover:border-emerald-400/30 cursor-pointer block"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-          <div className="relative space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-semibold uppercase tracking-wider text-emerald-400">
-                Recintos disponibles
-              </h2>
+        <Card className="flex flex-col shadow-md bg-gradient-to-br from-background to-surface hover:shadow-lg hover:scale-[1.02] transition-all duration-300 border-border hover:border-primary/20">
+          <CardHeader className="flex-1">
+            <div className="w-12 h-12 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <FileText className="w-6 h-6 text-primary" />
             </div>
-            <p className="text-5xl font-bold bg-gradient-to-br from-emerald-400 to-emerald-600 bg-clip-text text-transparent">
-              {availableRecintos}
-            </p>
-            <p className="text-xs text-foreground-secondary leading-relaxed">
-              Consulta la lista actualizada en la sección de recintos.
-            </p>
-          </div>
-        </Link>
-      </section>
+            <CardTitle>
+              Solicitudes
+              <span className="ml-2 text-sm font-normal text-foreground-secondary">({reservationsCount})</span>
+            </CardTitle>
+            <CardDescription>Consulta el estado de las solicitudes de recintos enviadas.</CardDescription>
+          </CardHeader>
+          <CardFooter>
+            <Button asChild className="w-full">
+              <Link href="/organizer/solicitudes">Ver Solicitudes</Link>
+            </Button>
+          </CardFooter>
+        </Card>
+      </div>
 
-      {/* Últimas solicitudes - Diseño de lista mejorado con más contexto */}
-      <section className="space-y-5">
+      {/* Latest reservations */}
+      <div className="mt-10 space-y-5">
         <div className="space-y-2">
           <h2 className="text-2xl font-bold tracking-tight">Últimas Solicitudes</h2>
           <p className="text-sm text-foreground-secondary">
@@ -184,32 +173,7 @@ export default async function OrganizerPanelPage() {
               const cursoName = reservation.cursos?.name || 'Curso desconocido'
               const recintoName = reservation.recintos?.name || 'Recinto desconocido'
               const duration = startDate && endDate ? calculateDuration(reservation.start_at, reservation.end_at) : null
-
-              // Configuración de badges de estado
-              const statusConfig = {
-                aprobada: {
-                  bg: 'bg-gradient-to-r from-emerald-500 to-emerald-600',
-                  text: 'text-white',
-                  shadow: 'shadow-lg shadow-emerald-500/20'
-                },
-                rechazada: {
-                  bg: 'bg-gradient-to-r from-red-500 to-red-600',
-                  text: 'text-white',
-                  shadow: 'shadow-lg shadow-red-500/20'
-                },
-                cancelada: {
-                  bg: 'bg-gradient-to-r from-gray-600 to-gray-700',
-                  text: 'text-white',
-                  shadow: 'shadow-lg shadow-gray-500/20'
-                },
-                pendiente: {
-                  bg: 'bg-gradient-to-r from-amber-400 to-amber-500',
-                  text: 'text-gray-900',
-                  shadow: 'shadow-lg shadow-amber-500/20'
-                }
-              }
-
-              const config = statusConfig[reservation.status as keyof typeof statusConfig] || statusConfig.pendiente
+              const config = statusClass[reservation.status] ?? statusClass.pendiente
 
               return (
                 <li key={reservation.id}>
@@ -220,35 +184,18 @@ export default async function OrganizerPanelPage() {
                     <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                     <div className="relative space-y-3">
-                      {/* Cabecera con curso y estado */}
                       <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                         <div className="flex-1 space-y-1">
-                          <div className="flex items-center gap-2">
-                            <h3 className="text-base font-bold text-foreground">
-                              {cursoName}
-                            </h3>
-                          </div>
-                          <p className="text-xs text-foreground-secondary">
-                            Solicitud #{reservation.id}
-                          </p>
+                          <h3 className="text-base font-bold text-foreground">{cursoName}</h3>
+                          <p className="text-xs text-foreground-secondary">Solicitud #{reservation.id}</p>
                         </div>
 
-                        <span className={`
-                          self-start
-                          inline-flex items-center gap-2
-                          rounded-lg px-3 py-1.5
-                          text-xs font-semibold uppercase tracking-wide
-                          ${config.bg} ${config.text} ${config.shadow}
-                          transition-all duration-300
-                          group-hover:scale-105
-                        `}>
-                          <span>{reservation.status}</span>
+                        <span className={`self-start inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold uppercase ${config}`}>
+                          {reservation.status}
                         </span>
                       </div>
 
-                      {/* Grid de detalles */}
                       <div className="grid gap-2 text-xs md:grid-cols-3">
-                        {/* Recinto */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
                             <span className="text-foreground-secondary">Recinto</span>
@@ -256,7 +203,6 @@ export default async function OrganizerPanelPage() {
                           </div>
                         </div>
 
-                        {/* Fecha y hora */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
                             <span className="text-foreground-secondary">Fecha y hora</span>
@@ -273,18 +219,14 @@ export default async function OrganizerPanelPage() {
                           </div>
                         </div>
 
-                        {/* Duración */}
                         <div className="flex items-start gap-2">
                           <div className="flex flex-col">
                             <span className="text-foreground-secondary">Duración</span>
-                            <span className="font-medium text-foreground">
-                              {duration || '—'}
-                            </span>
+                            <span className="font-medium text-foreground">{duration || '—'}</span>
                           </div>
                         </div>
                       </div>
 
-                      {/* Indicador de hover */}
                       <div className="flex items-center gap-1.5 text-xs text-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                         <span>Ver detalles</span>
                         <span>→</span>
@@ -296,7 +238,7 @@ export default async function OrganizerPanelPage() {
             })}
           </ul>
         )}
-      </section>
+      </div>
     </div>
   )
 }

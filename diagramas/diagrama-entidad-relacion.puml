@@ -1,0 +1,74 @@
+@startuml diagrama-entidad-relacion
+
+!theme plain
+hide circle
+skinparam linetype ortho
+
+entity "users" as user {
+  *uid : uuid <<PK>>
+  --
+  email : varchar
+  name : varchar
+  surname : varchar
+  dni : varchar
+  phone : varchar
+  role : user_role
+  created_at : timestamp
+}
+
+entity "recintos" as recinto {
+  *id : bigint <<PK>>
+  --
+  name : varchar
+  description : text
+  ubication : varchar
+  price_hour : numeric
+  capacity : integer
+  state : recinto_state
+}
+
+entity "reservas" as reserva {
+  *id : bigint <<PK>>
+  --
+  *user_uid : uuid <<FK>>
+  *recinto_id : bigint <<FK>>
+  start_at : timestamp
+  end_at : timestamp
+  price : numeric
+  status : status_activa
+  paid : boolean
+}
+
+entity "cursos" as curso {
+  *id : bigint <<PK>>
+  --
+  *organizer_uid : uuid <<FK>>
+  *recinto_id : bigint <<FK>>
+  name : varchar
+  description : text
+  start_date : date
+  end_date : date
+  price : numeric
+  state : curso_state
+}
+
+entity "inscripciones" as inscripcion {
+  *id : bigint <<PK>>
+  --
+  *user_uid : uuid <<FK>>
+  *curso_id : bigint <<FK>>
+  status : status_activa
+  paid : boolean
+  created_at : timestamp
+}
+
+user ||--o{ reserva : "1:N"
+recinto ||--o{ reserva : "1:N"
+
+user ||--o{ curso : "1:N (Organizer)"
+recinto ||--o{ curso : "1:N"
+
+user ||--o{ inscripcion : "1:N"
+curso ||--o{ inscripcion : "1:N"
+
+@enduml

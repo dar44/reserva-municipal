@@ -1,0 +1,26 @@
+@startuml secuencia-creacion-curso
+
+actor "Organizador" as Org
+participant "Frontend" as F
+participant "API / Cursos" as API
+database "Supabase DB" as DB
+participant "Resend" as Mail
+
+autonumber
+
+Org -> F: Rellena formulario de curso
+F -> API: POST /api/cursos (datos del curso)
+API -> DB: INSERT curso (status='pendiente')
+DB --> API: ID del nuevo curso
+
+API -> DB: SELECT emails FROM users WHERE role='worker'
+DB --> API: Lista de emails de trabajadores
+
+loop Para cada trabajador
+    API -> Mail: Enviar notificación "Nuevo curso pendiente"
+end
+
+API --> F: 201 Created
+F --> Org: Muestra "Curso enviado a revisión"
+
+@enduml

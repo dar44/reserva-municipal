@@ -1,0 +1,150 @@
+@startuml diagrama-clases
+title Diagrama de Clases - Reserva Municipal
+skinparam linetype ortho
+skinparam nodesep 150
+skinparam ranksep 150
+
+class User {
+    +uid: UUID
+    +name: VARCHAR
+    +surname: VARCHAR
+    +email: VARCHAR
+    +role: user_role
+    +image: TEXT
+    +dni: VARCHAR
+    +email_verified_at: TIMESTAMPTZ
+    +phone: VARCHAR
+    +remember_token: VARCHAR
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class Recinto {
+    +id: BIGINT
+    +name: VARCHAR
+    +state: recinto_state
+    +description: VARCHAR
+    +ubication: VARCHAR
+    +province: VARCHAR
+    +postal_code: VARCHAR
+    +image: TEXT
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class Curso {
+    +id: BIGINT
+    +name: VARCHAR
+    +description: VARCHAR
+    +location: VARCHAR
+    +begining_date: DATE
+    +end_date: DATE
+    +price: NUMERIC
+    +state: curso_state
+    +capacity: INTEGER
+    +image: TEXT
+    +organizer_uid: UUID
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class Inscripcion {
+    +id: BIGINT
+    +user_uid: UUID
+    +curso_id: BIGINT
+    +status: status_activa
+    +paid: BOOLEAN
+    +cancelled_by: UUID
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class CursoReserva {
+    +id: BIGINT
+    +curso_id: BIGINT
+    +recinto_id: BIGINT
+    +organizer_uid: UUID
+    +start_at: TIMESTAMPTZ
+    +end_at: TIMESTAMPTZ
+    +status: VARCHAR
+    +observations: TEXT
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class Reserva {
+    +id: BIGINT
+    +user_uid: UUID
+    +recinto_id: BIGINT 
+    +price: NUMERIC
+    +start_at: TIMESTAMPTZ
+    +end_at: TIMESTAMPTZ
+    +status: status_activa
+    +paid: BOOLEAN
+    +observations: VARCHAR
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+class Pago {
+    +id: UUID
+    +user_uid: UUID
+    +reserva_id: BIGINT
+    +inscripcion_id: BIGINT
+    +monto_centavos: INTEGER
+    +moneda: VARCHAR
+    +estado: VARCHAR
+    +gateway: VARCHAR
+    +checkout_id: VARCHAR
+    +order_id: VARCHAR
+    +created_at: TIMESTAMPTZ
+    +updated_at: TIMESTAMPTZ
+}
+
+' =======================
+' LAYOUT (Vertical y Espaciado)
+' =======================
+
+' Estrategia: User arriba del todo, y luego dos grandes ramas verticales:
+' Rama Izq: Cursos -> Inscripciones -> Pagos
+' Rama Der: Recintos -> Reservas -> Pagos
+' Centro: CursoReserva (Conecta ambas)
+
+User -[hidden]down-> Curso
+User -[hidden]down-> Recinto
+
+Curso -[hidden]down-> Inscripcion
+Recinto -[hidden]down-> Reserva
+
+' CursoReserva en el medio, un poco más abajo que Cursos/Recintos
+Curso -[hidden]down-> CursoReserva
+Recinto -[hidden]down-> CursoReserva
+
+Inscripcion -[hidden]down-> Pago
+Reserva -[hidden]down-> Pago
+
+' =======================
+' RELACIONES
+' =======================
+
+' Desde User (Top Down)
+User "1" -down-> "0..*" Curso : organiza
+User "1" -down-> "0..*" Recinto : gestiona
+User "1" -down-> "0..*" Reserva : realiza
+User "1" -down-> "0..*" Inscripcion : se inscribe
+User "1" -down-> "0..*" CursoReserva : gestiona
+User "1" -down-> "0..*" Pago : efectúa
+
+' Ramas de Negocio (Vertical)
+Curso "1" -down-> "0..*" Inscripcion : tiene
+Recinto "1" -down-> "0..*" Reserva : se reserva en
+
+' Relaciones Cruzadas (Horizontal/Diagonal)
+Curso "1" -right-> "0..*" CursoReserva : solicita
+Recinto "1" -left-> "0..*" CursoReserva : asignado a
+
+' Pagos (Final del flujo)
+Reserva "0..*" -down-> "0..1" Pago : pagada mediante
+Inscripcion "0..*" -down-> "0..1" Pago : pagada mediante
+
+@enduml

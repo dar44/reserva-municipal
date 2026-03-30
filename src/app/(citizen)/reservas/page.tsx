@@ -1,17 +1,12 @@
-import DeleteButton from './DeleteButton'
-import { Fragment } from "react";
-import OpenStreetMapView from "@/components/OpenStreetMapView";
-import Link from "next/link";
 import { getConfiguredCurrency } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { EmptyReservasState } from "@/components/ui/empty-state"
 import { MetricCard } from "@/components/ui/metric-card"
-import { ProgressBar } from "@/components/ui/progress-bar"
-import { Tooltip } from "@/components/ui/tooltip"
+import { Badge } from "@/components/ui/badge"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { CalendarCheck, TrendingUp, DollarSign } from "lucide-react"
+import ActiveReservasTable from "./ActiveReservasTable"
 
 export const dynamic = "force-dynamic";
 
@@ -88,11 +83,7 @@ function calculateCourseProgress(startDate: string, endDate: string): number {
   return Math.round((elapsed / total) * 100)
 }
 
-export default async function ReservasPage({
-  searchParams
-}: {
-  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
-}) {
+export default async function ReservasPage() {
   const supabase = await createSupabaseServerReadOnly();
 
   const { data: { user } } = await supabase.auth.getUser();
@@ -102,8 +93,6 @@ export default async function ReservasPage({
   }
 
   const userUid = user.id
-  const params = await searchParams;
-  const expandedId = params?.expanded ? Number(params.expanded) : null;
 
   // Fetch Reservas
   const { data: reservasData } = await supabase
@@ -183,6 +172,22 @@ export default async function ReservasPage({
     i.status === 'cancelada' || (i.status === 'activa' && new Date(i.endAt) < now)
   );
 
+  // Pre-format data on server to pass to client component
+  const formattedPrices: Record<number, string> = {}
+  const formattedDates: Record<number, { start: string; end: string }> = {}
+  const progressValues: Record<number, number> = {}
+
+  activeItems.forEach(item => {
+    formattedPrices[item.id] = item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'
+    formattedDates[item.id] = {
+      start: formatMadridDateTime(item.startAt),
+      end: formatMadridDateTime(item.endAt)
+    }
+    if (item.type === 'Curso') {
+      progressValues[item.id] = calculateCourseProgress(item.startAt, item.endAt)
+    }
+  })
+
   return (
     <div className="container-padding section-spacing">
       {/* Header with gradient */}
@@ -222,104 +227,12 @@ export default async function ReservasPage({
       {/* Active Reservations */}
       <h2 className="text-xl font-semibold mb-4">Reservas activas</h2>
       {activeItems.length > 0 ? (
-        <div className="overflow-x-auto rounded-lg border border-border bg-card shadow-sm mb-8">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Tipo</TableHead>
-                <TableHead>Nombre</TableHead>
-                <TableHead>Fecha inicio</TableHead>
-                <TableHead>Fecha fin</TableHead>
-                <TableHead>Total</TableHead>
-                <TableHead>Progreso</TableHead>
-                <TableHead>Estado</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {activeItems.map(item => (
-                <Fragment key={`${item.type}-${item.id}`}>
-                  <TableRow>
-                    <TableCell>
-                      <Badge variant="outline">
-                        {item.type}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="font-medium">{item.name}</TableCell>
-                    <TableCell className="text-secondary text-xs">{formatMadridDateTime(item.startAt)}</TableCell>
-                    <TableCell className="text-secondary text-xs">{formatMadridDateTime(item.endAt)}</TableCell>
-                    <TableCell className="font-medium">
-                      {item.price > 0 ? formatCurrency(item.price, currency) : 'Gratis'}
-                    </TableCell>
-                    <TableCell>
-                      {item.type === 'Curso' ? (
-                        <ProgressBar
-                          value={calculateCourseProgress(item.startAt, item.endAt)}
-                          showPercentage
-                          size="sm"
-                        />
-                      ) : (
-                        <Tooltip content="El progreso solo se muestra para cursos inscritos">
-                          <span className="text-xs text-muted-foreground cursor-help">—</span>
-                        </Tooltip>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Tooltip content={item.paid ? "Reserva confirmada y pagada" : "Pago pendiente de confirmación"}>
-                        <Badge className={item.paid ? "bg-success text-success-foreground" : "bg-warning text-warning-foreground"}>
-                          {item.paid ? 'Pagado' : 'Pendiente'}
-                        </Badge>
-                      </Tooltip>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex items-center gap-3">
-                        {item.type === 'Recinto' && (
-                          <Link
-                            href={`/reservas?expanded=${item.id}`}
-                            scroll={false}
-                            className="text-sm font-medium text-gray-300 hover:text-white hover:underline"
-                          >
-                            Ver detalle
-                          </Link>
-                        )}
-                        {!item.paid && (
-                          <DeleteButton id={item.originalId} type={item.type} />
-                        )}
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                  {expandedId === item.id && item.type === 'Recinto' && item.ubication && (
-                    <TableRow className="bg-muted/50">
-                      <TableCell colSpan={7} className="px-4 py-4">
-                        <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <p className="text-sm font-medium text-foreground">
-                              <span className="mr-2">📍</span>
-                              Cómo llegar a tu reserva
-                            </p>
-                            <Link
-                              href="/reservas"
-                              scroll={false}
-                              className="text-xs text-tertiary hover:text-foreground"
-                            >
-                              Cerrar mapa
-                            </Link>
-                          </div>
-                          <p className="text-xs text-tertiary mb-2">Ubicación de {item.name}: {item.ubication}</p>
-                          <OpenStreetMapView
-                            address={item.ubication}
-                            title={`Ubicación de ${item.name}`}
-                            className="h-64"
-                          />
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  )}
-                </Fragment>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <ActiveReservasTable
+          items={activeItems}
+          formattedPrices={formattedPrices}
+          formattedDates={formattedDates}
+          progressValues={progressValues}
+        />
       ) : (
         <div className="mb-8">
           <EmptyReservasState />

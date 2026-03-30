@@ -1,0 +1,54 @@
+@startuml casos-uso-reserva-espacios
+left to right direction
+skinparam packageStyle rectangle
+skinparam shadowing false
+skinparam nodesep 80
+skinparam ranksep 75
+
+actor "Ciudadano" as C
+actor "Lemon Squeezy\n(Pagos)" as Payment
+actor "Resend\n(Emails)" as Email
+
+rectangle "Reserva de Recintos" {
+
+  ' --- Columna izquierda (cerca del actor) ---
+  usecase "Ver Detalle de Recinto" as UC_Detail
+  usecase "Cancelar Reserva" as UC_Cancel
+
+  ' --- Columna derecha ---
+  usecase "Buscar Recinto\npor Nombre" as UC_Search
+  usecase "Seleccionar Fecha y\nFranja Horaria" as UC_Slot
+  usecase "Pagar Reserva" as UC_Pay
+
+  ' --- Forzar layout en columnas (invisible) ---
+  UC_Detail -[hidden]-> UC_Search
+  UC_Cancel -[hidden]-> UC_Pay
+  UC_Search -[hidden]-> UC_Slot
+  UC_Slot -[hidden]-> UC_Pay
+}
+
+' --- Entradas del actor (cortas, sin arcos gigantes) ---
+C --> UC_Detail
+C --> UC_Search
+C --> UC_Cancel
+
+' --- Flujo A: Buscar -> Ver Detalle ---
+UC_Detail ..> UC_Search : <<extend>> (si viene de búsqueda)
+
+' --- Flujo común: Detalle -> Franja -> Pagar ---
+UC_Slot ..> UC_Detail : <<include>>
+UC_Pay ..> UC_Slot : <<include>>
+
+' --- Integraciones externas ---
+UC_Pay ..> Payment : "procesar pago"
+UC_Pay ..> Email : "confirmación reserva"
+UC_Cancel ..> Email : "confirmación cancelación"
+
+' --- Nota cerca de Pagar (sin línea visible) ---
+note as N_Pendiente
+Si el pago falla o no se completa,
+la reserva queda en estado PENDIENTE.
+end note
+UC_Pay -[hidden]-> N_Pendiente
+
+@enduml

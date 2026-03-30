@@ -49,7 +49,9 @@ export default async function CursoDetail({ params }: { params: Promise<{ id: st
   const currency = getConfiguredCurrency()
   const priceNumber = Number(curso.price ?? 0)
   const priceLabel = priceNumber > 0 ? formatCurrency(priceNumber, currency) : 'Gratis'
-  const isDisponible = curso.state === 'Disponible'
+  const today = new Date().toISOString().split('T')[0]
+  const hasEnded = curso.end_date ? curso.end_date < today : false
+  const isDisponible = curso.state === 'Disponible' && !hasEnded
 
   return (
     <div className="container-padding section-spacing">
