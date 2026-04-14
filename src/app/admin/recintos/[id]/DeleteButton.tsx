@@ -23,7 +23,7 @@ export default function DeleteButton ({ id }: { id: number }) {
 
   return (
     <>
-      <button onClick={() => setOpen(true)} className="text-red-400">Eliminar</button>
+      <button onClick={() => setOpen(true)} className="text-destructive hover:text-destructive-hover transition-colors">Eliminar</button>
       <ConfirmModal
         open={open}
         title="Eliminar recinto"

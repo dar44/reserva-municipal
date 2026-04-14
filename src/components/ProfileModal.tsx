@@ -286,8 +286,8 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-20">
-      <div className="bg-white text-gray-900 p-6 rounded w-80 max-h-[90vh] overflow-y-auto space-y-4">
+    <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-20">
+      <div className="bg-card text-card-foreground p-6 rounded border border-card-border shadow-lg w-80 max-h-[90vh] overflow-y-auto space-y-4">
         <h2 className="text-lg font-semibold">Perfil</h2>
         {editableFields.map(field => {
           const label = fieldLabels[field]
@@ -304,7 +304,7 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
                   />
                   <button
                     onClick={() => saveField(field)}
-                    className="px-2 bg-blue-600 text-white rounded"
+                    className="px-2 bg-primary text-primary-foreground rounded"
                   >
                     Guardar
                   </button>
@@ -322,7 +322,7 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
                   {editing && (
                     <button
                       onClick={() => startEdit(field)}
-                      className="text-blue-600 text-xs"
+                      className="text-primary text-xs"
                     >
                       Editar
                     </button>
@@ -383,7 +383,7 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
                   setImagePreviewUrl(null)
                   setImageEditing(true)
                 }}
-                className="text-blue-600 text-xs"
+                className="text-primary text-xs"
               >
                 Editar
               </button>
@@ -391,7 +391,7 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
           </div>
 
           {editing && imageEditing && (
-            <div className="space-y-3 border rounded p-2 bg-gray-50">
+            <div className="space-y-3 border border-border rounded p-2 bg-surface">
               <div className="space-y-2 text-xs">
                 <label className={`flex items-center gap-2 ${profile.image ? '' : 'opacity-60'}`}>
                   <input
@@ -505,13 +505,13 @@ export default function ProfileModal({ onClose, onUpdated }: Props) {
                   />
                 </div>
               )}
-              <p className="text-xs text-gray-500 break-all">
+              <p className="text-xs text-foreground-tertiary break-all">
                 Actual: {profile.image_bucket ? `${profile.image_bucket}/${profile.image ?? ''}` : 'Sin imagen'}
               </p>
               <div className="flex justify-end space-x-2">
                 <button
                   onClick={saveImage}
-                  className="px-2 bg-blue-600 text-white rounded"
+                  className="px-2 bg-primary text-primary-foreground rounded"
                 >
                   Guardar
                 </button>

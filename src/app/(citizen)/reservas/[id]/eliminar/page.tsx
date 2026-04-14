@@ -26,9 +26,9 @@ export default async function ReservaDeletePage ({ params }: Props) {
       <p className="text-sm">¿Estás seguro de cancelar la reserva? Se perderán sus datos.</p>
       <div className="space-x-2">
         <form action={deleteReserva} className="inline">
-          <button className="text-red-400" type="submit">Aceptar</button>
+          <button className="text-destructive" type="submit">Aceptar</button>
         </form>
-        <Link href="/reservas" className="text-blue-400">Cancelar</Link>
+        <Link href="/reservas" className="text-primary">Cancelar</Link>
       </div>
     </div>
   )

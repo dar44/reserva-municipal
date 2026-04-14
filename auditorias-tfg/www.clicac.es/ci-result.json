@@ -1,0 +1,122 @@
+[
+  {
+    "path": "/",
+    "score": 0.7,
+    "performance": 0.16,
+    "accessibility": 0.98,
+    "best-practices": 0.74,
+    "seo": 0.92
+  },
+  {
+    "path": "/asistente/",
+    "score": 0.76,
+    "performance": 0.49,
+    "accessibility": 0.95,
+    "best-practices": 0.74,
+    "seo": 0.85
+  },
+  {
+    "path": "/asistente/ayuntamiento/",
+    "score": 0.65,
+    "performance": 0.39,
+    "accessibility": 0.95,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/ayuntamiento/anual/",
+    "score": 0.67,
+    "performance": 0.47,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/centro-privado/",
+    "score": 0.64,
+    "performance": 0.37,
+    "accessibility": 0.95,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/centro-privado/pago-anual/",
+    "score": 0.69,
+    "performance": 0.55,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/centro-privado/pago-mensual/",
+    "score": 0.68,
+    "performance": 0.52,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/comunidad-de-vecinos/",
+    "score": 0.67,
+    "performance": 0.48,
+    "accessibility": 0.95,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/comunidad-de-vecinos/pago-anual/",
+    "score": 0.67,
+    "performance": 0.48,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/comunidad-de-vecinos/pago-mensual/",
+    "score": 0.68,
+    "performance": 0.5,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/asistente/comunidad-de-vecinos/pago-trimestral/",
+    "score": 0.66,
+    "performance": 0.42,
+    "accessibility": 0.96,
+    "best-practices": 0.74,
+    "seo": 0.5
+  },
+  {
+    "path": "/author/zitelia-admin/",
+    "score": 0.77,
+    "performance": 0.44,
+    "accessibility": 0.98,
+    "best-practices": 0.74,
+    "seo": 0.92
+  },
+  {
+    "path": "/aviso-legal/",
+    "score": 0.68,
+    "performance": 0.47,
+    "accessibility": 0.94,
+    "best-practices": 0.74,
+    "seo": 0.58
+  },
+  {
+    "path": "/ayuntamientos/",
+    "score": 0.76,
+    "performance": 0.4,
+    "accessibility": 0.98,
+    "best-practices": 0.74,
+    "seo": 0.92
+  },
+  {
+    "path": "/blog/",
+    "score": 0.76,
+    "performance": 0.6,
+    "accessibility": 0.94,
+    "best-practices": 0.74,
+    "seo": 0.77
+  }
+]

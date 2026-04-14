@@ -86,30 +86,30 @@ export default function SyncPago ({ pagoId }: Props) {
 
   if (error) {
     return (
-      <p className="text-sm text-red-400">
+      <p className="text-sm text-error">
         {error}. Actualiza esta página más tarde para comprobar si se registró el pago.
       </p>
     )
   }
 
   if (estado === 'pagado') {
-    return <p className="text-sm text-green-400">Pago confirmado correctamente.</p>
+    return <p className="text-sm text-success">Pago confirmado correctamente.</p>
   }
 
   if (estado === 'pendiente') {
-    return <p className="text-sm text-gray-400">Confirmando el pago con la pasarela...</p>
+    return <p className="text-sm text-foreground-secondary">Confirmando el pago con la pasarela...</p>
   }
 
   if (estado === 'desconocido') {
     return (
-      <p className="text-sm text-yellow-400">
+      <p className="text-sm text-warning">
         No se pudo determinar el estado final del pago todavía. Intentaremos nuevamente en unos segundos.
       </p>
     )
   }
 
   return (
-    <p className="text-sm text-yellow-400">
+    <p className="text-sm text-warning">
       El pago se encuentra en estado: {estado}. Revísalo en el panel administrativo para más detalles.
     </p>
   )

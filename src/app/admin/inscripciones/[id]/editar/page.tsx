@@ -82,39 +82,39 @@ export default async function EditInscripcionPage({ params }: Props) {
             <Link href="/admin/reservas" className="text-sm underline">← Volver</Link>
             <h1 className="text-2xl font-bold">Editar inscripción #{inscripcion.id}</h1>
 
-            <div className="bg-gray-800 p-6 rounded space-y-4">
+            <div className="bg-card p-6 rounded border border-card-border space-y-4">
                 {/* Usuario */}
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Usuario</span>
+                    <span className="text-xs text-foreground-secondary">Usuario</span>
                     <span className="font-medium">{inscripcion.users ? `${inscripcion.users.name} ${inscripcion.users.surname}` : 'Desconocido'}</span>
                 </div>
 
                 {/* Nombre (Curso) */}
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Nombre</span>
+                    <span className="text-xs text-foreground-secondary">Nombre</span>
                     <span className="font-medium">{inscripcion.cursos?.name ?? 'Curso sin nombre'}</span>
                 </div>
 
                 {/* Fecha */}
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Fecha</span>
+                    <span className="text-xs text-foreground-secondary">Fecha</span>
                     <span className="font-medium">{fechaFormateada}</span>
                 </div>
 
                 {/* Total */}
                 <div className="flex flex-col gap-1">
-                    <span className="text-xs text-gray-400">Total</span>
+                    <span className="text-xs text-foreground-secondary">Total</span>
                     <span className="font-medium">$ {inscripcion.cursos?.price || 0}</span>
                 </div>
 
                 {/* Form con dropdown de estado */}
-                <form action={updateInscripcion} className="space-y-4 pt-4 border-t border-gray-700">
+                <form action={updateInscripcion} className="space-y-4 pt-4 border-t border-border">
                     <label className="flex flex-col gap-1">
-                        <span className="text-xs text-gray-400">Nuevo estado</span>
+                        <span className="text-xs text-foreground-secondary">Nuevo estado</span>
                         <select
                             name="estado"
                             defaultValue={estadoActual}
-                            className="rounded bg-gray-700 px-3 py-2"
+                            className="rounded bg-input border border-input-border px-3 py-2"
                             required
                         >
                             <option value="Confirmada">Confirmada</option>
@@ -124,8 +124,8 @@ export default async function EditInscripcionPage({ params }: Props) {
                     </label>
 
                     <div className="flex gap-2">
-                        <button type="submit" className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">Guardar cambios</button>
-                        <Link href="/admin/reservas" className="px-4 py-2 rounded bg-gray-700 hover:bg-gray-600">Cancelar</Link>
+                        <button type="submit" className="bg-primary text-primary-foreground px-4 py-2 rounded hover:bg-primary-hover">Guardar cambios</button>
+                        <Link href="/admin/reservas" className="px-4 py-2 rounded bg-secondary text-secondary-foreground hover:bg-secondary-hover">Cancelar</Link>
                     </div>
                 </form>
             </div>

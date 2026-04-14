@@ -4,7 +4,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
 import { motion } from 'framer-motion'
-import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2, ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -55,7 +55,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      {/* Navbar de escape */}
+      <nav className="w-full px-6 py-4 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm">
+        <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+          <span className="text-xl font-black tracking-tight text-foreground">
+            Servi<span className="text-primary font-medium">Municipal</span>
+          </span>
+        </Link>
+        <div className="flex items-center gap-1 text-sm">
+          <Link href="/public/recintos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Recintos</Link>
+          <Link href="/public/cursos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Cursos</Link>
+          <Link href="/signup" className="ml-2 px-4 py-1.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover rounded-lg transition-all hover:scale-105">
+            Registrarse
+          </Link>
+        </div>
+      </nav>
+
+      <div className="flex-1 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -199,6 +216,7 @@ export default function LoginPage() {
           </motion.div>
         </div>
       </motion.div>
+      </div>
     </div>
   )
 }

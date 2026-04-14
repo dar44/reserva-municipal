@@ -57,26 +57,26 @@ export default async function PagoExitoPage({
 
   return (
     <div className="max-w-xl mx-auto text-center space-y-4">
-      <h1 className="text-3xl font-bold text-green-500">Pago completado</h1>
+      <h1 className="text-3xl font-bold text-success">Pago completado</h1>
       <p>
         Hemos recibido correctamente tu pago. Estamos confirmando la {tipoLabel} con la
         pasarela de cobro para que aparezca como pagada en tu panel.
       </p>
       {pagoId ? (
         <div className="space-y-2">
-          <p className="text-sm text-gray-400">
+          <p className="text-sm text-foreground-secondary">
             Identificador interno del pago: {pagoId}
           </p>
           <PagoStatusWatcher pagoId={pagoId} tipo={tipoKey} />
         </div>
       ) : (
-        <p className="text-sm text-gray-400">
+        <p className="text-sm text-foreground-secondary">
           Si necesitas ayuda para localizar el pago, contacta con el equipo de soporte.
         </p>
       )}
       <Link
         href={href}
-        className="inline-block bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded"
+        className="inline-block bg-primary hover:bg-primary-hover text-primary-foreground px-4 py-2 rounded"
       >
         {label}
       </Link>

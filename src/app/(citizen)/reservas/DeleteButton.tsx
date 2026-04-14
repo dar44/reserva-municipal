@@ -33,7 +33,7 @@ export default function DeleteButton({ id, type }: DeleteButtonProps) {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-red-400 hover:text-red-300 text-sm font-medium transition-colors"
+        className="text-destructive hover:text-destructive-hover text-sm font-medium transition-colors"
       >
         Eliminar
       </button>

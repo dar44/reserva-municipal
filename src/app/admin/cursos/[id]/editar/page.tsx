@@ -228,7 +228,7 @@ export default async function EditarCursoPage({
           </label>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+              <label className="block text-xs text-foreground-secondary mb-1">Hora de inicio</label>
               <input
                 type="time"
                 name="start_time"
@@ -237,7 +237,7 @@ export default async function EditarCursoPage({
               />
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+              <label className="block text-xs text-foreground-secondary mb-1">Hora de fin</label>
               <input
                 type="time"
                 name="end_time"
@@ -270,7 +270,7 @@ export default async function EditarCursoPage({
                   type="checkbox"
                   name={`day_${day.value}`}
                   defaultChecked={curso.days_of_week?.includes(day.value)}
-                  className="h-4 w-4 accent-blue-600"
+                  className="h-4 w-4 accent-primary"
                 />
                 {day.label}
               </label>
@@ -333,7 +333,7 @@ export default async function EditarCursoPage({
 
         <div className="space-y-2">
           <label className="block text-sm font-medium">Imagen del curso</label>
-          <div className="relative h-40 bg-gray-800 rounded flex items-center justify-center text-xs text-gray-400 overflow-hidden">
+          <div className="relative h-40 bg-surface-secondary rounded flex items-center justify-center text-xs text-foreground-secondary overflow-hidden">
             {imageUrl ? (
               <Image
                 src={imageUrl}

@@ -25,10 +25,10 @@ type Props = {
 }
 
 const statusStyles: Record<ReservationStatus, string> = {
-  pendiente: 'bg-yellow-600 text-black',
-  aprobada: 'bg-green-700 text-white',
-  rechazada: 'bg-red-700 text-white',
-  cancelada: 'bg-gray-700 text-white',
+  pendiente: 'bg-warning text-warning-foreground',
+  aprobada: 'bg-success text-success-foreground',
+  rechazada: 'bg-error text-error-foreground',
+  cancelada: 'bg-muted text-muted-foreground',
 }
 
 type DecisionStatus = Exclude<ReservationStatus, 'pendiente'>
@@ -130,14 +130,14 @@ export default function CourseReservationsTable({ reservations }: Props) {
   }
 
   if (rows.length === 0) {
-    return <p className="text-sm text-gray-400">No hay solicitudes de reserva de cursos registradas.</p>
+    return <p className="text-sm text-foreground-secondary">No hay solicitudes de reserva de cursos registradas.</p>
   }
 
   return (
     <>
       <div className="overflow-x-auto">
-        <table className="min-w-full overflow-hidden rounded bg-gray-900 text-sm">
-          <thead className="bg-gray-800 text-xs uppercase text-gray-300">
+        <table className="min-w-full overflow-hidden rounded bg-card text-sm">
+          <thead className="bg-surface-secondary text-xs uppercase text-foreground-secondary">
             <tr>
               <th className="px-4 py-2 text-left">Curso</th>
               <th className="px-4 py-2 text-left">Recinto</th>
@@ -151,7 +151,7 @@ export default function CourseReservationsTable({ reservations }: Props) {
           </thead>
           <tbody>
             {rows.map(row => (
-              <tr key={row.id} className="border-t border-gray-800">
+              <tr key={row.id} className="border-t border-border">
                 <td className="px-4 py-2">{row.curso_name}</td>
                 <td className="px-4 py-2">{row.recinto_name}</td>
                 <td className="px-4 py-2">{formatDateTime(row.start_at)}</td>
@@ -161,8 +161,8 @@ export default function CourseReservationsTable({ reservations }: Props) {
                     {row.status}
                   </span>
                 </td>
-                <td className="px-4 py-2 text-xs text-gray-300">{row.observations ?? '—'}</td>
-                <td className="px-4 py-2 text-xs text-gray-400">
+                <td className="px-4 py-2 text-xs text-foreground-secondary">{row.observations ?? '—'}</td>
+                <td className="px-4 py-2 text-xs text-foreground-tertiary">
                   {row.reviewed_at ? formatDateTime(row.reviewed_at) : 'Pendiente'}
                 </td>
                 <td className="px-4 py-2">
@@ -202,7 +202,7 @@ export default function CourseReservationsTable({ reservations }: Props) {
                       Cancelar
                     </Button>
                   ) : (
-                    <span className="text-xs text-gray-500">—</span>
+                    <span className="text-xs text-muted-foreground">—</span>
                   )}
                 </td>
               </tr>
@@ -218,13 +218,13 @@ export default function CourseReservationsTable({ reservations }: Props) {
           aria-modal="true"
         >
           <div
-            className="w-full max-w-md rounded border border-gray-700 bg-gray-900 p-6 shadow-lg"
+            className="w-full max-w-md rounded border border-border bg-card p-6 shadow-lg"
             onClick={event => event.stopPropagation()}
           >
-            <h3 className="text-lg font-semibold text-gray-100">{decisionCopy[decisionTarget.status].title}</h3>
-            <p className="mt-2 text-sm text-gray-400">{decisionCopy[decisionTarget.status].helper}</p>
+            <h3 className="text-lg font-semibold text-foreground">{decisionCopy[decisionTarget.status].title}</h3>
+            <p className="mt-2 text-sm text-foreground-secondary">{decisionCopy[decisionTarget.status].helper}</p>
             <textarea
-              className="mt-4 w-full rounded border border-gray-700 bg-gray-900 p-2 text-sm"
+              className="mt-4 w-full rounded border border-border bg-input p-2 text-sm"
               rows={4}
               placeholder="Observaciones (opcional)"
               value={decisionNote}

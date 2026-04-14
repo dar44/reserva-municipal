@@ -1,0 +1,122 @@
+[
+  {
+    "path": "/es/Instalaciones/Pasos-y-Normativa-reserva-instalaciones",
+    "score": 0.74,
+    "performance": 0.49,
+    "accessibility": 0.77,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/es/La-Fundaci%C3%B3n/Abonados-FDM",
+    "score": 0.77,
+    "performance": 0.53,
+    "accessibility": 0.83,
+    "best-practices": 0.81,
+    "seo": 0.92
+  },
+  {
+    "path": "/es/Textos-legales/Normativa-reservas-por-Internet",
+    "score": 0.69,
+    "performance": 0.54,
+    "accessibility": 0.84,
+    "best-practices": 0.81,
+    "seo": 0.58
+  },
+  {
+    "path": "/es/Tr%C3%A1mites/Inscripci%C3%B3n-de-abonados",
+    "score": 0.76,
+    "performance": 0.54,
+    "accessibility": 0.79,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/es/Tr%C3%A1mites/Reserva-de-instalaciones",
+    "score": 0.75,
+    "performance": 0.49,
+    "accessibility": 0.82,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/es/Tr%C3%A1mites/Reserva-de-instalaciones/moduleId/7594/controller/item/action/preregistroabonado",
+    "score": 0.76,
+    "performance": 0.54,
+    "accessibility": 0.82,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/Textos-legales/Aviso-legal",
+    "score": 0.7,
+    "performance": 0.54,
+    "accessibility": 0.85,
+    "best-practices": 0.81,
+    "seo": 0.58
+  },
+  {
+    "path": "/Textos-legales/Normativa-reservas-por-Internet",
+    "score": 0.7,
+    "performance": 0.55,
+    "accessibility": 0.84,
+    "best-practices": 0.81,
+    "seo": 0.58
+  },
+  {
+    "path": "/Textos-legales/Pol%C3%ADtica-de-cookies",
+    "score": 0.68,
+    "performance": 0.56,
+    "accessibility": 0.85,
+    "best-practices": 0.81,
+    "seo": 0.5
+  },
+  {
+    "path": "/Textos-legales/Pol%C3%ADtica-de-privacidad",
+    "score": 0.66,
+    "performance": 0.39,
+    "accessibility": 0.85,
+    "best-practices": 0.81,
+    "seo": 0.58
+  },
+  {
+    "path": "/Textos-legales/Pol%C3%ADtica-de-redes-sociales",
+    "score": 0.7,
+    "performance": 0.56,
+    "accessibility": 0.85,
+    "best-practices": 0.81,
+    "seo": 0.58
+  },
+  {
+    "path": "/Textos-legales/T%C3%A9rminos-y-Condiciones-de-Compra",
+    "score": 0.68,
+    "performance": 0.56,
+    "accessibility": 0.85,
+    "best-practices": 0.81,
+    "seo": 0.5
+  },
+  {
+    "path": "/Tr%C3%A1mites/Reserva-de-instalaciones",
+    "score": 0.76,
+    "performance": 0.54,
+    "accessibility": 0.82,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/Tr%C3%A1mites/Reserva-de-instalaciones/moduleId/7594/controller/item/action/login",
+    "score": 0.76,
+    "performance": 0.54,
+    "accessibility": 0.82,
+    "best-practices": 0.78,
+    "seo": 0.92
+  },
+  {
+    "path": "/Tr%C3%A1mites/Reserva-de-instalaciones/moduleId/7594/controller/item/action/preregistroabonado",
+    "score": 0.76,
+    "performance": 0.54,
+    "accessibility": 0.82,
+    "best-practices": 0.78,
+    "seo": 0.92
+  }
+]

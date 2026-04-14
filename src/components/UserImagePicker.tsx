@@ -133,7 +133,7 @@ export default function UserImagePicker ({
           name="image_file"
           accept="image/*"
           disabled={mode !== 'upload'}
-          className="block w-full text-xs text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white disabled:opacity-70"
+          className="block w-full text-xs text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-primary file:text-primary-foreground disabled:opacity-70"
         />
       </label>
       <label className="flex items-center gap-2">

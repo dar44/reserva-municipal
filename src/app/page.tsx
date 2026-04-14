@@ -6,7 +6,7 @@ import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-950/30 via-background to-blue-900/20">
+    <div className="min-h-screen bg-gradient-to-br from-primary/10 via-background to-primary/5">
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-6 focus:py-3 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg"
@@ -16,10 +16,11 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border" aria-label="Navegación principal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-8 h-8 text-primary" aria-hidden="true" />
-              <span className="text-xl font-bold text-foreground">ServiMunicipal</span>
-            </div>
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+              <span className="text-2xl font-black tracking-tight text-foreground">
+                Servi<span className="text-primary font-medium">Municipal</span>
+              </span>
+            </Link>
             <div className="flex items-center gap-3">
               <Link
                 href="/public/recintos"
@@ -60,7 +61,7 @@ export default function Home() {
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <motion.div
-              className="absolute top-0 right-0 w-96 h-96 bg-blue-600/20 rounded-full blur-3xl"
+              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
               animate={{
                 scale: [1, 1.2, 1],
                 opacity: [0.3, 0.5, 0.3],
@@ -76,7 +77,7 @@ export default function Home() {
               }}
             />
             <motion.div
-              className="absolute bottom-0 left-0 w-96 h-96 bg-blue-700/15 rounded-full blur-3xl"
+              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl"
               animate={{
                 scale: [1.2, 1, 1.2],
                 opacity: [0.5, 0.3, 0.5],
@@ -100,7 +101,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <motion.div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600/10 text-blue-600 rounded-full mb-6 border border-blue-600/20"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
                 role="status"
                 aria-label="Etiqueta del sistema"
                 initial={{ opacity: 0, scale: 0.9 }}
@@ -114,7 +115,7 @@ export default function Home() {
               {/* Jerarquía visual clara - Refactoring UI */}
               <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
                 Reserva tus espacios{" "}
-                <span className="bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-primary via-primary-hover to-primary bg-clip-text text-transparent">
                   de forma simple y rápida
                 </span>
               </h1>
@@ -175,22 +176,22 @@ export default function Home() {
                   icon: Calendar,
                   title: "Reservas Simplificadas",
                   description: "Reserva espacios y cursos en segundos. Sistema intuitivo que te guía paso a paso.",
-                  gradient: "from-blue-600/10 to-blue-600/5",
-                  iconColor: "text-blue-600",
+                  gradient: "from-primary/10 to-primary/5",
+                  iconColor: "text-primary",
                 },
                 {
                   icon: MapPin,
                   title: "Ubicaciones Precisas",
                   description: "Encuentra fácilmente recintos y ubicaciones con mapas interactivos integrados.",
-                  gradient: "from-blue-500/10 to-blue-500/5",
-                  iconColor: "text-blue-500",
+                  gradient: "from-primary/10 to-primary/5",
+                  iconColor: "text-primary",
                 },
                 {
                   icon: Users,
                   title: "Multi-rol",
                   description: "Diferentes perfiles para ciudadanos, organizadores, trabajadores y administradores.",
-                  gradient: "from-blue-700/10 to-blue-700/5",
-                  iconColor: "text-blue-700",
+                  gradient: "from-primary/10 to-primary/5",
+                  iconColor: "text-primary",
                 },
               ].map((feature, index) => (
                 <motion.div
@@ -227,7 +228,7 @@ export default function Home() {
         <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="cta-heading">
           <div className="max-w-5xl mx-auto">
             <motion.div
-              className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 to-blue-700 p-12 sm:p-16 text-center"
+              className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-12 sm:p-16 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
@@ -238,16 +239,16 @@ export default function Home() {
 
               <div className="relative z-10">
                 {/* Efecto de Posición en Serie: CTA importante al final */}
-                <h2 id="cta-heading" className="text-4xl sm:text-5xl font-bold text-white mb-6">
+                <h2 id="cta-heading" className="text-4xl sm:text-5xl font-bold text-primary-foreground mb-6">
                   ¿Listo para empezar?
                 </h2>
-                <p className="text-xl text-white/90 mb-10 max-w-2xl mx-auto">
+                <p className="text-xl text-primary-foreground/90 mb-10 max-w-2xl mx-auto">
                   Únete a nuestra comunidad y gestiona tus reservas de forma eficiente
                 </p>
                 {/* Efecto Von Restorff: botón oscuro destaca claramente sobre fondo de gradiente */}
                 <Link
                   href="/signup"
-                  className="inline-flex items-center gap-2 px-10 py-5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold text-lg shadow-2xl transition-all hover:scale-105 hover:shadow-3xl border-2 border-white/20 focus:outline-none focus:ring-2 focus:ring-white focus:ring-offset-2 focus:ring-offset-primary"
+                  className="inline-flex items-center gap-2 px-10 py-5 bg-background hover:bg-surface text-foreground rounded-xl font-bold text-lg shadow-2xl transition-all hover:scale-105 hover:shadow-3xl border-2 border-foreground/20 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-primary"
                   aria-label="Crear cuenta gratuita y comenzar a usar el sistema ahora"
                 >
                   Crear cuenta ahora
@@ -263,10 +264,11 @@ export default function Home() {
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-surface/50" role="contentinfo" aria-label="Pie de página">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-2">
-              <Calendar className="w-6 h-6 text-primary" aria-hidden="true" />
-              <span className="text-lg font-semibold text-foreground">ServiMunicipal</span>
-            </div>
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+              <span className="text-xl font-black tracking-tight text-foreground">
+                Servi<span className="text-primary font-medium">Municipal</span>
+              </span>
+            </Link>
             <p className="text-sm text-foreground-secondary">
               © 2025 ServiMunicipal. Sistema de gestión de reservas municipales.
             </p>

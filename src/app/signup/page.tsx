@@ -62,7 +62,24 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
+      {/* Navbar de escape */}
+      <nav className="w-full px-6 py-4 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm">
+        <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+          <span className="text-xl font-black tracking-tight text-foreground">
+            Servi<span className="text-primary font-medium">Municipal</span>
+          </span>
+        </Link>
+        <div className="flex items-center gap-1 text-sm">
+          <Link href="/public/recintos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Recintos</Link>
+          <Link href="/public/cursos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Cursos</Link>
+          <Link href="/login" className="ml-2 px-4 py-1.5 text-sm font-medium text-primary border border-primary/30 hover:bg-primary/5 rounded-lg transition-all hover:border-primary">
+            Iniciar sesión
+          </Link>
+        </div>
+      </nav>
+
+      <div className="flex-1 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -215,6 +232,7 @@ export default function SignupPage() {
           </motion.div>
         </div>
       </motion.div>
+      </div>
     </div>
   )
 }

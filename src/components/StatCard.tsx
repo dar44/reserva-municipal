@@ -6,9 +6,9 @@ interface StatCardProps {
 
 export default function StatCard({ label, value, className = '' }: StatCardProps) {
     return (
-        <div className={`bg-gray-800 rounded-lg border border-gray-700 p-4 ${className}`}>
-            <p className="text-sm text-gray-400 mb-1">{label}</p>
-            <p className="text-2xl font-bold">{value}</p>
+        <div className={`bg-card rounded-lg border border-card-border p-4 shadow-sm ${className}`}>
+            <p className="text-sm text-foreground-secondary mb-1">{label}</p>
+            <p className="text-2xl font-bold text-foreground">{value}</p>
         </div>
     )
 }

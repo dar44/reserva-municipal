@@ -198,13 +198,13 @@ export default function PendingRequestsTable({ requests }: Props) {
                     aria-modal="true"
                 >
                     <div
-                        className="w-full max-w-md rounded border border-gray-700 bg-gray-900 p-6 shadow-lg"
+                        className="w-full max-w-md rounded border border-border bg-card p-6 shadow-lg"
                         onClick={event => event.stopPropagation()}
                     >
-                        <h3 className="text-lg font-semibold text-gray-100">{decisionCopy[decisionTarget.status].title}</h3>
-                        <p className="mt-2 text-sm text-gray-400">{decisionCopy[decisionTarget.status].helper}</p>
+                        <h3 className="text-lg font-semibold text-foreground">{decisionCopy[decisionTarget.status].title}</h3>
+                        <p className="mt-2 text-sm text-foreground-secondary">{decisionCopy[decisionTarget.status].helper}</p>
                         <textarea
-                            className="mt-4 w-full rounded border border-gray-700 bg-gray-900 p-2 text-sm"
+                            className="mt-4 w-full rounded border border-border bg-input p-2 text-sm"
                             rows={4}
                             placeholder="Observaciones (opcional)"
                             value={decisionNote}

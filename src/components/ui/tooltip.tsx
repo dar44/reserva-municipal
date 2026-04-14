@@ -25,7 +25,7 @@ export function Tooltip({
                     <TooltipPrimitive.Content
                         side={side}
                         className={cn(
-                            "z-50 overflow-hidden rounded-md bg-gray-900 px-3 py-1.5 text-xs text-white",
+                            "z-50 overflow-hidden rounded-md bg-popover px-3 py-1.5 text-xs text-popover-foreground border border-border shadow-md",
                             "animate-in fade-in-0 zoom-in-95",
                             "data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95",
                             "data-[side=bottom]:slide-in-from-top-2",
@@ -36,7 +36,7 @@ export function Tooltip({
                         sideOffset={5}
                     >
                         {content}
-                        <TooltipPrimitive.Arrow className="fill-gray-900" />
+                        <TooltipPrimitive.Arrow className="fill-popover" />
                     </TooltipPrimitive.Content>
                 </TooltipPrimitive.Portal>
             </TooltipPrimitive.Root>

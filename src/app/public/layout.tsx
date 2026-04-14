@@ -12,10 +12,12 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
           <div className="flex items-center justify-between h-16">
             <Link
               href="/"
-              className="flex items-center gap-2 text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors"
+              className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
+              aria-label="Ir al inicio"
             >
-              <Calendar className="w-6 h-6 text-primary" aria-hidden="true" />
-              ServiMunicipal
+              <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
+                Servi<span className="text-primary font-medium">Municipal</span>
+              </span>
             </Link>
 
             <div className="hidden md:flex h-full items-center gap-3">

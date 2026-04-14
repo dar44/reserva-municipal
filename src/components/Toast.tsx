@@ -51,12 +51,12 @@ export function ToastProvider ({ children }: { children: ReactNode }) {
             {toasts.map(t => (
               <div
                 key={t.id}
-                className={`pointer-events-auto rounded px-4 py-2 text-white shadow ${
+                className={`pointer-events-auto rounded px-4 py-2 shadow ${
                   t.type === 'success'
-                    ? 'bg-green-600'
+                    ? 'bg-success text-success-foreground'
                     : t.type === 'error'
-                      ? 'bg-red-600'
-                      : 'bg-blue-600'
+                      ? 'bg-error text-error-foreground'
+                      : 'bg-primary text-primary-foreground'
                 }`}
               >
                 {t.message}

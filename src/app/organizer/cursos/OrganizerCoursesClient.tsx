@@ -546,7 +546,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <label className="block text-sm font-medium">Horario del curso</label>
                       <div className="grid grid-cols-2 gap-3">
                         <div>
-                          <label className="block text-xs text-gray-400 mb-1">Hora de inicio</label>
+                          <label className="block text-xs text-foreground-secondary mb-1">Hora de inicio</label>
                           <input
                             type="time"
                             name="start_time"
@@ -555,7 +555,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                           />
                         </div>
                         <div>
-                          <label className="block text-xs text-gray-400 mb-1">Hora de fin</label>
+                          <label className="block text-xs text-foreground-secondary mb-1">Hora de fin</label>
                           <input
                             type="time"
                             name="end_time"
@@ -568,7 +568,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
 
                     <div className="space-y-2 md:col-span-2">
                       <label className="block text-sm font-medium">Días de la semana</label>
-                      <p className="text-xs text-gray-400">Selecciona los días en los que se imparte el curso.</p>
+                      <p className="text-xs text-foreground-secondary">Selecciona los días en los que se imparte el curso.</p>
                       <div className="mt-2 flex flex-wrap gap-2">
                         {[
                           { value: 1, label: 'Lunes' },
@@ -666,8 +666,8 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                   <div className="space-y-4">
                     <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                       <div className="flex-1">
-                        <h3 className="text-xl font-bold text-gray-100">{course.name}</h3>
-                        <p className="text-sm text-gray-400 mt-1 flex items-center gap-1">
+                        <h3 className="text-xl font-bold text-foreground">{course.name}</h3>
+                        <p className="text-sm text-foreground-secondary mt-1 flex items-center gap-1">
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -678,7 +678,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                       <Badge
                         className={
                           course.state === 'Disponible'
-                            ? 'bg-primary text-primary-foreground'
+                            ? 'bg-success text-success-foreground'
                             : course.state === 'No disponible'
                               ? 'bg-warning text-warning-foreground'
                               : 'bg-error text-error-foreground'
@@ -689,7 +689,7 @@ export default function OrganizerCoursesClient({ courses, defaultImages }: Props
                     </div>
 
                     {course.image && course.image_bucket && (
-                      <div className="relative h-48 w-full rounded-lg overflow-hidden bg-gray-800 shadow-lg">
+                      <div className="relative h-48 w-full rounded-lg overflow-hidden bg-surface-secondary shadow-lg">
                         <Image
                           src={getImageUrl(course.image, course.image_bucket) || ''}
                           alt={course.name}

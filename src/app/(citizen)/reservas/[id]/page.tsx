@@ -42,7 +42,7 @@ export default async function ReservaDetailPage({ params }: PageProps) {
     return (
       <div className="mt-20 text-center space-y-2">
         <p>🔒 Inicia sesión primero</p>
-        <Link href="/login" className="text-blue-400 underline">
+        <Link href="/login" className="text-primary underline">
           Ir al inicio de sesión
         </Link>
       </div>
@@ -79,7 +79,7 @@ export default async function ReservaDetailPage({ params }: PageProps) {
             <h1 className="text-2xl font-bold">
               {reserva.recintos?.name ?? "Detalle de la reserva"}
             </h1>
-            <p className="text-sm text-gray-300">
+            <p className="text-sm text-foreground-secondary">
               {new Date(reserva.start_at).toLocaleString()} – {" "}
               {new Date(reserva.end_at).toLocaleString()}
             </p>

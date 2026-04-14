@@ -86,7 +86,7 @@ export default function RecintoImagePicker({ initialImage = null }: Props) {
             name="image_file"
             accept="image/*"
             disabled={mode !== 'upload'}
-            className="block w-full text-sm text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-blue-600 file:text-white"
+            className="block w-full text-sm text-foreground file:mr-4 file:py-1 file:px-2 file:rounded file:border-0 file:bg-primary file:text-primary-foreground"
           />
         </label>
         <label className="flex items-center gap-2">

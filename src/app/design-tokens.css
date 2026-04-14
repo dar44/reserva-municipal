@@ -246,7 +246,7 @@
     --primary: rgb(var(--primary-500));
     --primary-hover: rgb(var(--primary-400));
     --primary-active: rgb(var(--primary-300));
-    --primary-foreground: rgb(var(--neutral-950));
+    --primary-foreground: rgb(255 255 255);
 
     /* Acciones Secundarias */
     --secondary: rgb(var(--neutral-800));
@@ -282,17 +282,17 @@
 
     /* Estados */
     --success: rgb(var(--success-500));
-    --success-foreground: rgb(var(--neutral-950));
+    --success-foreground: rgb(255 255 255);
     --success-subtle: rgb(var(--success-950));
     --success-subtle-foreground: rgb(var(--success-300));
 
     --warning: rgb(var(--warning-500));
-    --warning-foreground: rgb(var(--neutral-950));
+    --warning-foreground: rgb(255 255 255);
     --warning-subtle: rgb(var(--warning-950));
     --warning-subtle-foreground: rgb(var(--warning-300));
 
     --error: rgb(var(--error-500));
-    --error-foreground: rgb(var(--neutral-950));
+    --error-foreground: rgb(255 255 255);
     --error-subtle: rgb(var(--error-950));
     --error-subtle-foreground: rgb(var(--error-300));
 

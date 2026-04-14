@@ -127,7 +127,7 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
 
   if (!estado) {
     return (
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-foreground-secondary">
         Estamos confirmando el estado del pago...
       </p>
     );
@@ -139,28 +139,28 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
   switch (estado) {
     case "pagado":
       message = `La ${tipoLabel} ya aparece como pagada en el panel.`;
-      colorClass += "text-green-500";
+      colorClass += "text-success";
       break;
     case "pendiente":
       if (syncing) {
         message = `Estamos sincronizando la ${tipoLabel} con la pasarela. Se actualizará automáticamente en unos instantes.`;
-        colorClass += "text-amber-400";
+        colorClass += "text-warning";
       } else {
         message = "No hemos podido confirmar el estado del pago automáticamente. Actualiza esta página más tarde para comprobar si se registró correctamente.";
-        colorClass += "text-red-400";
+        colorClass += "text-error";
       }
       break;
     case "reembolsado":
       message = "El pago figura como reembolsado en la pasarela.";
-      colorClass += "text-blue-400";
+      colorClass += "text-info";
       break;
     case "fallido":
       message = "El pago aparece como fallido en la pasarela.";
-      colorClass += "text-red-500";
+      colorClass += "text-error";
       break;
     case "cancelado":
       message = "El pago aparece cancelado en la pasarela.";
-      colorClass += "text-red-400";
+      colorClass += "text-error";
       break;
   }
 
@@ -168,12 +168,12 @@ export function PagoStatusWatcher({ pagoId, tipo }: Props): JSX.Element {
     <div className="space-y-2">
       <p className={colorClass}>{message}</p>
       {syncing && estado === "pendiente" && (
-        <p className="text-xs text-gray-400">
+        <p className="text-xs text-foreground-secondary">
           Intento {attempts} de {MAX_ATTEMPTS}. Puedes mantener esta página abierta mientras finalizamos la sincronización.
         </p>
       )}
       {finalError && (
-        <p className="text-xs text-red-400">
+        <p className="text-xs text-error">
           Error al sincronizar con la pasarela: {finalError}
         </p>
       )}

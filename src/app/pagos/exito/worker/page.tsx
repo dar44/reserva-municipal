@@ -29,20 +29,20 @@ export default async function PagoExitoWorkerPage ({
 
   return (
     <div className="max-w-xl mx-auto text-center space-y-4">
-      <h1 className="text-3xl font-bold text-green-500">Pago registrado</h1>
+      <h1 className="text-3xl font-bold text-success">Pago registrado</h1>
       <p>
         El pago se ha completado correctamente. Estamos sincronizando la {tipoRaw} para que
         aparezca como pagada en el panel de trabajo.
       </p>
       {pagoId && (
         <>
-          <p className="text-sm text-gray-400">Identificador interno del pago: {pagoId}</p>
+          <p className="text-sm text-foreground-secondary">Identificador interno del pago: {pagoId}</p>
           <SyncPago pagoId={pagoId} />
         </>
       )}
       <Link
         href={href}
-        className="inline-block bg-blue-600 hover:bg-blue-500 px-4 py-2 rounded"
+        className="inline-block bg-primary hover:bg-primary-hover text-primary-foreground px-4 py-2 rounded"
       >
         {label}
       </Link>
