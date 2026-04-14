@@ -3,7 +3,8 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'react-toastify'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
+import { MotionProvider } from '@/components/motion-provider'
 import { Mail, Loader2, ArrowRight, ArrowLeft } from 'lucide-react'
 
 export default function ResetPasswordPage() {
@@ -42,7 +43,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -52,15 +53,15 @@ export default function ResetPasswordPage() {
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <motion.h1
+            <m.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
             >
               Recuperar Contraseña
-            </motion.h1>
-            <motion.p
+            </m.h1>
+            <m.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
@@ -70,13 +71,13 @@ export default function ResetPasswordPage() {
                 ? '¡Listo! Revisa tu correo electrónico'
                 : 'Ingresa tu email para recibir un enlace de recuperación'
               }
-            </motion.p>
+            </m.p>
           </div>
 
           {!emailSent ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email input con ícono */}
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.3 }}
@@ -92,10 +93,10 @@ export default function ResetPasswordPage() {
                   onChange={e => setEmail(e.target.value)}
                   disabled={isLoading}
                 />
-              </motion.div>
+              </m.div>
 
               {/* Botón con estado de carga */}
-              <motion.button
+              <m.button
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.4 }}
@@ -126,10 +127,10 @@ export default function ResetPasswordPage() {
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
-              </motion.button>
+              </m.button>
             </form>
           ) : (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="text-center space-y-4"
@@ -143,11 +144,11 @@ export default function ResetPasswordPage() {
               <p className="text-sm text-foreground-tertiary">
                 Revisa tu bandeja de entrada y sigue las instrucciones del correo.
               </p>
-            </motion.div>
+            </m.div>
           )}
 
           {/* Enlaces secundarios */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: emailSent ? 0.3 : 0.5 }}
@@ -167,9 +168,9 @@ export default function ResetPasswordPage() {
               <ArrowLeft className="w-4 h-4" />
               <span>Volver al inicio de sesión</span>
             </Link>
-          </motion.div>
+          </m.div>
         </div>
-      </motion.div>
+      </m.div>
     </div>
   )
 }

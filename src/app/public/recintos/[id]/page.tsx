@@ -61,6 +61,7 @@ export default async function PublicRecintoDetail({
               fill
               className="object-cover"
               sizes="(min-width: 768px) 50vw, 100vw"
+              priority
             />
           ) : (
             "Sin imagen"

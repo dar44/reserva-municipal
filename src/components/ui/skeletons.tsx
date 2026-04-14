@@ -1,4 +1,5 @@
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
+import { MotionProvider } from '@/components/motion-provider'
 
 export const CourseCardSkeleton = () => (
     <div className="surface rounded-xl overflow-hidden shadow-md">
@@ -23,7 +24,7 @@ export const CourseCardSkeleton = () => (
 )
 
 export const CourseCardSkeletonWithAnimation = ({ delay = 0 }: { delay?: number }) => (
-    <motion.div
+    <m.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay }}
@@ -58,7 +59,7 @@ export const CourseCardSkeletonWithAnimation = ({ delay = 0 }: { delay?: number 
                 </div>
             </div>
         </div>
-    </motion.div>
+    </m.div>
 )
 
 export const CourseGridSkeleton = ({ count = 6 }: { count?: number }) => (

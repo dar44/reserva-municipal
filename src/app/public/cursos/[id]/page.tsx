@@ -11,7 +11,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import { Button } from "@/components/ui/button"
 import { LogIn, UserPlus } from "lucide-react"
 
-export const dynamic = 'force-dynamic'
+export const dynamic = 'force-dynamic';
 
 export default async function PublicCursoDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

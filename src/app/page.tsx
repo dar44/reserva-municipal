@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
+import { MotionProvider } from "@/components/motion-provider";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 
 export default function Home() {
@@ -60,7 +61,7 @@ export default function Home() {
         <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden" aria-labelledby="hero-heading">
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-            <motion.div
+            <m.div
               className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
               animate={{
                 scale: [1, 1.2, 1],
@@ -76,7 +77,7 @@ export default function Home() {
                 animationPlayState: typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'paused' : 'running'
               }}
             />
-            <motion.div
+            <m.div
               className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl"
               animate={{
                 scale: [1.2, 1, 1.2],
@@ -94,13 +95,13 @@ export default function Home() {
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
-            <motion.div
+            <m.div
               className="text-center"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
             >
-              <motion.div
+              <m.div
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
                 role="status"
                 aria-label="Etiqueta del sistema"
@@ -110,7 +111,7 @@ export default function Home() {
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 <span className="text-sm font-medium">Sistema de Reservas Inteligente</span>
-              </motion.div>
+              </m.div>
 
               {/* Jerarquía visual clara - Refactoring UI */}
               <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
@@ -146,14 +147,14 @@ export default function Home() {
                   Conocer más
                 </button>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
 
         {/* Features Section */}
         <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-16" aria-labelledby="features-heading">
           <div className="max-w-7xl mx-auto">
-            <motion.div
+            <m.div
               className="text-center mb-16"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -166,7 +167,7 @@ export default function Home() {
               <p className="text-lg sm:text-xl text-foreground-secondary max-w-2xl mx-auto">
                 Plataforma completa para ciudadanos, organizadores y administradores
               </p>
-            </motion.div>
+            </m.div>
 
             {/* Ley de Miller: exactamente 3 características para memoria de trabajo óptima */}
 
@@ -194,7 +195,7 @@ export default function Home() {
                   iconColor: "text-primary",
                 },
               ].map((feature, index) => (
-                <motion.div
+                <m.div
                   key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -218,7 +219,7 @@ export default function Home() {
                       {feature.description}
                     </p>
                   </div>
-                </motion.div>
+                </m.div>
               ))}
             </div>
           </div>
@@ -227,7 +228,7 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="cta-heading">
           <div className="max-w-5xl mx-auto">
-            <motion.div
+            <m.div
               className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-12 sm:p-16 text-center"
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
@@ -255,7 +256,7 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
               </div>
-            </motion.div>
+            </m.div>
           </div>
         </section>
       </main>

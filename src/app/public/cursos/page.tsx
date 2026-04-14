@@ -104,7 +104,7 @@ export default async function PublicCursosPage({
       </form>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {cursosWithImages?.map(c => (
+        {cursosWithImages?.map((c, index) => (
           <Link
             key={c.id}
             href={`/public/cursos/${c.id}`}
@@ -127,6 +127,8 @@ export default async function PublicCursosPage({
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                    priority={index < 3}
+                    loading={index < 3 ? "eager" : "lazy"}
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />

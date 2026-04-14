@@ -1,6 +1,7 @@
 'use client'
 
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
+import { MotionProvider } from '@/components/motion-provider'
 import { SearchX, RefreshCw, CalendarX } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from './button'
@@ -16,7 +17,7 @@ interface EmptyStateProps {
 }
 
 export const EmptyState = ({ icon, title, description, action }: EmptyStateProps) => (
-    <motion.div
+    <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -28,7 +29,7 @@ export const EmptyState = ({ icon, title, description, action }: EmptyStateProps
                 {icon || <SearchX className="w-16 h-16 text-primary/40" />}
             </div>
             {/* Pulsing ring */}
-            <motion.div
+            <m.div
                 animate={{
                     scale: [1, 1.2, 1],
                     opacity: [0.5, 0, 0.5],
@@ -57,7 +58,7 @@ export const EmptyState = ({ icon, title, description, action }: EmptyStateProps
                 </Link>
             </Button>
         )}
-    </motion.div>
+    </m.div>
 )
 
 // Predefined empty states

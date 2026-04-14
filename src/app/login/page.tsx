@@ -3,7 +3,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
-import { motion } from 'framer-motion'
+import { m } from 'framer-motion'
+import { MotionProvider } from '@/components/motion-provider'
 import { Mail, Lock, ArrowRight, Loader2, ArrowLeft } from 'lucide-react'
 
 export default function LoginPage() {
@@ -73,7 +74,7 @@ export default function LoginPage() {
       </nav>
 
       <div className="flex-1 flex items-center justify-center p-4">
-      <motion.div
+      <m.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
@@ -83,27 +84,27 @@ export default function LoginPage() {
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <motion.h1
+            <m.h1
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
               className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
             >
               ServiMunicipal
-            </motion.h1>
-            <motion.p
+            </m.h1>
+            <m.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.2 }}
               className="text-foreground-secondary text-sm"
             >
               Gestión inteligente de servicios municipales
-            </motion.p>
+            </m.p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email input con ícono */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
@@ -119,10 +120,10 @@ export default function LoginPage() {
                 onChange={e => setEmail(e.target.value)}
                 disabled={isLoading}
               />
-            </motion.div>
+            </m.div>
 
             {/* Password input con ícono */}
-            <motion.div
+            <m.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
@@ -138,10 +139,10 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 disabled={isLoading}
               />
-            </motion.div>
+            </m.div>
 
             {/* Botón con estado de carga */}
-            <motion.button
+            <m.button
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
@@ -172,11 +173,11 @@ export default function LoginPage() {
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
-            </motion.button>
+            </m.button>
           </form>
 
           {/* Enlaces secundarios */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -213,9 +214,9 @@ export default function LoginPage() {
             >
               Crear cuenta nueva
             </Link>
-          </motion.div>
+          </m.div>
         </div>
-      </motion.div>
+      </m.div>
       </div>
     </div>
   )

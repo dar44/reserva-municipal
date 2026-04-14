@@ -6,6 +6,8 @@ import 'leaflet/dist/leaflet.css'
 import { ToastContainer } from 'react-toastify'
 import { ThemeProvider } from '@/components/theme-provider'
 
+import { MotionProvider } from '@/components/motion-provider'
+
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -28,6 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
+      <head>
+        <link rel="preconnect" href="https://nwhvezrclrmoyrcnijaw.supabase.co" />
+        <link rel="dns-prefetch" href="https://nwhvezrclrmoyrcnijaw.supabase.co" />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ThemeProvider
           attribute="class"
@@ -35,7 +41,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <MotionProvider>
+            {children}
+          </MotionProvider>
           <ToastContainer
             position="top-right"
             autoClose={3000}

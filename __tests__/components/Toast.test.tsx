@@ -14,9 +14,9 @@ describe('ToastProvider', () => {
   }
 
   it.each([
-    ['success', 'bg-green-600'],
-    ['error', 'bg-red-600'],
-    ['info', 'bg-blue-600']
+    ['success', 'bg-success'],
+    ['error', 'bg-error'],
+    ['info', 'bg-primary']
   ] as const)('muestra un toast %s con el estilo correcto', async (type, className) => {
     function TestConsumer () {
       const show = useToast()
