@@ -11,7 +11,7 @@ import { ThemeToggle } from './ThemeToggle'
 export default function AdminNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) =>
-    `h-full flex items-center justify-center px-4 my-2 rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+    `h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
       ? "bg-primary text-primary-foreground shadow-sm"
       : "text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`
@@ -64,7 +64,7 @@ export default function AdminNavBar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-accent"
+                  className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-2 rounded-none hover:bg-accent"
                 >
                   {profileName || ''} <span className="text-xs">▾</span>
                 </button>
@@ -79,7 +79,7 @@ export default function AdminNavBar() {
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2 rounded-md hover:bg-accent transition-colors"
+                className="md:hidden p-2 rounded-none hover:bg-accent transition-colors"
                 aria-label="Toggle menu"
               >
                 {mobileMenuOpen ? (
@@ -96,35 +96,35 @@ export default function AdminNavBar() {
             <div className="md:hidden border-t border-border py-4 space-y-1">
               <Link
                 href="/admin/panel"
-                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Panel
               </Link>
               <Link
                 href="/admin/recintos"
-                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Recintos
               </Link>
               <Link
                 href="/admin/cursos"
-                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Cursos
               </Link>
               <Link
                 href="/admin/usuarios"
-                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Usuarios
               </Link>
               <Link
                 href="/admin/reservas"
-                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 Reservas

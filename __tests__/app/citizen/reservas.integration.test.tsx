@@ -13,7 +13,7 @@ const reservasMock = [
   {
     id: 1,
     start_at: '2026-04-01T10:00:00Z',
-    end_at: '2026-04-01T11:00:00Z',
+    end_at: '2099-12-31T23:59:00Z',
     price: 5000,
     status: 'activa',
     paid: true,

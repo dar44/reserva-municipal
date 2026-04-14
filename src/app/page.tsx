@@ -7,14 +7,12 @@ import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-950/30 via-background to-blue-900/20">
-      {/* Skip Link para accesibilidad */}
       <a
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-6 focus:py-3 focus:bg-primary focus:text-primary-foreground focus:rounded-lg focus:shadow-lg"
       >
         Saltar al contenido principal
       </a>
-      {/* Navigation Bar */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border" aria-label="Navegación principal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
@@ -23,6 +21,20 @@ export default function Home() {
               <span className="text-xl font-bold text-foreground">ServiMunicipal</span>
             </div>
             <div className="flex items-center gap-3">
+              <Link
+                href="/public/recintos"
+                className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg hidden sm:inline-flex"
+                aria-label="Explorar recintos disponibles"
+              >
+                Recintos
+              </Link>
+              <Link
+                href="/public/cursos"
+                className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg hidden sm:inline-flex"
+                aria-label="Explorar cursos disponibles"
+              >
+                Cursos
+              </Link>
               <Link
                 href="/login"
                 className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
@@ -259,6 +271,12 @@ export default function Home() {
               © 2025 ServiMunicipal. Sistema de gestión de reservas municipales.
             </p>
             <nav className="flex items-center gap-6" aria-label="Enlaces del pie de página">
+              <Link href="/public/recintos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Explorar recintos">
+                Recintos
+              </Link>
+              <Link href="/public/cursos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Explorar cursos">
+                Cursos
+              </Link>
               <Link href="/login" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Ir a iniciar sesión">
                 Iniciar Sesión
               </Link>

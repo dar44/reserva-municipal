@@ -11,7 +11,7 @@ import { ThemeToggle } from './ThemeToggle'
 export default function OrganizerNavBar() {
   const pathname = usePathname()
   const linkClass = (href: string) =>
-    `h-full flex items-center justify-center px-4 my-2 rounded-md text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
+    `h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 ${pathname.startsWith(href)
       ? "bg-primary text-primary-foreground shadow-sm"
       : "text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     }`
@@ -58,7 +58,7 @@ export default function OrganizerNavBar() {
             <div className="relative hidden sm:block">
               <button
                 onClick={() => setMenuOpen(!menuOpen)}
-                className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-2 rounded-md hover:bg-accent"
+                className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors flex items-center gap-1.5 px-3 py-2 rounded-none hover:bg-accent"
               >
                 {profileName || ''} <span className="text-xs">▾</span>
               </button>
@@ -72,7 +72,7 @@ export default function OrganizerNavBar() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-md hover:bg-accent transition-colors"
+              className="md:hidden p-2 rounded-none hover:bg-accent transition-colors"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -83,10 +83,10 @@ export default function OrganizerNavBar() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border py-4 space-y-1">
-            <Link href="/organizer/panel" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>Panel</Link>
-            <Link href="/organizer/recintos" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>Recintos</Link>
-            <Link href="/organizer/cursos" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>Cursos</Link>
-            <Link href="/organizer/solicitudes" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-md transition-colors" onClick={() => setMobileMenuOpen(false)}>Solicitudes</Link>
+            <Link href="/organizer/panel" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors" onClick={() => setMobileMenuOpen(false)}>Panel</Link>
+            <Link href="/organizer/recintos" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors" onClick={() => setMobileMenuOpen(false)}>Recintos</Link>
+            <Link href="/organizer/cursos" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors" onClick={() => setMobileMenuOpen(false)}>Cursos</Link>
+            <Link href="/organizer/solicitudes" className="block px-4 py-3 text-sm font-medium hover:bg-accent rounded-none transition-colors" onClick={() => setMobileMenuOpen(false)}>Solicitudes</Link>
             <div className="px-4 py-3 flex items-center justify-between">
               <span className="text-sm font-medium">Tema</span>
               <ThemeToggle />
