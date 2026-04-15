@@ -14,8 +14,7 @@
     "audit:citizen": "node scripts/lighthouse/audit-citizen.mjs",
     "audit:worker": "node scripts/lighthouse/audit-worker.mjs",
     "audit:organizer": "node scripts/lighthouse/audit-organizer.mjs",
-    "audit:admin": "node scripts/lighthouse/audit-admin.mjs",
-    "audit:all": "node scripts/lighthouse/audit-all.mjs"
+    "audit:admin": "node scripts/lighthouse/audit-admin.mjs"
   },
   "dependencies": {
     "@radix-ui/react-progress": "^1.1.8",

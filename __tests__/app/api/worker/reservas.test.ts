@@ -16,6 +16,11 @@ jest.mock('@/lib/supabaseAdmin', () => ({
   supabaseAdmin: { __type: 'admin-mock' },
 }))
 
+jest.mock('@/lib/emailNotifications', () => ({
+  sendSolicitudAprobadaEmail: jest.fn().mockResolvedValue(undefined),
+  sendSolicitudRechazadaEmail: jest.fn().mockResolvedValue(undefined),
+}))
+
 jest.mock('next/server', () => {
   const actual = jest.requireActual('next/server')
   return {
@@ -29,6 +34,8 @@ jest.mock('next/server', () => {
 
 const requireAuthAPIMock = jest.requireMock('@/lib/auth/guard').requireAuthAPI as jest.Mock
 const hasRecintoConflictsMock = jest.requireMock('@/lib/reservas/conflicts').hasRecintoConflicts as jest.Mock
+const sendSolicitudAprobadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudAprobadaEmail as jest.Mock
+const sendSolicitudRechazadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudRechazadaEmail as jest.Mock
 const jsonSpy = NextResponse.json as jest.Mock
 
 import { PATCH } from '@/app/api/worker/reservas/[id]/route'
@@ -88,6 +95,10 @@ describe('PATCH /api/worker/reservas/[id]', () => {
   beforeEach(() => {
     requireAuthAPIMock.mockReset()
     hasRecintoConflictsMock.mockReset()
+    sendSolicitudAprobadaEmailMock.mockReset()
+    sendSolicitudRechazadaEmailMock.mockReset()
+    sendSolicitudAprobadaEmailMock.mockResolvedValue(undefined)
+    sendSolicitudRechazadaEmailMock.mockResolvedValue(undefined)
     jsonSpy.mockReset()
     jsonSpy.mockImplementation((body: unknown, init?: { status?: number }) => ({ body, init }))
   })
@@ -153,6 +164,8 @@ describe('PATCH /api/worker/reservas/[id]', () => {
     })
     expect(supabaseStub.updateEqMock).toHaveBeenCalledWith('id', 42)
     expect(supabaseStub.updateSelectMock).toHaveBeenCalledWith('*')
+    expect(sendSolicitudAprobadaEmailMock).toHaveBeenCalledWith(42)
+    expect(sendSolicitudRechazadaEmailMock).not.toHaveBeenCalled()
     expect(jsonSpy).toHaveBeenCalledWith({
       reserva: {
         id: 42,

@@ -1,7 +1,6 @@
 'use client'
 
 import { m } from 'framer-motion'
-import { MotionProvider } from '@/components/motion-provider'
 import { SearchX, RefreshCw, CalendarX } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from './button'
@@ -62,24 +61,30 @@ export const EmptyState = ({ icon, title, description, action }: EmptyStateProps
 )
 
 // Predefined empty states
-export const EmptyCoursesState = () => (
+export const EmptyCoursesState = ({ clearHref = "/cursos" }: { clearHref?: string }) => (
     <EmptyState
         title="No se encontraron cursos"
         description="No hay cursos disponibles con los filtros seleccionados. Intenta ajustar tus criterios de búsqueda."
         action={{
             label: "Limpiar filtros",
-            href: "/cursos"
+            href: clearHref
         }}
     />
 )
 
-export const EmptyRecintosState = () => (
+export const EmptyRecintosState = ({
+    clearHref = "/",
+    actionLabel = "Volver al inicio"
+}: {
+    clearHref?: string
+    actionLabel?: string
+}) => (
     <EmptyState
         title="No se encontraron recintos"
         description="No hay recintos disponibles en este momento. Prueba a buscar más tarde o contacta con el administrador."
         action={{
-            label: "Volver al inicio",
-            href: "/"
+            label: actionLabel,
+            href: clearHref
         }}
     />
 )

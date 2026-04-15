@@ -61,6 +61,7 @@ describe('POST /api/reservas (JSON)', () => {
   let toMinorUnitsMock: jest.Mock
   let getConfiguredCurrencyMock: jest.Mock
   let getReservaPriceValueMock: jest.Mock
+  let sendCuentaCreadaPorTrabajadorEmailMock: jest.Mock
   let jsonSpy: jest.Mock
   let POST: (req: Request) => Promise<any>
 
@@ -144,6 +145,9 @@ describe('POST /api/reservas (JSON)', () => {
       getConfiguredCurrency: jest.fn(),
       getReservaPriceValue: jest.fn(),
     }))
+    jest.doMock('@/lib/emailNotifications', () => ({
+      sendCuentaCreadaPorTrabajadorEmail: jest.fn().mockResolvedValue(false),
+    }))
 
     // imports después de mockear
     const supabaseAdminModule = await import('@/lib/supabaseAdmin')
@@ -167,6 +171,9 @@ describe('POST /api/reservas (JSON)', () => {
     getConfiguredCurrencyMock = cfg.getConfiguredCurrency as jest.Mock
     getReservaPriceValueMock = cfg.getReservaPriceValue as jest.Mock
 
+    const emailNotifications = await import('@/lib/emailNotifications')
+    sendCuentaCreadaPorTrabajadorEmailMock = emailNotifications.sendCuentaCreadaPorTrabajadorEmail as jest.Mock
+
     const { NextResponse } = await import('next/server')
     jsonSpy = (NextResponse as any).json as jest.Mock
     jsonSpy.mockReset()
@@ -181,6 +188,7 @@ describe('POST /api/reservas (JSON)', () => {
     toMinorUnitsMock.mockReturnValue(7500)
     getConfiguredCurrencyMock.mockReturnValue('CLP')
     getReservaPriceValueMock.mockReturnValue(75)
+    sendCuentaCreadaPorTrabajadorEmailMock.mockResolvedValue(false)
     supabaseAdminMock.clearTables()
   })
 
@@ -371,6 +379,7 @@ describe('POST /api/reservas (JSON)', () => {
       user_metadata: { name: 'Grace', surname: 'Hopper', dni: '2-7', phone: '+569' },
       app_metadata: { role: 'citizen' },
     })
+    expect(sendCuentaCreadaPorTrabajadorEmailMock).toHaveBeenCalledWith('uid-new', 'reserva')
     expect(supabaseAdminMock.resetPasswordForEmail).toHaveBeenCalledWith('new@example.com', {
       redirectTo: 'https://app.example.com/reset',
     })
@@ -408,6 +417,7 @@ describe('POST /api/reservas (JSON)', () => {
     const response = await POST(request)
 
     expect(supabaseAdminMock.createUser).toHaveBeenCalled()
+    expect(sendCuentaCreadaPorTrabajadorEmailMock).toHaveBeenCalledWith('uid-new-3', 'reserva')
     expect(supabaseAdminMock.resetPasswordForEmail).toHaveBeenCalledWith('fresh@example.com', {
       redirectTo: 'https://app.example.com/reset',
     })

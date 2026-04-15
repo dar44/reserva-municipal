@@ -37,6 +37,21 @@ export async function createSupabaseServerReadOnly() {
   )
 }
 
+export async function createSupabaseServerAdmin() {
+  const cookieStore = await cookies()
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    {
+      cookies: {
+        get(name: string) { return cookieStore.get(name)?.value },
+        set: () => undefined,
+        remove: () => undefined,
+      },
+    }
+  )
+}
+
 /*/ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 

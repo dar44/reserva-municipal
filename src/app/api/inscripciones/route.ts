@@ -52,7 +52,10 @@ export async function POST(req: Request) {
         // Enviar email de bienvenida personalizado para cuentas creadas por trabajadores
         try {
           const { sendCuentaCreadaPorTrabajadorEmail } = await import('@/lib/emailNotifications')
-          await sendCuentaCreadaPorTrabajadorEmail(auth.user.id, 'inscripcion')
+          const customEmailSent = await sendCuentaCreadaPorTrabajadorEmail(auth.user.id, 'inscripcion')
+          if (!customEmailSent) {
+            await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
+          }
         } catch (emailError) {
           console.error('Error sending worker-created account email:', emailError)
           // Fall back to standard password reset if custom email fails

@@ -21,6 +21,7 @@ export default async function RecintosPage({
   const supabase = await createSupabaseServerReadOnly();
 
   const params = await searchParams;
+  const clearHref = "/recintos";
 
   let query = supabase
     .from("recintos")
@@ -57,7 +58,7 @@ export default async function RecintosPage({
 
       <form
         className="flex gap-3 mb-8"
-        action="/recintos"
+        action={clearHref}
       >
         <input
           type="text"
@@ -70,7 +71,7 @@ export default async function RecintosPage({
           Buscar
         </Button>
         <Button asChild variant="outline">
-          <Link href="/recintos">Limpiar</Link>
+          <Link href={clearHref}>Limpiar</Link>
         </Button>
       </form>
 
@@ -166,7 +167,7 @@ export default async function RecintosPage({
         })}
 
         {/* Empty state with animation */}
-        {!recintos?.length && <EmptyRecintosState />}
+        {!recintos?.length && <EmptyRecintosState clearHref={clearHref} actionLabel="Limpiar filtros" />}
       </div>
     </div>
   );

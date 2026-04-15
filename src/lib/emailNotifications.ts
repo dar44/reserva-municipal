@@ -1,4 +1,4 @@
-import { resend } from "./resend";
+import { getResendClient } from "./resend";
 import { supabaseAdmin } from "./supabaseAdmin";
 import { formatCurrency } from "./currency";
 import { getConfiguredCurrency } from "./config";
@@ -10,9 +10,6 @@ import RegistroConfirmado from '@/components/emails/RegistroConfirmado';
 import SolicitudAprobada from '@/components/emails/SolicitudAprobada';
 import SolicitudRechazada from '@/components/emails/SolicitudRechazada';
 import CuentaCreadaPorTrabajador from '@/components/emails/CuentaCreadaPorTrabajador';
-
-const FROM_EMAIL = process.env.RESEND_FROM_EMAIL;
-const IS_EMAIL_CONFIGURED = Boolean(FROM_EMAIL && process.env.RESEND_API_KEY);
 
 const DATE_TIME_FORMAT = new Intl.DateTimeFormat("es-CL", {
   dateStyle: "full",
@@ -53,9 +50,18 @@ type InscripcionEmailRecord = {
   } | null;
 };
 
+function getFromEmail(): string | null {
+  const value = process.env.RESEND_FROM_EMAIL?.trim();
+  return value ? value : null;
+}
+
+function isEmailConfigured(): boolean {
+  return Boolean(getFromEmail() && process.env.RESEND_API_KEY?.trim());
+}
+
 function logMissingConfig(): void {
-  if (!IS_EMAIL_CONFIGURED) {
-    console.warn("Resend no está configurado. Se omite el envío de correos.");
+  if (!isEmailConfigured()) {
+    console.warn("Resend no está configurado. Define RESEND_API_KEY y RESEND_FROM_EMAIL para enviar correos.");
   }
 }
 
@@ -81,18 +87,23 @@ function getRecipientName(user: UserRecord): string {
   return parts.join(" ");
 }
 
-async function sendEmailMessage({ to, subject, html, text }: { to: string; subject: string; html: string; text: string; }): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED || !FROM_EMAIL) {
+async function sendEmailMessage({ to, subject, html, text }: { to: string; subject: string; html: string; text: string; }): Promise<boolean> {
+  const fromEmail = getFromEmail();
+  const resend = getResendClient();
+
+  if (!fromEmail || !resend) {
     logMissingConfig();
-    console.warn('[EMAIL] Skipped (config):', { from: FROM_EMAIL, to, subject })
-    return;
+    console.warn('[EMAIL] Skipped (config):', { from: fromEmail, to, subject })
+    return false;
   }
-  console.log('[EMAIL] Sending via Resend:', { from: FROM_EMAIL, to, subject })
+  console.log('[EMAIL] Sending via Resend:', { from: fromEmail, to, subject })
   try {
-    const res = await resend.emails.send({ from: FROM_EMAIL, to, subject, html, text });
+    const res = await resend.emails.send({ from: fromEmail, to, subject, html, text });
     console.log('[EMAIL] Resend OK:', res?.data?.id ?? res)
+    return true;
   } catch (error) {
     console.error('[EMAIL] Resend ERROR:', error)
+    return false;
   }
 }
 
@@ -120,7 +131,7 @@ function normalizeNumericId(
 export async function sendReservaPagoConfirmadoEmail(
   reservaId: number
 ): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+  if (!isEmailConfigured()) {
     logMissingConfig();
     return;
   }
@@ -187,7 +198,7 @@ export async function sendReservaPagoConfirmadoEmail(
 export async function sendInscripcionPagoConfirmadoEmail(
   inscripcionId: number
 ): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+  if (!isEmailConfigured()) {
     logMissingConfig();
     return;
   }
@@ -338,7 +349,7 @@ export async function notifyPagoConfirmado({ previousEstado, nextEstado, reserva
  * Envía un email de confirmación de registro cuando un usuario se registra
  */
 export async function sendRegistroConfirmadoEmail(userUid: string): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+  if (!isEmailConfigured()) {
     logMissingConfig();
     return;
   }
@@ -381,7 +392,7 @@ export async function sendRegistroConfirmadoEmail(userUid: string): Promise<void
  * Envía un email cuando un trabajador aprueba una solicitud de recinto de un organizador
  */
 export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+  if (!isEmailConfigured()) {
     logMissingConfig();
     return;
   }
@@ -449,7 +460,7 @@ export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<voi
  * Envía un email cuando un trabajador rechaza una solicitud de recinto de un organizador
  */
 export async function sendSolicitudRechazadaEmail(reservaId: number): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+  if (!isEmailConfigured()) {
     logMissingConfig();
     return;
   }
@@ -519,10 +530,10 @@ export async function sendSolicitudRechazadaEmail(reservaId: number): Promise<vo
 export async function sendCuentaCreadaPorTrabajadorEmail(
   userUid: string,
   context: 'reserva' | 'inscripcion'
-): Promise<void> {
-  if (!IS_EMAIL_CONFIGURED) {
+): Promise<boolean> {
+  if (!isEmailConfigured()) {
     logMissingConfig();
-    return;
+    return false;
   }
 
   const { data: user, error: userError } = await supabaseAdmin
@@ -533,12 +544,12 @@ export async function sendCuentaCreadaPorTrabajadorEmail(
 
   if (userError) {
     console.error('Error obteniendo datos del usuario para email de cuenta creada', userError);
-    return;
+    return false;
   }
 
   if (!user || !user.email) {
     console.warn('No se pudo enviar email de cuenta creada: usuario sin email');
-    return;
+    return false;
   }
 
   const recipientName = getRecipientName(user);
@@ -557,9 +568,7 @@ export async function sendCuentaCreadaPorTrabajadorEmail(
 
   if (resetError || !resetData) {
     console.error('Error generando enlace de reseteo para cuenta creada', resetError);
-    // Fall back to regular reset
-    await supabaseAdmin.auth.resetPasswordForEmail(user.email, { redirectTo: redirectUrl });
-    return;
+    return false;
   }
 
   const resetPasswordUrl = resetData.properties.action_link;
@@ -575,7 +584,7 @@ export async function sendCuentaCreadaPorTrabajadorEmail(
   const subject = 'Bienvenido a ServiMunicipal - Configura tu cuenta';
   const text = `Hola ${recipientName},\n\nUn funcionario municipal ha creado una cuenta para ti mientras procesaba ${contextText}.\n\nPara establecer tu contraseña, visita:\n${resetPasswordUrl}\n\n¡Bienvenido!`;
 
-  await sendEmailMessage({
+  return sendEmailMessage({
     to: user.email,
     subject,
     html,

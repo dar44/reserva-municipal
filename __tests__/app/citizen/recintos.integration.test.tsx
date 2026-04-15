@@ -121,5 +121,6 @@ describe('RecintosPage (ciudadanía)', () => {
         render(ui)
 
         expect(screen.getByText(/no se encontraron recintos/i)).toBeInTheDocument()
+        expect(screen.getByRole('link', { name: /limpiar filtros/i })).toHaveAttribute('href', '/recintos')
     })
 })

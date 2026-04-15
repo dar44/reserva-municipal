@@ -40,12 +40,17 @@ jest.mock('@/lib/supabaseServer', () => ({
   createSupabaseServer: jest.fn(),
 }))
 
+jest.mock('@/lib/emailNotifications', () => ({
+  sendCuentaCreadaPorTrabajadorEmail: jest.fn().mockResolvedValue(false),
+}))
+
 const supabaseAdmin = jest.requireMock('@/lib/supabaseAdmin').supabaseAdmin as {
   from: jest.Mock
   auth: { admin: { createUser: jest.Mock }, resetPasswordForEmail: jest.Mock }
 }
 const createSupabaseServer = jest.requireMock('@/lib/supabaseServer').createSupabaseServer as jest.Mock
 const createCheckout = jest.requireMock('@/lib/lemonSqueezy').createCheckout as jest.Mock
+const sendCuentaCreadaPorTrabajadorEmail = jest.requireMock('@/lib/emailNotifications').sendCuentaCreadaPorTrabajadorEmail as jest.Mock
 const jsonSpy = NextResponse.json as jest.Mock
 
 import { POST } from '@/app/api/inscripciones/route'
@@ -55,6 +60,7 @@ describe('API inscripciones', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     createSupabaseServer.mockReset()
+    sendCuentaCreadaPorTrabajadorEmail.mockResolvedValue(false)
     jsonSpy.mockImplementation((body: unknown, init?: { status?: number }) => ({ body, init }))
   })
 
@@ -196,6 +202,7 @@ describe('API inscripciones', () => {
     const response = await POST(request)
 
     expect(supabaseAdmin.auth.admin.createUser).toHaveBeenCalledWith(expect.objectContaining({ email: 'new@example.com' }))
+    expect(sendCuentaCreadaPorTrabajadorEmail).toHaveBeenCalledWith('uid-new-ins', 'inscripcion')
     expect(supabaseAdmin.auth.resetPasswordForEmail).toHaveBeenCalledWith('new@example.com', {
       redirectTo: 'https://app.example.com/reset',
     })

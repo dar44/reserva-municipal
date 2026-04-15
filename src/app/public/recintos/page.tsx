@@ -1,13 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
-import { createSupabaseServerReadOnly } from "@/lib/supabaseServer";
+import { createSupabaseServerAdmin } from "@/lib/supabaseServer";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyRecintosState } from "@/components/ui/empty-state";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 type SearchParams = {
   search?: string;
@@ -18,9 +18,10 @@ export default async function PublicRecintosPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const supabase = await createSupabaseServerReadOnly();
+  const supabase = await createSupabaseServerAdmin();
 
   const params = await searchParams;
+  const clearHref = "/public/recintos";
 
   let query = supabase
     .from("recintos")
@@ -56,7 +57,7 @@ export default async function PublicRecintosPage({
 
       <form
         className="flex gap-3 mb-8"
-        action="/public/recintos"
+        action={clearHref}
       >
         <input
           type="text"
@@ -69,7 +70,7 @@ export default async function PublicRecintosPage({
           Buscar
         </Button>
         <Button asChild variant="outline">
-          <Link href="/public/recintos">Limpiar</Link>
+          <Link href={clearHref}>Limpiar</Link>
         </Button>
       </form>
 
@@ -157,7 +158,7 @@ export default async function PublicRecintosPage({
           );
         })}
 
-        {!recintos?.length && <EmptyRecintosState />}
+        {!recintos?.length && <EmptyRecintosState clearHref={clearHref} actionLabel="Limpiar filtros" />}
       </div>
     </div>
   );

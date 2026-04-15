@@ -1,13 +1,13 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPublicStorageUrl } from '@/lib/storage'
-import { createSupabaseServerReadOnly } from '@/lib/supabaseServer'
+import { createSupabaseServerAdmin } from '@/lib/supabaseServer'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { EmptyCoursesState } from '@/components/ui/empty-state'
 import { Calendar, DollarSign, ArrowRight } from 'lucide-react'
 
-export const dynamic = "force-dynamic";
+export const dynamic = 'force-dynamic';
 
 type SearchParams = {
   from?: string;
@@ -20,9 +20,10 @@ export default async function PublicCursosPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const supabase = await createSupabaseServerReadOnly();
+  const supabase = await createSupabaseServerAdmin();
 
   const params = await searchParams;
+  const clearHref = '/public/cursos'
 
   const today = new Date().toISOString().split('T')[0]
 
@@ -45,7 +46,11 @@ export default async function PublicCursosPage({
     query = query.ilike("name", `%${params.search}%`);
   }
 
-  const { data: cursos } = await query
+  const { data: cursos, error } = await query
+  
+  if (error) {
+    console.error("Supabase query error in public/cursos:", error);
+  }
 
   const cursosWithImages = cursos?.map(curso => ({
     ...curso,
@@ -72,7 +77,7 @@ export default async function PublicCursosPage({
 
       <form
         className="flex flex-wrap gap-3 mb-8"
-        action="/public/cursos"
+        action={clearHref}
       >
         <input
           type="text"
@@ -99,7 +104,7 @@ export default async function PublicCursosPage({
           Filtrar
         </Button>
         <Button asChild variant="outline">
-          <Link href="/public/cursos">Limpiar</Link>
+          <Link href={clearHref}>Limpiar</Link>
         </Button>
       </form>
 
@@ -182,7 +187,7 @@ export default async function PublicCursosPage({
           </Link>
         ))}
 
-        {!cursosWithImages?.length && <EmptyCoursesState />}
+        {!cursosWithImages?.length && <EmptyCoursesState clearHref={clearHref} />}
       </div>
     </div>
   );
