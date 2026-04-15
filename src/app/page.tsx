@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
-import { m } from "framer-motion";
-import { MotionProvider } from "@/components/motion-provider";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
+import { ScrollToFeatures } from "./scroll-to-features";
 
 export default function Home() {
   return (
@@ -22,31 +19,31 @@ export default function Home() {
                 Servi<span className="text-primary font-medium">Municipal</span>
               </span>
             </Link>
-            <div className="flex items-center gap-3">
+            <div className="flex h-full items-center gap-1">
               <Link
                 href="/public/recintos"
-                className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg hidden sm:inline-flex"
+                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
                 aria-label="Explorar recintos disponibles"
               >
                 Recintos
               </Link>
               <Link
                 href="/public/cursos"
-                className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg hidden sm:inline-flex"
+                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
                 aria-label="Explorar cursos disponibles"
               >
                 Cursos
               </Link>
               <Link
                 href="/login"
-                className="px-4 py-2.5 text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
+                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300"
                 aria-label="Ir a la página de inicio de sesión"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/signup"
-                className="px-5 py-2.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover rounded-lg transition-all hover:scale-105 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                 aria-label="Crear una cuenta nueva"
               >
                 Registrarse
@@ -61,57 +58,24 @@ export default function Home() {
         <section className="relative pt-32 pb-20 px-4 sm:px-6 lg:px-8 overflow-hidden" aria-labelledby="hero-heading">
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
-            <m.div
-              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl"
-              animate={{
-                scale: [1, 1.2, 1],
-                opacity: [0.3, 0.5, 0.3],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              // Respetar preferencias de movimiento reducido
-              style={{
-                animationPlayState: typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'paused' : 'running'
-              }}
+            <div
+              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-glow"
             />
-            <m.div
-              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl"
-              animate={{
-                scale: [1.2, 1, 1.2],
-                opacity: [0.5, 0.3, 0.5],
-              }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: "easeInOut",
-              }}
-              style={{
-                animationPlayState: typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'paused' : 'running'
-              }}
+            <div
+              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse-glow-alt"
             />
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
-            <m.div
-              className="text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <m.div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
+            <div className="text-center animate-fade-in-up">
+              <div
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20 animate-scale-in delay-200"
                 role="status"
                 aria-label="Etiqueta del sistema"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.2 }}
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 <span className="text-sm font-medium">Sistema de Reservas Inteligente</span>
-              </m.div>
+              </div>
 
               {/* Jerarquía visual clara - Refactoring UI */}
               <h1 id="hero-heading" className="text-5xl sm:text-6xl lg:text-7xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
@@ -137,37 +101,23 @@ export default function Home() {
                   Comenzar ahora
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
                 </Link>
-                <button
-                  onClick={() => {
-                    document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' });
-                  }}
-                  className="px-10 py-5 bg-surface hover:bg-surface-secondary border-2 border-border hover:border-primary/30 rounded-xl font-semibold text-lg transition-all hover:scale-105 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 min-w-[200px]"
-                  aria-label="Ver características del sistema - desplazarse a la sección de características"
-                >
-                  Conocer más
-                </button>
+                <ScrollToFeatures />
               </div>
-            </m.div>
+            </div>
           </div>
         </section>
 
         {/* Features Section */}
         <section id="features" className="py-20 px-4 sm:px-6 lg:px-8 relative scroll-mt-16" aria-labelledby="features-heading">
           <div className="max-w-7xl mx-auto">
-            <m.div
-              className="text-center mb-16"
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-            >
+            <div className="text-center mb-16">
               <h2 id="features-heading" className="text-4xl sm:text-5xl font-bold text-foreground mb-6">
                 Todo lo que necesitas
               </h2>
               <p className="text-lg sm:text-xl text-foreground-secondary max-w-2xl mx-auto">
                 Plataforma completa para ciudadanos, organizadores y administradores
               </p>
-            </m.div>
+            </div>
 
             {/* Ley de Miller: exactamente 3 características para memoria de trabajo óptima */}
 
@@ -195,19 +145,14 @@ export default function Home() {
                   iconColor: "text-primary",
                 },
               ].map((feature, index) => (
-                <m.div
+                <div
                   key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative"
+                  className="group relative transition-transform duration-300 hover:-translate-y-2 hover:scale-[1.02]"
                   role="article"
                   aria-labelledby={`feature-${index}`}
                 >
                   <div
-                    className={`relative h-full p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border backdrop-blur-sm transition-all duration-300 hover:shadow-2xl hover:border-${feature.iconColor.split('-')[1]}/30`}
+                    className={`relative h-full p-8 rounded-2xl bg-gradient-to-br ${feature.gradient} border border-border backdrop-blur-sm transition-all duration-300 hover:shadow-2xl`}
                   >
                     <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform`} aria-hidden="true">
                       <feature.icon className={`w-7 h-7 ${feature.iconColor}`} />
@@ -219,7 +164,7 @@ export default function Home() {
                       {feature.description}
                     </p>
                   </div>
-                </m.div>
+                </div>
               ))}
             </div>
           </div>
@@ -228,12 +173,8 @@ export default function Home() {
         {/* CTA Section */}
         <section className="py-20 px-4 sm:px-6 lg:px-8" aria-labelledby="cta-heading">
           <div className="max-w-5xl mx-auto">
-            <m.div
+            <div
               className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-primary to-primary-hover p-12 sm:p-16 text-center"
-              initial={{ opacity: 0, scale: 0.95 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
             >
               {/* Glassmorphism overlay */}
               <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent backdrop-blur-sm" aria-hidden="true" />
@@ -256,7 +197,7 @@ export default function Home() {
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
                 </Link>
               </div>
-            </m.div>
+            </div>
           </div>
         </section>
       </main>

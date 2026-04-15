@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { createSupabaseServerReadOnly, createSupabaseServerAdmin } from '@/lib/supabaseServer'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { getConfiguredCurrency } from '@/lib/config'
 import { formatCurrency } from '@/lib/currency'
 import { getPublicStorageUrl } from '@/lib/storage'
@@ -15,7 +15,7 @@ export const dynamic = 'force-dynamic';
 
 export default async function PublicCursoDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const supabase = await createSupabaseServerAdmin()
+  const supabase = supabaseAdmin
 
   const { data: curso } = await supabase
     .from('cursos')

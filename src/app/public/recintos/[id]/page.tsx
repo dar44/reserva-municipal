@@ -4,7 +4,7 @@ import Link from "next/link";
 import { getConfiguredCurrency, getReservaPriceValue } from "@/lib/config";
 import { formatCurrency } from "@/lib/currency";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
-import { createSupabaseServerReadOnly, createSupabaseServerAdmin } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/ui/breadcrumbs";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ export default async function PublicRecintoDetail({
   params: Promise<{ id: string }>
 }) {
   const { id } = await params;
-  const supabase = await createSupabaseServerAdmin();
+  const supabase = supabaseAdmin;
 
   const { data: recinto } = await supabase
     .from("recintos")

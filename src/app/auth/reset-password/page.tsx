@@ -3,8 +3,6 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'react-toastify'
-import { m } from 'framer-motion'
-import { MotionProvider } from '@/components/motion-provider'
 import { Mail, Loader2, ArrowRight, ArrowLeft } from 'lucide-react'
 
 export default function ResetPasswordPage() {
@@ -16,12 +14,8 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
-    if (!redirectUrl) {
-      toast.error('Error de configuración: URL de redirección no disponible')
-      setIsLoading(false)
-      return
-    }
+    const origin = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+    const redirectUrl = `${origin}/auth/update-password`
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -43,45 +37,33 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md"
+      <div
+        className="w-full max-w-md animate-scale-in"
       >
         {/* Card con glassmorphism */}
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <m.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
+            <h1
+              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2 animate-fade-in-up delay-100"
             >
               Recuperar Contraseña
-            </m.h1>
-            <m.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-foreground-secondary text-sm"
+            </h1>
+            <p
+              className="text-foreground-secondary text-sm animate-fade-in delay-200"
             >
               {emailSent
                 ? '¡Listo! Revisa tu correo electrónico'
                 : 'Ingresa tu email para recibir un enlace de recuperación'
               }
-            </m.p>
+            </p>
           </div>
 
           {!emailSent ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Email input con ícono */}
-              <m.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
-                className="relative group"
+              <div
+                className="relative group animate-fade-in-left delay-300"
               >
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
                 <input
@@ -93,13 +75,10 @@ export default function ResetPasswordPage() {
                   onChange={e => setEmail(e.target.value)}
                   disabled={isLoading}
                 />
-              </m.div>
+              </div>
 
               {/* Botón con estado de carga */}
-              <m.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4 }}
+              <button
                 type="submit"
                 disabled={isLoading}
                 className="
@@ -114,6 +93,7 @@ export default function ResetPasswordPage() {
                   flex items-center justify-center gap-2
                   disabled:opacity-50 disabled:cursor-not-allowed
                   disabled:hover:scale-100
+                  animate-fade-in-up delay-400
                 "
               >
                 {isLoading ? (
@@ -127,13 +107,11 @@ export default function ResetPasswordPage() {
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
-              </m.button>
+              </button>
             </form>
           ) : (
-            <m.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="text-center space-y-4"
+            <div
+              className="text-center space-y-4 animate-scale-in"
             >
               <div className="w-16 h-16 mx-auto bg-success/10 rounded-full flex items-center justify-center">
                 <Mail className="w-8 h-8 text-success" />
@@ -144,15 +122,12 @@ export default function ResetPasswordPage() {
               <p className="text-sm text-foreground-tertiary">
                 Revisa tu bandeja de entrada y sigue las instrucciones del correo.
               </p>
-            </m.div>
+            </div>
           )}
 
           {/* Enlaces secundarios */}
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: emailSent ? 0.3 : 0.5 }}
-            className="mt-6"
+          <div
+            className="mt-6 animate-fade-in delay-500"
           >
             <Link
               href="/login"
@@ -168,9 +143,9 @@ export default function ResetPasswordPage() {
               <ArrowLeft className="w-4 h-4" />
               <span>Volver al inicio de sesión</span>
             </Link>
-          </m.div>
+          </div>
         </div>
-      </m.div>
+      </div>
     </div>
   )
 }

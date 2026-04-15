@@ -266,3 +266,95 @@
     }
   }
 }
+
+/* ============================================
+   PERFORMANCE ANIMATIONS - CSS-only replacements
+   for framer-motion (eliminates ~45KB JS)
+   ============================================ */
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-20px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.3; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.2); }
+}
+
+@keyframes pulseRing {
+  0%, 100% { opacity: 0.5; transform: scale(1); }
+  50% { opacity: 0; transform: scale(1.2); }
+}
+
+@layer utilities {
+  /* Base animation classes */
+  .animate-fade-in {
+    animation: fadeIn 0.6s ease-out both;
+  }
+
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out both;
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.5s ease-out both;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.3s ease-out both;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 8s ease-in-out infinite;
+  }
+
+  .animate-pulse-glow-alt {
+    animation: pulseGlow 8s ease-in-out infinite reverse;
+  }
+
+  .animate-pulse-ring {
+    animation: pulseRing 2s ease-in-out infinite;
+  }
+
+  /* Animation delay utilities */
+  .delay-100 { animation-delay: 0.1s; }
+  .delay-200 { animation-delay: 0.2s; }
+  .delay-300 { animation-delay: 0.3s; }
+  .delay-400 { animation-delay: 0.4s; }
+  .delay-500 { animation-delay: 0.5s; }
+  .delay-600 { animation-delay: 0.6s; }
+  .delay-700 { animation-delay: 0.7s; }
+  .delay-800 { animation-delay: 0.8s; }
+  .delay-900 { animation-delay: 0.9s; }
+
+  /* Respect prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-fade-in,
+    .animate-fade-in-up,
+    .animate-fade-in-left,
+    .animate-scale-in,
+    .animate-pulse-glow,
+    .animate-pulse-glow-alt,
+    .animate-pulse-ring {
+      animation: none !important;
+      opacity: 1 !important;
+      transform: none !important;
+    }
+  }
+}

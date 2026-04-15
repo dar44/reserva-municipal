@@ -3,9 +3,7 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
-import { m } from 'framer-motion'
-import { MotionProvider } from '@/components/motion-provider'
-import { Mail, Lock, ArrowRight, Loader2, ArrowLeft } from 'lucide-react'
+import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -58,57 +56,47 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
-      <nav className="w-full px-6 py-4 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm">
+      <nav className="w-full border-b border-border bg-background/60 backdrop-blur-sm">
+        <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
         <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
           <span className="text-xl font-black tracking-tight text-foreground">
             Servi<span className="text-primary font-medium">Municipal</span>
           </span>
         </Link>
-        <div className="flex items-center gap-1 text-sm">
-          <Link href="/public/recintos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Recintos</Link>
-          <Link href="/public/cursos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Cursos</Link>
-          <Link href="/signup" className="ml-2 px-4 py-1.5 text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover rounded-lg transition-all hover:scale-105">
+        <div className="flex h-full items-center gap-1 text-sm">
+          <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Recintos</Link>
+          <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Cursos</Link>
+          <Link href="/signup" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm">
             Registrarse
           </Link>
+        </div>
         </div>
       </nav>
 
       <div className="flex-1 flex items-center justify-center p-4">
-      <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md"
+      <div
+        className="w-full max-w-md animate-scale-in"
       >
         {/* Card con glassmorphism sutil */}
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <m.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
+            <h1
+              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2 animate-fade-in-up delay-100"
             >
               ServiMunicipal
-            </m.h1>
-            <m.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-foreground-secondary text-sm"
+            </h1>
+            <p
+              className="text-foreground-secondary text-sm animate-fade-in delay-200"
             >
               Gestión inteligente de servicios municipales
-            </m.p>
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email input con ícono */}
-            <m.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="relative group"
+            <div
+              className="relative group animate-fade-in-left delay-300"
             >
               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
               <input
@@ -120,14 +108,11 @@ export default function LoginPage() {
                 onChange={e => setEmail(e.target.value)}
                 disabled={isLoading}
               />
-            </m.div>
+            </div>
 
             {/* Password input con ícono */}
-            <m.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.4 }}
-              className="relative group"
+            <div
+              className="relative group animate-fade-in-left delay-400"
             >
               <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
               <input
@@ -139,13 +124,10 @@ export default function LoginPage() {
                 onChange={e => setPassword(e.target.value)}
                 disabled={isLoading}
               />
-            </m.div>
+            </div>
 
             {/* Botón con estado de carga */}
-            <m.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
+            <button
               type="submit"
               disabled={isLoading}
               className="
@@ -160,6 +142,7 @@ export default function LoginPage() {
                 flex items-center justify-center gap-2
                 disabled:opacity-50 disabled:cursor-not-allowed
                 disabled:hover:scale-100
+                animate-fade-in-up delay-500
               "
             >
               {isLoading ? (
@@ -173,15 +156,12 @@ export default function LoginPage() {
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
-            </m.button>
+            </button>
           </form>
 
           {/* Enlaces secundarios */}
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-6 space-y-3"
+          <div
+            className="mt-6 space-y-3 animate-fade-in delay-600"
           >
             <Link
               href="/auth/reset-password"
@@ -214,9 +194,9 @@ export default function LoginPage() {
             >
               Crear cuenta nueva
             </Link>
-          </m.div>
+          </div>
         </div>
-      </m.div>
+      </div>
       </div>
     </div>
   )

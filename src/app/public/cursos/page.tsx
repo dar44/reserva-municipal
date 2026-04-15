@@ -1,7 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { getPublicStorageUrl } from '@/lib/storage'
-import { createSupabaseServerAdmin } from '@/lib/supabaseServer'
+import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { EmptyCoursesState } from '@/components/ui/empty-state'
@@ -20,7 +20,7 @@ export default async function PublicCursosPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const supabase = await createSupabaseServerAdmin();
+  const supabase = supabaseAdmin;
 
   const params = await searchParams;
   const clearHref = '/public/cursos'

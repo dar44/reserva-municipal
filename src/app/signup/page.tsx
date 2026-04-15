@@ -3,8 +3,6 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
-import { m } from 'framer-motion'
-import { MotionProvider } from '@/components/motion-provider'
 import { Mail, Lock, User, Phone, CreditCard, Loader2, ArrowRight, HelpCircle } from 'lucide-react'
 import { Tooltip } from '@/components/ui/tooltip'
 
@@ -65,60 +63,49 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
-      <nav className="w-full px-6 py-4 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm">
+      <nav className="w-full px-6 h-16 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm">
         <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
           <span className="text-xl font-black tracking-tight text-foreground">
             Servi<span className="text-primary font-medium">Municipal</span>
           </span>
         </Link>
-        <div className="flex items-center gap-1 text-sm">
-          <Link href="/public/recintos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Recintos</Link>
-          <Link href="/public/cursos" className="px-3 py-1.5 text-foreground-secondary hover:text-foreground rounded-md hover:bg-accent transition-colors">Cursos</Link>
-          <Link href="/login" className="ml-2 px-4 py-1.5 text-sm font-medium text-primary border border-primary/30 hover:bg-primary/5 rounded-lg transition-all hover:border-primary">
+        <div className="flex h-full items-center gap-1 text-sm">
+          <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Recintos</Link>
+          <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Cursos</Link>
+          <Link href="/login" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm">
             Iniciar sesión
           </Link>
         </div>
       </nav>
 
       <div className="flex-1 flex items-center justify-center p-4">
-      <m.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-2xl"
+      <div
+        className="w-full max-w-2xl animate-scale-in"
       >
         {/* Card con glassmorphism */}
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <m.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
+            <h1
+              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2 animate-fade-in-up delay-100"
             >
               Crear Cuenta
-            </m.h1>
-            <m.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2 }}
-              className="text-foreground-secondary text-sm"
+            </h1>
+            <p
+              className="text-foreground-secondary text-sm animate-fade-in delay-200"
             >
               Únete a ServiMunicipal y gestiona tus reservas
-            </m.p>
+            </p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Grid de inputs */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {Object.entries(form).map(([key, val], index) => (
-                <m.div
+                <div
                   key={key}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * (index + 3) }}
-                  className={`relative group ${key === 'email' || key === 'password' ? 'md:col-span-2' : ''}`}
+                  className={`relative group animate-fade-in-left ${key === 'email' || key === 'password' ? 'md:col-span-2' : ''}`}
+                  style={{ animationDelay: `${0.1 * (index + 3)}s` }}
                 >
                   <label className="block text-sm font-medium text-foreground-secondary mb-2">
                     <span className="flex items-center gap-1.5">
@@ -160,15 +147,12 @@ export default function SignupPage() {
                       Mínimo 8 caracteres
                     </p>
                   )}
-                </m.div>
+                </div>
               ))}
             </div>
 
             {/* Botón con estado de carga */}
-            <m.button
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
+            <button
               type="submit"
               disabled={isLoading}
               className="
@@ -183,6 +167,7 @@ export default function SignupPage() {
                 flex items-center justify-center gap-2
                 disabled:opacity-50 disabled:cursor-not-allowed
                 disabled:hover:scale-100
+                animate-fade-in-up delay-800
               "
             >
               {isLoading ? (
@@ -196,15 +181,12 @@ export default function SignupPage() {
                   <ArrowRight className="w-5 h-5" />
                 </>
               )}
-            </m.button>
+            </button>
           </form>
 
           {/* Enlaces secundarios */}
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.9 }}
-            className="mt-6 text-center"
+          <div
+            className="mt-6 text-center animate-fade-in delay-900"
           >
             <div className="relative mb-4">
               <div className="absolute inset-0 flex items-center">
@@ -230,9 +212,9 @@ export default function SignupPage() {
             >
               Iniciar sesión
             </Link>
-          </m.div>
+          </div>
         </div>
-      </m.div>
+      </div>
       </div>
     </div>
   )

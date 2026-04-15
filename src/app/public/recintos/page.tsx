@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getRecintoDefaultPublicUrl, getRecintoImageUrl } from "@/lib/recintoImages";
-import { createSupabaseServerAdmin } from "@/lib/supabaseServer";
+import { supabaseAdmin } from "@/lib/supabaseAdmin";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyRecintosState } from "@/components/ui/empty-state";
@@ -18,7 +18,7 @@ export default async function PublicRecintosPage({
 }: {
   searchParams: Promise<SearchParams>;
 }) {
-  const supabase = await createSupabaseServerAdmin();
+  const supabase = supabaseAdmin;
 
   const params = await searchParams;
   const clearHref = "/public/recintos";

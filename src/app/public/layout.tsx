@@ -26,16 +26,16 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
               <ThemeToggle />
             </div>
 
-            <div className="flex items-center gap-3">
+            <div className="flex h-full items-center gap-1">
               <Link
                 href="/login"
-                className="text-sm font-medium text-foreground-secondary hover:text-foreground transition-colors px-3 py-2 rounded-md hover:bg-accent"
+                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/signup"
-                className="text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover px-4 py-2 rounded-lg transition-all hover:scale-105 hover:shadow-lg"
+                className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm"
               >
                 Registrarse
               </Link>
@@ -58,7 +58,7 @@ function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
       href={href}
-      className="h-full flex items-center justify-center px-4 my-2 rounded-md text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
+      className="h-full flex items-center justify-center px-4 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     >
       {children}
     </Link>
