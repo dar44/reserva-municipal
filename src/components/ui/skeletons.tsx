@@ -21,36 +21,21 @@ export const CourseCardSkeleton = () => (
 )
 
 export const CourseCardSkeletonWithAnimation = ({ delay = 0 }: { delay?: number }) => (
-    <div
-        className="surface rounded-xl overflow-hidden shadow-md animate-fade-in-up"
-        style={{ animationDelay: `${delay}s` }}
-    >
+    <div className="surface rounded-xl overflow-hidden shadow-md">
         <div className="animate-pulse">
-            <div className="h-48 bg-muted relative overflow-hidden">
-                <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-            </div>
+            <div className="h-48 bg-muted" />
 
             <div className="p-6 space-y-4">
-                <div className="h-6 bg-muted rounded w-3/4 relative overflow-hidden">
-                    <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                </div>
+                <div className="h-6 bg-muted rounded w-3/4" />
 
                 <div className="space-y-2">
-                    <div className="h-4 bg-muted rounded w-full relative overflow-hidden">
-                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
-                    <div className="h-4 bg-muted rounded w-5/6 relative overflow-hidden">
-                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
+                    <div className="h-4 bg-muted rounded w-full" />
+                    <div className="h-4 bg-muted rounded w-5/6" />
                 </div>
 
                 <div className="flex justify-between items-center pt-2">
-                    <div className="h-6 bg-muted rounded w-24 relative overflow-hidden">
-                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
-                    <div className="h-4 bg-muted rounded w-32 relative overflow-hidden">
-                        <div className="absolute inset-0 -translate-x-full animate-[shimmer_2s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
-                    </div>
+                    <div className="h-6 bg-muted rounded w-24" />
+                    <div className="h-4 bg-muted rounded w-32" />
                 </div>
             </div>
         </div>
