@@ -5,7 +5,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'react-toastify'
-import { motion } from 'framer-motion'
+import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { Lock, Loader2, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export default function UpdatePasswordClient() {
@@ -113,37 +113,30 @@ export default function UpdatePasswordClient() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="surface rounded-2xl shadow-2xl p-8 border border-border w-full max-w-md"
+        <div
+          className="surface rounded-2xl shadow-2xl p-8 border border-border w-full max-w-md animate-fade-in"
         >
           <div className="text-center space-y-4">
             <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
             <p className="text-foreground-secondary">Verificando enlace de recuperación...</p>
           </div>
-        </motion.div>
+        </div>
+        <LazyToastContainer />
       </div>
     )
   }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-primary/5 via-background to-accent/5 p-4">
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.3 }}
-        className="w-full max-w-md"
+      <div
+        className="w-full max-w-md animate-scale-in"
       >
         {/* Card con glassmorphism */}
         <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
           {/* Logo y título */}
           <div className="text-center mb-8">
-            <motion.div
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.1 }}
-              className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center ${ready ? 'bg-success/10' : 'bg-error/10'
+            <div
+              className={`w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center animate-scale-in delay-100 ${ready ? 'bg-success/10' : 'bg-error/10'
                 }`}
             >
               {ready ? (
@@ -151,37 +144,28 @@ export default function UpdatePasswordClient() {
               ) : (
                 <AlertCircle className="w-8 h-8 text-error" />
               )}
-            </motion.div>
+            </div>
 
-            <motion.h1
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2"
+            <h1
+              className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-hover bg-clip-text text-transparent mb-2 animate-fade-in-up delay-200"
             >
               {ready ? 'Nueva Contraseña' : 'Enlace Inválido'}
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-foreground-secondary text-sm"
+            </h1>
+            <p
+              className="text-foreground-secondary text-sm animate-fade-in delay-300"
             >
               {ready
                 ? 'Crea una contraseña segura para tu cuenta'
                 : 'Este enlace no es válido o ha expirado'
               }
-            </motion.p>
+            </p>
           </div>
 
           {ready ? (
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Password input con ícono */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                className="relative group"
+              <div
+                className="relative group animate-fade-in-left delay-400"
               >
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
                 <input
@@ -197,13 +181,10 @@ export default function UpdatePasswordClient() {
                 <p className="text-xs text-foreground-tertiary mt-1">
                   Mínimo 8 caracteres
                 </p>
-              </motion.div>
+              </div>
 
               {/* Botón con estado de carga */}
-              <motion.button
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
+              <button
                 type="submit"
                 disabled={isSubmitting}
                 className="
@@ -218,6 +199,7 @@ export default function UpdatePasswordClient() {
                   flex items-center justify-center gap-2
                   disabled:opacity-50 disabled:cursor-not-allowed
                   disabled:hover:scale-100
+                  animate-fade-in-up delay-500
                 "
               >
                 {isSubmitting ? (
@@ -231,14 +213,11 @@ export default function UpdatePasswordClient() {
                     <ArrowRight className="w-5 h-5" />
                   </>
                 )}
-              </motion.button>
+              </button>
             </form>
           ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 }}
-              className="space-y-4"
+            <div
+              className="space-y-4 animate-fade-in delay-400"
             >
               <p className="text-foreground-secondary text-center">
                 Debes abrir esta página desde el enlace del email de recuperación.
@@ -258,15 +237,12 @@ export default function UpdatePasswordClient() {
               >
                 Solicitar nuevo enlace
               </Link>
-            </motion.div>
+            </div>
           )}
 
           {/* Enlace a login */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="mt-6 text-center"
+          <div
+            className="mt-6 text-center animate-fade-in delay-600"
           >
             <Link
               href="/login"
@@ -274,10 +250,10 @@ export default function UpdatePasswordClient() {
             >
               Volver al inicio de sesión
             </Link>
-          </motion.div>
+          </div>
         </div>
-      </motion.div>
+      </div>
+      <LazyToastContainer />
     </div>
   )
 }
-

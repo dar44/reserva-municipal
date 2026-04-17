@@ -2,6 +2,7 @@
 import { ReactNode } from 'react'
 import AdminNavBar from '@/components/AdminNavBar'
 import { requireAuthRSC } from '@/lib/auth/guard'
+import { LazyToastContainer } from '@/components/LazyToastContainer'
 
 export const dynamic = 'force-dynamic'
 
@@ -12,6 +13,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     <div className="min-h-screen flex flex-col bg-background text-foreground">
       <AdminNavBar />
       <main className="flex-1 p-4 container mx-auto">{children}</main>
+      <LazyToastContainer />
     </div>
   )
 }

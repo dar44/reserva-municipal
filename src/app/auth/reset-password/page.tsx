@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'react-toastify'
+import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { Mail, Loader2, ArrowRight, ArrowLeft } from 'lucide-react'
 
 export default function ResetPasswordPage() {
@@ -14,8 +15,12 @@ export default function ResetPasswordPage() {
     e.preventDefault()
     setIsLoading(true)
 
-    const origin = typeof window !== 'undefined' ? window.location.origin : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
-    const redirectUrl = `${origin}/auth/update-password`
+    const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
+    if (!redirectUrl) {
+      toast.error('Error de configuración: URL de redirección no disponible')
+      setIsLoading(false)
+      return
+    }
 
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -146,6 +151,7 @@ export default function ResetPasswordPage() {
           </div>
         </div>
       </div>
+      <LazyToastContainer />
     </div>
   )
 }

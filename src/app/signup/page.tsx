@@ -3,8 +3,8 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'react-toastify'
+import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { Mail, Lock, User, Phone, CreditCard, Loader2, ArrowRight, HelpCircle } from 'lucide-react'
-import { Tooltip } from '@/components/ui/tooltip'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -111,19 +111,19 @@ export default function SignupPage() {
                     <span className="flex items-center gap-1.5">
                       {getLabel(key)}
                       {(key === 'dni') && (
-                        <Tooltip content="Documento Nacional de Identidad. Formato: 12345678A (8 dígitos seguidos de una letra)." side="right">
+                        <span title="Documento Nacional de Identidad. Formato: 12345678A (8 dígitos seguidos de una letra).">
                           <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                        </Tooltip>
+                        </span>
                       )}
                       {(key === 'phone') && (
-                        <Tooltip content="Formato recomendado: +34 600 000 000. Se usará para notificaciones." side="right">
+                        <span title="Formato recomendado: +34 600 000 000. Se usará para notificaciones.">
                           <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                        </Tooltip>
+                        </span>
                       )}
                       {(key === 'password') && (
-                        <Tooltip content="Mínimo 8 caracteres. Usa letras, números y símbolos para mayor seguridad." side="right">
+                        <span title="Mínimo 8 caracteres. Usa letras, números y símbolos para mayor seguridad.">
                           <HelpCircle className="w-3.5 h-3.5 text-muted-foreground cursor-help" />
-                        </Tooltip>
+                        </span>
                       )}
                     </span>
                   </label>
@@ -216,6 +216,7 @@ export default function SignupPage() {
         </div>
       </div>
       </div>
+      <LazyToastContainer />
     </div>
   )
 }

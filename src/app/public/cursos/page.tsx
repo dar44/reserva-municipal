@@ -132,8 +132,9 @@ export default async function PublicCursosPage({
                     fill
                     className="object-cover transition-transform duration-500 group-hover:scale-110"
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    priority={index < 3}
-                    loading={index < 3 ? "eager" : "lazy"}
+                    priority={index === 0}
+                    loading={index === 0 ? "eager" : "lazy"}
+                    quality={75}
                   />
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
