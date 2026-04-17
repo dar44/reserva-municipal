@@ -59,17 +59,19 @@ export default function Home() {
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <div
-              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full blur-3xl animate-pulse-glow"
+              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full opacity-50"
+              style={{ filter: 'blur(100px)' }}
             />
             <div
-              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full blur-3xl animate-pulse-glow-alt"
+              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full opacity-50"
+              style={{ filter: 'blur(100px)' }}
             />
           </div>
 
           <div className="max-w-7xl mx-auto relative z-10">
-            <div className="text-center animate-fade-in-up">
+            <div className="text-center">
               <div
-                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20 animate-scale-in delay-200"
+                className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
                 role="status"
                 aria-label="Etiqueta del sistema"
               >

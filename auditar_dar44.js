@@ -2,16 +2,17 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const SITE = 'https://dar44.netlify.app';
+const target = process.argv[2] === 'local' ? 'localhost' : 'remote';
+const SITE = target === 'local' ? 'http://localhost:3000' : 'https://dar44.netlify.app';
 const TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-const FOLDER_NAME = `dar44.netlify.app`;
+const FOLDER_NAME = target === 'local' ? 'localhost_3000' : 'dar44.netlify.app';
 const OUTPUT_PATH = `./auditorias-tfg/${FOLDER_NAME}`;
-const HISTORY_PATH = `./auditorias-tfg/_historial_dar44.json`;
+const HISTORY_PATH = `./auditorias-tfg/_historial_${target}.json`;
 
 console.log('╔══════════════════════════════════════════════════════╗');
 console.log('║   Auditoría de Rendimiento — dar44.netlify.app       ║');
 console.log('╚══════════════════════════════════════════════════════╝');
-console.log(`\n📅 Fecha: ${new Date().toLocaleString('es-ES')}`);
+console.log(`\n📅 Fecha: ${new Date().toLocaleString('es-CL')}`);
 console.log(`📁 Resultados en: ${OUTPUT_PATH}\n`);
 
 try {
@@ -50,7 +51,7 @@ function loadResults() {
 function saveToHistory(results) {
   let history = [];
   if (fs.existsSync(HISTORY_PATH)) {
-    try { history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf8')); } catch {}
+    try { history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf8')); } catch { }
   }
   history.push({ timestamp: TIMESTAMP, date: new Date().toLocaleString('es-ES'), results });
   fs.writeFileSync(HISTORY_PATH, JSON.stringify(history, null, 2));
@@ -102,9 +103,9 @@ function generateReport(currentResults, history) {
     <tr>
       <td class="path">${entry.date}</td>
       ${keys.map(k => {
-        const a = avg(rs, k);
-        return `<td><span class="score ${avgClass(a)}">${a ?? '-'}</span></td>`;
-      }).join('')}
+      const a = avg(rs, k);
+      return `<td><span class="score ${avgClass(a)}">${a ?? '-'}</span></td>`;
+    }).join('')}
     </tr>`;
   }).join('');
 
@@ -154,16 +155,16 @@ function generateReport(currentResults, history) {
 
     <!-- Medias actuales -->
     <div class="summary-grid">
-      ${['score','performance','accessibility','best-practices','seo'].map(k => {
-        const a = avg(currentResults, k);
-        const label = { score:'Global', performance:'Rendimiento', accessibility:'Accesibilidad', 'best-practices':'B. Prácticas', seo:'SEO' }[k];
-        const cls = a >= 90 ? 'value-high' : a >= 50 ? 'value-medium' : 'value-low';
-        // Comparar con penúltima entrada del historial
-        const prev = history.length >= 2 ? avg(history[history.length - 2].results, k) : null;
-        const delta = prev != null ? a - prev : null;
-        const deltaStr = delta != null ? `<div class="delta ${delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : ''}">${delta > 0 ? '▲' : delta < 0 ? '▼' : '='} ${Math.abs(delta)} vs anterior</div>` : '';
-        return `<div class="summary-card"><div class="label">${label}</div><div class="value ${cls}">${a ?? '–'}</div>${deltaStr}</div>`;
-      }).join('')}
+      ${['score', 'performance', 'accessibility', 'best-practices', 'seo'].map(k => {
+    const a = avg(currentResults, k);
+    const label = { score: 'Global', performance: 'Rendimiento', accessibility: 'Accesibilidad', 'best-practices': 'B. Prácticas', seo: 'SEO' }[k];
+    const cls = a >= 90 ? 'value-high' : a >= 50 ? 'value-medium' : 'value-low';
+    // Comparar con penúltima entrada del historial
+    const prev = history.length >= 2 ? avg(history[history.length - 2].results, k) : null;
+    const delta = prev != null ? a - prev : null;
+    const deltaStr = delta != null ? `<div class="delta ${delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : ''}">${delta > 0 ? '▲' : delta < 0 ? '▼' : '='} ${Math.abs(delta)} vs anterior</div>` : '';
+    return `<div class="summary-card"><div class="label">${label}</div><div class="value ${cls}">${a ?? '–'}</div>${deltaStr}</div>`;
+  }).join('')}
     </div>
 
     <!-- Tabla por ruta -->
@@ -225,11 +226,11 @@ if (results) {
   console.log('\n┌─────────────────────────────────────────────┐');
   console.log('│            RESUMEN DE MEDIAS                │');
   console.log('├──────────────────┬──────────────────────────┤');
-  ['score','performance','accessibility','best-practices','seo'].forEach(k => {
-    const label = { score:'Global         ', performance:'Rendimiento     ', accessibility:'Accesibilidad   ', 'best-practices':'B. Prácticas    ', seo:'SEO             ' }[k];
+  ['score', 'performance', 'accessibility', 'best-practices', 'seo'].forEach(k => {
+    const label = { score: 'Global         ', performance: 'Rendimiento     ', accessibility: 'Accesibilidad   ', 'best-practices': 'B. Prácticas    ', seo: 'SEO             ' }[k];
     const vals = results.filter(r => r[k] != null).map(r => Math.round(r[k] * 100));
-    const a = vals.length ? Math.round(vals.reduce((a,b) => a+b,0) / vals.length) : '-';
-    const bar = typeof a === 'number' ? '█'.repeat(Math.floor(a/10)) + '░'.repeat(10 - Math.floor(a/10)) : '';
+    const a = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : '-';
+    const bar = typeof a === 'number' ? '█'.repeat(Math.floor(a / 10)) + '░'.repeat(10 - Math.floor(a / 10)) : '';
     const status = typeof a === 'number' ? (a >= 90 ? '✅' : a >= 50 ? '⚠️ ' : '❌') : '❓';
     console.log(`│ ${label}│  ${String(a).padStart(3)}  ${bar} ${status} │`);
   });
