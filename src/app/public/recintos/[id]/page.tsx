@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -12,12 +13,24 @@ import { LogIn, UserPlus } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
-export default async function PublicRecintoDetail({
-  params
-}: {
-  params: Promise<{ id: string }>
-}) {
-  const { id } = await params;
+function DetailSkeleton() {
+  return (
+    <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface animate-pulse">
+      <div className="h-80 bg-muted rounded-lg w-full"></div>
+      <div className="space-y-6 w-full">
+        <div className="h-10 bg-muted rounded w-3/4"></div>
+        <div className="space-y-3">
+          <div className="h-4 bg-muted rounded w-full"></div>
+          <div className="h-4 bg-muted rounded w-5/6"></div>
+          <div className="h-4 bg-muted rounded w-4/5"></div>
+        </div>
+        <div className="h-24 bg-muted rounded mt-6"></div>
+      </div>
+    </div>
+  )
+}
+
+async function RecintoDetailContent({ id }: { id: string }) {
   const supabase = supabaseAdmin;
 
   const { data: recinto } = await supabase
@@ -43,7 +56,7 @@ export default async function PublicRecintoDetail({
   const isDisponible = recinto.state === "Disponible";
 
   return (
-    <div className="container-padding section-spacing">
+    <>
       <Breadcrumbs
         homeHref="/public/recintos"
         items={[
@@ -52,7 +65,7 @@ export default async function PublicRecintoDetail({
         ]}
       />
 
-      <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface">
+      <div className="grid md:grid-cols-2 gap-8 surface rounded-lg p-8 shadow-xl bg-gradient-to-br from-background to-surface mt-6">
         <div className="relative h-80 bg-muted rounded-lg overflow-hidden flex items-center justify-center text-tertiary">
           {imageUrl ? (
             <Image
@@ -113,6 +126,27 @@ export default async function PublicRecintoDetail({
           )}
         </div>
       </div>
+    </>
+  );
+}
+
+export default async function PublicRecintoDetail({
+  params
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = await params;
+
+  return (
+    <div className="container-padding section-spacing">
+      <Suspense fallback={
+        <>
+          <div className="h-6 w-48 bg-muted rounded animate-pulse mb-6" />
+          <DetailSkeleton />
+        </>
+      }>
+        <RecintoDetailContent id={id} />
+      </Suspense>
     </div>
   );
 }
