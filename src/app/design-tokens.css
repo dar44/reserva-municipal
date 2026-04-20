@@ -110,12 +110,12 @@
     /* slate-300 */
 
     /* Acciones Primarias */
-    --primary: rgb(var(--primary-500));
-    /* blue-500 */
-    --primary-hover: rgb(var(--primary-600));
-    /* blue-600 */
-    --primary-active: rgb(var(--primary-700));
-    /* blue-700 */
+    --primary: rgb(var(--primary-700));
+    /* blue-700 - sufficient contrast with white (7:1) */
+    --primary-hover: rgb(var(--primary-800));
+    /* blue-800 */
+    --primary-active: rgb(var(--primary-900));
+    /* blue-900 */
     --primary-foreground: rgb(255 255 255);
 
     /* Acciones Secundarias */

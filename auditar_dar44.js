@@ -42,7 +42,7 @@ console.log("\n¡Proceso finalizado! Todas las auditorías estáticas se han gua
 
 function generateOfflineSummary() {
   console.log("\nGenerando reporte offline resumen...");
-  const baseDir = './auditorias-tfg';
+  const baseDir = './auditorias-tfg-dar44';
   if (!fs.existsSync(baseDir)) return;
 
   const folders = fs.readdirSync(baseDir, { withFileTypes: true })

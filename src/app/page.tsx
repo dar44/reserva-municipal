@@ -28,7 +28,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border" aria-label="Navegación principal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
               <span className="text-2xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>
               </span>
@@ -37,28 +37,24 @@ export default function Home() {
               <Link
                 href="/public/recintos"
                 className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
-                aria-label="Explorar recintos disponibles"
               >
                 Recintos
               </Link>
               <Link
                 href="/public/cursos"
                 className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
-                aria-label="Explorar cursos disponibles"
               >
                 Cursos
               </Link>
               <Link
                 href="/login"
                 className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300"
-                aria-label="Ir a la página de inicio de sesión"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/signup"
                 className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                aria-label="Crear una cuenta nueva"
               >
                 Registrarse
               </Link>
@@ -109,7 +105,6 @@ export default function Home() {
                 <Link
                   href="/signup"
                   className="group px-10 py-5 bg-primary hover:bg-primary-hover text-primary-foreground rounded-xl font-semibold text-lg shadow-lg transition-all hover:scale-105 hover:shadow-2xl focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 flex items-center gap-2 min-w-[200px] justify-center"
-                  aria-label="Comenzar a usar la plataforma registrándote"
                 >
                   Comenzar ahora
                   <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" aria-hidden="true" />
@@ -204,7 +199,6 @@ export default function Home() {
                 <Link
                   href="/signup"
                   className="inline-flex items-center gap-2 px-10 py-5 bg-background hover:bg-surface text-foreground rounded-xl font-bold text-lg shadow-2xl transition-all hover:scale-105 hover:shadow-3xl border-2 border-foreground/20 focus:outline-none focus:ring-2 focus:ring-foreground focus:ring-offset-2 focus:ring-offset-primary"
-                  aria-label="Crear cuenta gratuita y comenzar a usar el sistema ahora"
                 >
                   Crear cuenta ahora
                   <ArrowRight className="w-5 h-5" aria-hidden="true" />
@@ -219,7 +213,7 @@ export default function Home() {
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-surface/50" role="contentinfo" aria-label="Pie de página">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
               <span className="text-xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>
               </span>
@@ -228,16 +222,16 @@ export default function Home() {
               © 2025 ServiMunicipal. Sistema de gestión de reservas municipales.
             </p>
             <nav className="flex items-center gap-6" aria-label="Enlaces del pie de página">
-              <Link href="/public/recintos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Explorar recintos">
+              <Link href="/public/recintos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded">
                 Recintos
               </Link>
-              <Link href="/public/cursos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Explorar cursos">
+              <Link href="/public/cursos" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded">
                 Cursos
               </Link>
-              <Link href="/login" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Ir a iniciar sesión">
+              <Link href="/login" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded">
                 Iniciar Sesión
               </Link>
-              <Link href="/signup" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded" aria-label="Ir a registrarse">
+              <Link href="/signup" className="text-sm text-foreground-secondary hover:text-foreground transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded">
                 Registrarse
               </Link>
             </nav>

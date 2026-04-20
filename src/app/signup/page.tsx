@@ -7,15 +7,15 @@ export default function SignupPage() {
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
       <nav className="w-full px-6 h-16 flex items-center justify-between border-b border-border bg-background/60 backdrop-blur-sm" aria-label="Navegación principal">
-        <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
+        <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
           <span className="text-xl font-black tracking-tight text-foreground">
             Servi<span className="text-primary font-medium">Municipal</span>
           </span>
         </Link>
         <div className="flex h-full items-center gap-1 text-sm">
-          <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300" aria-label="Explorar recintos disponibles">Recintos</Link>
-          <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300" aria-label="Explorar cursos disponibles">Cursos</Link>
-          <Link href="/login" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm" aria-label="Ir a la página de inicio de sesión">
+          <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Recintos</Link>
+          <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Cursos</Link>
+          <Link href="/login" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm">
             Iniciar sesión
           </Link>
         </div>
@@ -60,7 +60,6 @@ export default function SignupPage() {
                   transition-all duration-200
                   flex items-center justify-center
                 "
-                aria-label="Ir a la página de inicio de sesión"
               >
                 Iniciar sesión
               </Link>

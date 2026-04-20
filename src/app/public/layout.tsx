@@ -16,7 +16,7 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             <Link
               href="/"
               className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
-              aria-label="Ir al inicio"
+              aria-label="Inicio"
             >
               <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>
@@ -24,8 +24,8 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
             </Link>
 
             <div className="hidden md:flex h-full items-center gap-3">
-              <NavLink href="/public/recintos" aria-label="Explorar recintos disponibles">Recintos</NavLink>
-              <NavLink href="/public/cursos" aria-label="Explorar cursos disponibles">Cursos</NavLink>
+              <NavLink href="/public/recintos">Recintos</NavLink>
+              <NavLink href="/public/cursos">Cursos</NavLink>
               <ThemeToggle />
             </div>
 
@@ -33,14 +33,12 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
               <Link
                 href="/login"
                 className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300"
-                aria-label="Ir a la página de inicio de sesión"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/signup"
                 className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm"
-                aria-label="Crear una cuenta nueva"
               >
                 Registrarse
               </Link>
@@ -59,11 +57,10 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
   )
 }
 
-function NavLink({ href, children, 'aria-label': ariaLabel }: { href: string; children: ReactNode; 'aria-label'?: string }) {
+function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
       href={href}
-      aria-label={ariaLabel}
       className="h-full flex items-center justify-center px-4 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
     >
       {children}
