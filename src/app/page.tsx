@@ -1,6 +1,20 @@
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
-import { ScrollToFeatures } from "./scroll-to-features";
+
+const ScrollToFeatures = dynamic(
+  () => import("./scroll-to-features").then((mod) => mod.ScrollToFeatures),
+  {
+    loading: () => (
+      <button
+        className="px-10 py-5 bg-surface hover:bg-surface-secondary border-2 border-border hover:border-primary/30 rounded-xl font-semibold text-lg transition-all min-w-[200px]"
+        aria-label="Ver características del sistema"
+      >
+        Conocer más
+      </button>
+    ),
+  }
+);
 
 export default function Home() {
   return (
@@ -11,7 +25,7 @@ export default function Home() {
       >
         Saltar al contenido principal
       </a>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border" aria-label="Navegación principal">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border" aria-label="Navegación principal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
@@ -59,12 +73,10 @@ export default function Home() {
           {/* Animated gradient orbs - decorativos, ocultos para lectores de pantalla */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
             <div
-              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full opacity-50"
-              style={{ filter: 'blur(100px)' }}
+              className="absolute top-0 right-0 w-96 h-96 bg-primary/20 rounded-full opacity-50 blur-[100px] will-change-transform"
             />
             <div
-              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full opacity-50"
-              style={{ filter: 'blur(100px)' }}
+              className="absolute bottom-0 left-0 w-96 h-96 bg-primary/15 rounded-full opacity-50 blur-[100px] will-change-transform"
             />
           </div>
 
@@ -72,8 +84,7 @@ export default function Home() {
             <div className="text-center">
               <div
                 className="inline-flex items-center gap-2 px-4 py-2 bg-primary/10 text-primary rounded-full mb-6 border border-primary/20"
-                role="status"
-                aria-label="Etiqueta del sistema"
+                aria-hidden="true"
               >
                 <Sparkles className="w-4 h-4" aria-hidden="true" />
                 <span className="text-sm font-medium">Sistema de Reservas Inteligente</span>

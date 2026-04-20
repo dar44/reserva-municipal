@@ -2,245 +2,159 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const target = process.argv[2] === 'local' ? 'localhost' : 'remote';
-const SITE = target === 'local' ? 'http://localhost:3000' : 'https://dar44.netlify.app';
-const TIMESTAMP = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-const FOLDER_NAME = target === 'local' ? 'localhost_3000' : 'dar44.netlify.app';
-const OUTPUT_PATH = `./auditorias-tfg/${FOLDER_NAME}`;
-const HISTORY_PATH = `./auditorias-tfg/_historial_${target}.json`;
+// Lista completa de plataformas para el análisis
+const competencias = [
+  "https://dar44.netlify.app",
+  "https://servimunicipal.vercel.app"
+];
 
-console.log('╔══════════════════════════════════════════════════════╗');
-console.log('║   Auditoría de Rendimiento — dar44.netlify.app       ║');
-console.log('╚══════════════════════════════════════════════════════╝');
-console.log(`\n📅 Fecha: ${new Date().toLocaleString('es-CL')}`);
-console.log(`📁 Resultados en: ${OUTPUT_PATH}\n`);
+console.log("Iniciando el proceso de auditoría general para el TFG...");
 
-try {
-  const command = [
-    'npx unlighthouse-ci',
-    `--site ${SITE}`,
-    '--build-static',
-    `--output-path ${OUTPUT_PATH}`,
-    '--no-cache',
-    '--desktop',
-  ].join(' ');
+for (const site of competencias) {
+  // Limpiamos la URL para crear un nombre de carpeta válido y limpio
+  const folderName = site
+    .replace(/^https?:\/\//, '')
+    .replace(/\/$/, '')
+    .replace(/[^\w.-]/g, '_');
 
-  console.log(`⚙️  Ejecutando: ${command}\n`);
-  execSync(command, { stdio: 'inherit' });
-  console.log(`\n✅ Auditoría completada.`);
+  console.log(`\n========================================================`);
+  console.log(`  Auditando competencia: ${site}`);
+  console.log(`========================================================\n`);
 
-} catch (error) {
-  console.error('\n❌ Error durante la auditoría. Puede ser un bloqueo temporal o problema de red.');
-}
+  try {
+    // Usamos 'unlighthouse-ci' para que el script se cierre correctamente y continúe con el siguiente.
+    // Añadimos '--no-cache' para evitar que devuelva resultados antiguos y mida el performance real actual.
+    // Añadimos '--desktop' de manera opcional en caso de que quieras comparar el rendimiento simulando ordenador.
+    const command = `npx unlighthouse-ci --site ${site} --build-static --output-path ./auditorias-tfg/${folderName} --no-cache --desktop`;
 
-// ──────────────────────────────────────────
-// 1. Leer resultados del ci-result.json
-// ──────────────────────────────────────────
-function loadResults() {
-  const jsonPath = path.join(OUTPUT_PATH, 'ci-result.json');
-  if (!fs.existsSync(jsonPath)) {
-    console.warn('\n⚠️  No se encontró ci-result.json. Saltando análisis.');
-    return null;
+    // Ejecutamos heredando el stdio para ver por consola el proceso tal cual
+    execSync(command, { stdio: 'inherit' });
+
+    console.log(`¡Auditoría de ${site} completada exitosamente! Guardada en ./auditorias-tfg/${folderName}`);
+
+
+  } catch (error) {
+    console.error(`Ha habido algún error escaneando ${site}. (Posible bloqueo anti-bots o ruta inaccesible).`);
   }
-  return JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 }
 
-// ──────────────────────────────────────────
-// 2. Guardar en historial para comparar
-// ──────────────────────────────────────────
-function saveToHistory(results) {
-  let history = [];
-  if (fs.existsSync(HISTORY_PATH)) {
-    try { history = JSON.parse(fs.readFileSync(HISTORY_PATH, 'utf8')); } catch { }
-  }
-  history.push({ timestamp: TIMESTAMP, date: new Date().toLocaleString('es-ES'), results });
-  fs.writeFileSync(HISTORY_PATH, JSON.stringify(history, null, 2));
-  console.log(`\n📊 Historial actualizado: ${HISTORY_PATH} (${history.length} entradas)`);
-  return history;
-}
+console.log("\n¡Proceso finalizado! Todas las auditorías estáticas se han guardado en la carpeta '/auditorias-tfg'.");
 
-// ──────────────────────────────────────────
-// 3. Generar reporte HTML con historial
-// ──────────────────────────────────────────
-function generateReport(currentResults, history) {
-  const formatScore = (val) => {
-    if (val === undefined || val === null) return '<span class="score score-none">-</span>';
-    const num = Math.round(val * 100);
-    let cls = 'score-low';
-    if (num >= 90) cls = 'score-high';
-    else if (num >= 50) cls = 'score-medium';
-    return `<span class="score ${cls}">${num}</span>`;
-  };
+function generateOfflineSummary() {
+  console.log("\nGenerando reporte offline resumen...");
+  const baseDir = './auditorias-tfg';
+  if (!fs.existsSync(baseDir)) return;
 
-  const avg = (routes, key) => {
-    const vals = routes.filter(r => r[key] != null).map(r => Math.round(r[key] * 100));
-    return vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
-  };
+  const folders = fs.readdirSync(baseDir, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => dirent.name);
 
-  const avgClass = (n) => {
-    if (n == null) return 'score-none';
-    if (n >= 90) return 'score-high';
-    if (n >= 50) return 'score-medium';
-    return 'score-low';
-  };
-
-  // Tabla de rutas actuales
-  const routeRows = currentResults.map(r => `
-    <tr>
-      <td class="path">${r.path}</td>
-      <td>${formatScore(r.score)}</td>
-      <td>${formatScore(r.performance)}</td>
-      <td>${formatScore(r.accessibility)}</td>
-      <td>${formatScore(r['best-practices'])}</td>
-      <td>${formatScore(r.seo)}</td>
-    </tr>`).join('');
-
-  // Historial de medias
-  const historyRows = history.map(entry => {
-    const rs = entry.results;
-    const keys = ['score', 'performance', 'accessibility', 'best-practices', 'seo'];
-    return `
-    <tr>
-      <td class="path">${entry.date}</td>
-      ${keys.map(k => {
-      const a = avg(rs, k);
-      return `<td><span class="score ${avgClass(a)}">${a ?? '-'}</span></td>`;
-    }).join('')}
-    </tr>`;
-  }).join('');
-
-  const html = `<!DOCTYPE html>
+  let html = `<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Auditoría dar44.netlify.app — ${TIMESTAMP}</title>
+  <title>Resumen de Auditorías - TFG</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: system-ui, -apple-system, sans-serif; background: #0f172a; color: #e2e8f0; min-height: 100vh; }
-    header { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); padding: 2rem; text-align: center; }
-    header h1 { font-size: 1.75rem; font-weight: 800; color: #fff; margin-bottom: 0.25rem; }
-    header p { color: #bfdbfe; font-size: 0.95rem; }
-    main { max-width: 1100px; margin: 0 auto; padding: 2rem 1rem; }
-    h2 { font-size: 1.1rem; font-weight: 700; color: #93c5fd; margin-bottom: 1rem; display: flex; align-items: center; gap: 0.5rem; }
-    .card { background: #1e293b; border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; border: 1px solid #334155; overflow-x: auto; }
-    table { width: 100%; border-collapse: collapse; min-width: 550px; }
-    th, td { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 1px solid #334155; font-size: 0.875rem; }
-    th { background: #0f172a; font-weight: 600; color: #94a3b8; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
-    tr:hover td { background: #1a2744; }
-    .path { font-family: monospace; color: #94a3b8; }
-    .score { font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 6px; text-align: center; display: inline-block; min-width: 40px; font-size: 0.85rem; }
-    .score-high { background: #14532d; color: #86efac; }
-    .score-medium { background: #713f12; color: #fde68a; }
-    .score-low { background: #7f1d1d; color: #fca5a5; }
-    .score-none { background: #1e293b; color: #64748b; border: 1px solid #334155; }
-    .summary-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
-    .summary-card { background: #1e293b; border: 1px solid #334155; border-radius: 10px; padding: 1rem; text-align: center; }
-    .summary-card .label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #64748b; margin-bottom: 0.5rem; }
-    .summary-card .value { font-size: 2rem; font-weight: 800; }
-    .value-high { color: #4ade80; }
-    .value-medium { color: #facc15; }
-    .value-low { color: #f87171; }
-    .delta { font-size: 0.8rem; margin-top: 0.25rem; color: #64748b; }
-    .delta-pos { color: #4ade80; }
-    .delta-neg { color: #f87171; }
+    body { font-family: system-ui, -apple-system, sans-serif; padding: 2rem; background: #f9fafb; color: #111827; }
+    h1 { color: #1f2937; text-align: center; margin-bottom: 2rem; }
+    .card { background: white; border-radius: 8px; padding: 1.5rem; margin-bottom: 2rem; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); overflow-x: auto; }
+    .site-title { font-size: 1.25rem; font-weight: bold; margin-bottom: 1rem; color: #2563eb; text-decoration: none; display: inline-block; }
+    .site-title:hover { text-decoration: underline; }
+    table { width: 100%; border-collapse: collapse; margin-top: 1rem; min-width: 600px; }
+    th, td { text-align: left; padding: 0.75rem; border-bottom: 1px solid #e5e7eb; }
+    th { background: #f3f4f6; font-weight: 600; color: #4b5563; }
+    .score { font-weight: bold; padding: 0.25rem 0.5rem; border-radius: 9999px; text-align: center; display: inline-block; width: 45px; font-size: 0.875rem; }
+    .score-high { background: #dcfce7; color: #166534; }
+    .score-medium { background: #fef08a; color: #854d0e; }
+    .score-low { background: #fee2e2; color: #991b1b; }
+    .score-none { background: #f3f4f6; color: #9ca3af; }
+    .path-link { color: #4b5563; font-family: monospace; font-size: 0.875rem; }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🔍 Auditoría — dar44.netlify.app</h1>
-    <p>Generado el ${new Date().toLocaleString('es-ES')} · Desktop mode</p>
-  </header>
-  <main>
+  <h1>Resumen de Rendimiento (Offline)</h1>
+`;
 
-    <!-- Medias actuales -->
-    <div class="summary-grid">
-      ${['score', 'performance', 'accessibility', 'best-practices', 'seo'].map(k => {
-    const a = avg(currentResults, k);
-    const label = { score: 'Global', performance: 'Rendimiento', accessibility: 'Accesibilidad', 'best-practices': 'B. Prácticas', seo: 'SEO' }[k];
-    const cls = a >= 90 ? 'value-high' : a >= 50 ? 'value-medium' : 'value-low';
-    // Comparar con penúltima entrada del historial
-    const prev = history.length >= 2 ? avg(history[history.length - 2].results, k) : null;
-    const delta = prev != null ? a - prev : null;
-    const deltaStr = delta != null ? `<div class="delta ${delta > 0 ? 'delta-pos' : delta < 0 ? 'delta-neg' : ''}">${delta > 0 ? '▲' : delta < 0 ? '▼' : '='} ${Math.abs(delta)} vs anterior</div>` : '';
-    return `<div class="summary-card"><div class="label">${label}</div><div class="value ${cls}">${a ?? '–'}</div>${deltaStr}</div>`;
-  }).join('')}
-    </div>
+  let hasData = false;
 
-    <!-- Tabla por ruta -->
-    <div class="card">
-      <h2>📄 Resultados por Ruta</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Ruta</th>
-            <th>Global</th>
-            <th>Rendimiento</th>
-            <th>Accesibilidad</th>
-            <th>B. Prácticas</th>
-            <th>SEO</th>
-          </tr>
-        </thead>
-        <tbody>${routeRows}</tbody>
-      </table>
-    </div>
+  for (const folder of folders) {
+    const jsonPath = path.join(baseDir, folder, 'ci-result.json');
+    if (!fs.existsSync(jsonPath)) continue;
 
-    <!-- Historial de medias -->
-    ${history.length > 1 ? `
-    <div class="card">
-      <h2>📈 Historial de Medias</h2>
-      <table>
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Global</th>
-            <th>Rendimiento</th>
-            <th>Accesibilidad</th>
-            <th>B. Prácticas</th>
-            <th>SEO</th>
-          </tr>
-        </thead>
-        <tbody>${historyRows}</tbody>
-      </table>
-    </div>` : ''}
+    hasData = true;
+    try {
+      const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
 
-  </main>
+      html += `  <div class="card">
+    <a href="./${folder}/index.html" class="site-title" title="Abrir reporte original (puede requerir servidor local)">${folder.replace(/_/g, '/')}</a>
+    <table>
+      <thead>
+        <tr>
+          <th>Ruta</th>
+          <th>Score Global</th>
+          <th>Rendimiento</th>
+          <th>Accesibilidad</th>
+          <th>B. Prácticas</th>
+          <th>SEO</th>
+        </tr>
+      </thead>
+      <tbody>`;
+
+      data.forEach(route => {
+        const formatScore = (val) => {
+          if (val === undefined || val === null) return '<span class="score score-none">-</span>';
+          const num = Math.round(val * 100);
+          let cls = 'score-low';
+          if (num >= 90) cls = 'score-high';
+          else if (num >= 50) cls = 'score-medium';
+          return `<span class="score ${cls}">${num}</span>`;
+        };
+
+        html += `
+        <tr>
+          <td class="path-link">${route.path}</td>
+          <td>${formatScore(route.score)}</td>
+          <td>${formatScore(route.performance)}</td>
+          <td>${formatScore(route.accessibility)}</td>
+          <td>${formatScore(route['best-practices'])}</td>
+          <td>${formatScore(route.seo)}</td>
+        </tr>`;
+      });
+
+      html += `
+      </tbody>
+    </table>
+  </div>\n`;
+    } catch (e) {
+      console.error("Error leyendo JSON de " + folder, e);
+    }
+  }
+
+  html += `
 </body>
 </html>`;
 
-  const outPath = path.join(OUTPUT_PATH, `reporte_${TIMESTAMP}.html`);
-  fs.writeFileSync(outPath, html);
-  console.log(`\n📋 Reporte HTML generado: ${outPath}`);
-  return outPath;
+  if (hasData) {
+    const outPath = path.join(baseDir, 'indice_offline.html');
+    fs.writeFileSync(outPath, html);
+    console.log(`¡Índice generado con éxito en: ${outPath}!`);
+    console.log("Puedes abrir el archivo 'indice_offline.html' directamente en tu navegador sin necesidad de servidor local.");
+  } else {
+    console.log("No se encontraron archivos ci-result.json para generar el resumen.");
+  }
 }
 
-// ──────────────────────────────────────────
-// Main
-// ──────────────────────────────────────────
-const results = loadResults();
-if (results) {
-  const history = saveToHistory(results);
-  const reportPath = generateReport(results, history);
+// Generamos el índice primero por si el servidor nunca se inicia o se cierra
+generateOfflineSummary();
 
-  // Mostrar resumen en consola
-  console.log('\n┌─────────────────────────────────────────────┐');
-  console.log('│            RESUMEN DE MEDIAS                │');
-  console.log('├──────────────────┬──────────────────────────┤');
-  ['score', 'performance', 'accessibility', 'best-practices', 'seo'].forEach(k => {
-    const label = { score: 'Global         ', performance: 'Rendimiento     ', accessibility: 'Accesibilidad   ', 'best-practices': 'B. Prácticas    ', seo: 'SEO             ' }[k];
-    const vals = results.filter(r => r[k] != null).map(r => Math.round(r[k] * 100));
-    const a = vals.length ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : '-';
-    const bar = typeof a === 'number' ? '█'.repeat(Math.floor(a / 10)) + '░'.repeat(10 - Math.floor(a / 10)) : '';
-    const status = typeof a === 'number' ? (a >= 90 ? '✅' : a >= 50 ? '⚠️ ' : '❌') : '❓';
-    console.log(`│ ${label}│  ${String(a).padStart(3)}  ${bar} ${status} │`);
-  });
-  console.log('└─────────────────────────────────────────────┘');
+console.log("\nIniciando servidor local para poder visualizar la 'vista general' completa original...");
+console.log("(Pulsa Ctrl+C en esta consola cuando termines de ver los reportes para cerrar el servidor)");
 
-  console.log('\n🚀 Iniciando servidor para ver el reporte completo...');
-  console.log('   (Pulsa Ctrl+C cuando termines)\n');
-  try {
-    execSync(`npx http-server ./auditorias-tfg -c-1 -p 5001 -o ./auditorias-tfg/${FOLDER_NAME}/reporte_${TIMESTAMP}.html`, { stdio: 'inherit' });
-  } catch {
-    console.log('\nServidor cerrado.');
-  }
+try {
+  // 'http-server' creará un servidor local apuntando a nuestra carpeta y abrirá el navegador ('-o') automáticamente en el puerto 5000.
+  // Es necesario simular un servidor real para que la web de Unlighthouse de 'vista general' pueda cargar los archivos JS y JSON subyacentes.
+  execSync('npx http-server ./auditorias-tfg -c-1 -p 5000 -o', { stdio: 'inherit' });
+} catch (error) {
+  console.log("\nServidor cerrado.");
 }

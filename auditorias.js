@@ -5,6 +5,7 @@ const path = require('path');
 // Lista completa de plataformas para el análisis
 const competencias = [
   "https://dar44.netlify.app",
+  "https://servimunicipal.vercel.app",
   "https://elpuertodesantamaria.i2a.es/CronosWeb/",
   "https://www.fdmtorrent.com/es/Tr%C3%A1mites/Reserva-de-instalaciones",
   "https://zaragoza.es/deporteszgz/",
@@ -51,11 +52,11 @@ function generateOfflineSummary() {
   console.log("\nGenerando reporte offline resumen...");
   const baseDir = './auditorias-tfg';
   if (!fs.existsSync(baseDir)) return;
-  
+
   const folders = fs.readdirSync(baseDir, { withFileTypes: true })
     .filter(dirent => dirent.isDirectory())
     .map(dirent => dirent.name);
-    
+
   let html = `<!DOCTYPE html>
 <html lang="es">
 <head>
@@ -88,11 +89,11 @@ function generateOfflineSummary() {
   for (const folder of folders) {
     const jsonPath = path.join(baseDir, folder, 'ci-result.json');
     if (!fs.existsSync(jsonPath)) continue;
-    
+
     hasData = true;
     try {
       const data = JSON.parse(fs.readFileSync(jsonPath, 'utf8'));
-      
+
       html += `  <div class="card">
     <a href="./${folder}/index.html" class="site-title" title="Abrir reporte original (puede requerir servidor local)">${folder.replace(/_/g, '/')}</a>
     <table>
@@ -107,7 +108,7 @@ function generateOfflineSummary() {
         </tr>
       </thead>
       <tbody>`;
-          
+
       data.forEach(route => {
         const formatScore = (val) => {
           if (val === undefined || val === null) return '<span class="score score-none">-</span>';
@@ -117,7 +118,7 @@ function generateOfflineSummary() {
           else if (num >= 50) cls = 'score-medium';
           return `<span class="score ${cls}">${num}</span>`;
         };
-        
+
         html += `
         <tr>
           <td class="path-link">${route.path}</td>
@@ -128,7 +129,7 @@ function generateOfflineSummary() {
           <td>${formatScore(route.seo)}</td>
         </tr>`;
       });
-      
+
       html += `
       </tbody>
     </table>

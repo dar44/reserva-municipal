@@ -1,8 +1,12 @@
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { toast } from 'react-toastify'
 import { Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
+
+const showToast = async (type: 'success' | 'error', msg: string) => {
+  const { toast } = await import('react-toastify')
+  toast[type](msg)
+}
 
 export function LoginForm() {
   const router = useRouter()
@@ -22,13 +26,13 @@ export function LoginForm() {
       })
 
       if (!res.ok) {
-        toast.error('Error al iniciar sesión. Verifica tus credenciales')
+        showToast('error', 'Error al iniciar sesión. Verifica tus credenciales')
         return
       }
 
       const data = await res.json()
 
-      toast.success('¡Bienvenido! Redirigiendo...')
+      showToast('success', '¡Bienvenido! Redirigiendo...')
 
       switch (data.role) {
         case 'admin':
@@ -45,20 +49,23 @@ export function LoginForm() {
           break
       }
     } catch (error) {
-      toast.error('Error de conexión. Inténtalo de nuevo')
+      showToast('error', 'Error de conexión. Inténtalo de nuevo')
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-5" aria-label="Formulario de inicio de sesión">
       <div className="relative group">
-        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
+        <label htmlFor="login-email" className="sr-only">Correo electrónico</label>
+        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" aria-hidden="true" />
         <input
+          id="login-email"
           type="email"
           placeholder="Correo electrónico"
           required
+          autoComplete="email"
           className="input-base pl-11 transition-all duration-200 focus:scale-[1.01]"
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -67,11 +74,14 @@ export function LoginForm() {
       </div>
 
       <div className="relative group">
-        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
+        <label htmlFor="login-password" className="sr-only">Contraseña</label>
+        <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" aria-hidden="true" />
         <input
+          id="login-password"
           type="password"
           placeholder="Contraseña"
           required
+          autoComplete="current-password"
           className="input-base pl-11 transition-all duration-200 focus:scale-[1.01]"
           value={password}
           onChange={e => setPassword(e.target.value)}
@@ -82,8 +92,10 @@ export function LoginForm() {
       <button
         type="submit"
         disabled={isLoading}
+        aria-busy={isLoading}
+        aria-label={isLoading ? 'Iniciando sesión, por favor espere' : 'Iniciar sesión'}
         className="
-        w-full h-12 
+        w-full h-12
         bg-gradient-to-r from-primary to-primary-hover
         text-primary-foreground font-semibold rounded-lg
         shadow-lg shadow-primary/25
@@ -98,13 +110,13 @@ export function LoginForm() {
       >
         {isLoading ? (
           <>
-            <Loader2 className="w-5 h-5 animate-spin" />
+            <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
             <span>Iniciando sesión...</span>
           </>
         ) : (
           <>
             <span>Iniciar sesión</span>
-            <ArrowRight className="w-5 h-5" />
+            <ArrowRight className="w-5 h-5" aria-hidden="true" />
           </>
         )}
       </button>

@@ -6,7 +6,7 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
-      <nav className="w-full border-b border-border bg-background/60 backdrop-blur-sm">
+      <nav className="w-full border-b border-border bg-background/60 backdrop-blur-sm" aria-label="Navegación principal">
         <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
           <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Ir al inicio">
             <span className="text-xl font-black tracking-tight text-foreground">
@@ -14,16 +14,16 @@ export default function LoginPage() {
             </span>
           </Link>
           <div className="flex h-full items-center gap-1 text-sm">
-            <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Recintos</Link>
-            <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Cursos</Link>
-            <Link href="/signup" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm">
+            <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300" aria-label="Explorar recintos disponibles">Recintos</Link>
+            <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300" aria-label="Explorar cursos disponibles">Cursos</Link>
+            <Link href="/signup" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm" aria-label="Crear una cuenta nueva">
               Registrarse
             </Link>
           </div>
         </div>
       </nav>
 
-      <div className="flex-1 flex items-center justify-center p-4">
+      <main className="flex-1 flex items-center justify-center p-4" id="main-content">
         <div className="w-full max-w-md">
           {/* Card con glassmorphism sutil */}
           <div className="surface rounded-2xl shadow-2xl p-8 border border-border backdrop-blur-sm">
@@ -44,11 +44,12 @@ export default function LoginPage() {
               <Link
                 href="/auth/reset-password"
                 className="block text-center text-sm text-primary hover:text-primary-hover transition-colors"
+                aria-label="Ir a la página de recuperación de contraseña"
               >
                 ¿Olvidaste tu contraseña?
               </Link>
 
-              <div className="relative">
+              <div className="relative" role="separator" aria-hidden="true">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-border" />
                 </div>
@@ -69,13 +70,14 @@ export default function LoginPage() {
                   transition-all duration-200
                   flex items-center justify-center
                 "
+                aria-label="Ir a la página de registro para crear una cuenta"
               >
                 Crear cuenta nueva
               </Link>
             </div>
           </div>
         </div>
-      </div>
+      </main>
       <LazyToastContainer />
     </div>
   )

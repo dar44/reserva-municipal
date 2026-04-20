@@ -2,9 +2,13 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabaseClient'
-import { toast } from 'react-toastify'
 import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { Mail, Loader2, ArrowRight, ArrowLeft } from 'lucide-react'
+
+const showToast = async (type: 'success' | 'error', msg: string) => {
+  const { toast } = await import('react-toastify')
+  toast[type](msg)
+}
 
 export default function ResetPasswordPage() {
   const [email, setEmail] = useState('')
@@ -17,7 +21,7 @@ export default function ResetPasswordPage() {
 
     const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
     if (!redirectUrl) {
-      toast.error('Error de configuración: URL de redirección no disponible')
+      showToast('error', 'Error de configuración: URL de redirección no disponible')
       setIsLoading(false)
       return
     }
@@ -28,13 +32,13 @@ export default function ResetPasswordPage() {
       })
 
       if (error) {
-        toast.error(error.message || 'Error al enviar el enlace de recuperación')
+        showToast('error', error.message || 'Error al enviar el enlace de recuperación')
       } else {
-        toast.success('Enlace enviado. Revisa tu correo electrónico')
+        showToast('success', 'Enlace enviado. Revisa tu correo electrónico')
         setEmailSent(true)
       }
     } catch (error) {
-      toast.error('Error de conexión. Inténtalo de nuevo')
+      showToast('error', 'Error de conexión. Inténtalo de nuevo')
     } finally {
       setIsLoading(false)
     }
@@ -65,16 +69,19 @@ export default function ResetPasswordPage() {
           </div>
 
           {!emailSent ? (
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5" aria-label="Formulario de recuperación de contraseña">
               {/* Email input con ícono */}
               <div
                 className="relative group animate-fade-in-left delay-300"
               >
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" />
+                <label htmlFor="reset-email" className="sr-only">Correo electrónico</label>
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-foreground-tertiary group-focus-within:text-primary transition-colors duration-200" aria-hidden="true" />
                 <input
+                  id="reset-email"
                   type="email"
                   placeholder="Correo electrónico"
                   required
+                  autoComplete="email"
                   className="input-base pl-11 transition-all duration-200 focus:scale-[1.01]"
                   value={email}
                   onChange={e => setEmail(e.target.value)}
@@ -86,8 +93,10 @@ export default function ResetPasswordPage() {
               <button
                 type="submit"
                 disabled={isLoading}
+                aria-busy={isLoading}
+                aria-label={isLoading ? 'Enviando enlace, por favor espere' : 'Enviar enlace de recuperación'}
                 className="
-                  w-full h-12 
+                  w-full h-12
                   bg-gradient-to-r from-primary to-primary-hover
                   text-primary-foreground font-semibold rounded-lg
                   shadow-lg shadow-primary/25
@@ -103,13 +112,13 @@ export default function ResetPasswordPage() {
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <Loader2 className="w-5 h-5 animate-spin" aria-hidden="true" />
                     <span>Enviando enlace...</span>
                   </>
                 ) : (
                   <>
                     <span>Enviar enlace de recuperación</span>
-                    <ArrowRight className="w-5 h-5" />
+                    <ArrowRight className="w-5 h-5" aria-hidden="true" />
                   </>
                 )}
               </button>
@@ -117,9 +126,12 @@ export default function ResetPasswordPage() {
           ) : (
             <div
               className="text-center space-y-4 animate-scale-in"
+              role="status"
+              aria-live="polite"
+              aria-label="Enlace de recuperación enviado"
             >
-              <div className="w-16 h-16 mx-auto bg-success/10 rounded-full flex items-center justify-center">
-                <Mail className="w-8 h-8 text-success" />
+              <div className="w-16 h-16 mx-auto bg-success/10 rounded-full flex items-center justify-center" aria-hidden="true">
+                <Mail className="w-8 h-8 text-success" aria-hidden="true" />
               </div>
               <p className="text-foreground-secondary">
                 Hemos enviado un enlace de recuperación a <strong className="text-foreground">{email}</strong>
@@ -144,8 +156,9 @@ export default function ResetPasswordPage() {
                 hover:bg-primary/5 hover:border-primary
                 transition-all duration-200
               "
+              aria-label="Volver a la página de inicio de sesión"
             >
-              <ArrowLeft className="w-4 h-4" />
+              <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Volver al inicio de sesión</span>
             </Link>
           </div>

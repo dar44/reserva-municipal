@@ -9,7 +9,7 @@ import { EmptyCoursesState } from '@/components/ui/empty-state'
 import { CourseGridSkeleton } from '@/components/ui/skeletons'
 import { Calendar, DollarSign, ArrowRight } from 'lucide-react'
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 type SearchParams = {
   from?: string;
@@ -62,6 +62,7 @@ async function CursosList({ params }: { params: SearchParams }) {
         <Link
           key={c.id}
           href={`/public/cursos/${c.id}`}
+          aria-label={`Ver detalles del curso: ${c.name}`}
           className="
             surface rounded-xl overflow-hidden 
             shadow-md hover:shadow-2xl 
@@ -107,7 +108,7 @@ async function CursosList({ params }: { params: SearchParams }) {
             <div className="space-y-3 pt-2 border-t border-border">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 text-foreground-tertiary text-sm">
-                  <DollarSign className="w-4 h-4" />
+                  <DollarSign className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs uppercase tracking-wide">Precio</span>
                 </div>
                 <span className="text-2xl font-bold text-primary">
@@ -116,15 +117,15 @@ async function CursosList({ params }: { params: SearchParams }) {
               </div>
 
               <div className="flex items-center gap-2 text-sm text-foreground-secondary">
-                <Calendar className="w-4 h-4 flex-shrink-0" />
+                <Calendar className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                 <span className="text-xs">
                   {c.begining_date} - {c.end_date}
                 </span>
               </div>
 
-              <div className="flex items-center justify-end gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
+              <div className="flex items-center justify-end gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all" aria-hidden="true">
                 <span>Ver detalles</span>
-                <ArrowRight className="w-4 h-4" />
+                <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </div>
             </div>
           </div>
@@ -159,33 +160,40 @@ export default async function PublicCursosPage({
       <form
         className="flex flex-wrap gap-3 mb-8"
         action={clearHref}
+        aria-label="Filtrar cursos"
       >
+        <label htmlFor="cursos-search" className="sr-only">Buscar curso por nombre</label>
         <input
+          id="cursos-search"
           type="text"
           name="search"
           placeholder="Buscar por nombre..."
           defaultValue={params.search}
           className="input-base flex-1 min-w-[200px]"
         />
+        <label htmlFor="cursos-from" className="sr-only">Fecha de inicio desde</label>
         <input
+          id="cursos-from"
           type="date"
           name="from"
           defaultValue={params.from}
           className="input-base"
-          placeholder="Desde"
+          aria-label="Fecha desde"
         />
+        <label htmlFor="cursos-to" className="sr-only">Fecha de fin hasta</label>
         <input
+          id="cursos-to"
           type="date"
           name="to"
           defaultValue={params.to}
           className="input-base"
-          placeholder="Hasta"
+          aria-label="Fecha hasta"
         />
-        <Button type="submit">
+        <Button type="submit" aria-label="Aplicar filtros de búsqueda">
           Filtrar
         </Button>
         <Button asChild variant="outline">
-          <Link href={clearHref}>Limpiar</Link>
+          <Link href={clearHref} aria-label="Borrar filtros aplicados">Limpiar</Link>
         </Button>
       </form>
 

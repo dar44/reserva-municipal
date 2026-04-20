@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 
 import PublicRecintosPage from '@/app/public/recintos/page'
 
@@ -18,14 +18,13 @@ function createRecintosQuery(data: any[]) {
   return builder
 }
 
-jest.mock('@/lib/supabaseServer', () => ({
-  createSupabaseServerAdmin: jest.fn(() => ({
+jest.mock('@/lib/supabaseAdmin', () => ({
+  supabaseAdmin: {
     from: jest.fn((table: string) => {
       if (table !== 'recintos') throw new Error('Unexpected table ' + table)
       return createRecintosQuery([])
     })
-  })),
-  createSupabaseServerReadOnly: jest.fn()
+  }
 }))
 
 jest.mock('@/lib/recintoImages', () => ({
@@ -37,9 +36,11 @@ describe('PublicRecintosPage', () => {
   it('mantiene la ruta publica al limpiar filtros desde el empty state', async () => {
     const ui = await PublicRecintosPage({ searchParams: Promise.resolve({ search: 'Piscina' }) })
 
-    render(ui)
+    await act(async () => {
+      render(ui)
+    })
 
-    expect(screen.getByText(/no se encontraron recintos/i)).toBeInTheDocument()
+    expect(await screen.findByText(/no se encontraron recintos/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /limpiar filtros/i })).toHaveAttribute('href', '/public/recintos')
   })
 })

@@ -12,7 +12,7 @@ import { Breadcrumbs } from "@/components/ui/breadcrumbs"
 import { Button } from "@/components/ui/button"
 import { LogIn, UserPlus } from "lucide-react"
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 function DetailSkeleton() {
   return (
@@ -141,14 +141,14 @@ async function CursoDetailContent({ id }: { id: string }) {
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href={`/login?next=/cursos/${curso.id}`}>
-                    <LogIn className="w-4 h-4 mr-2" />
+                  <Link href={`/login?next=/cursos/${curso.id}`} aria-label="Iniciar sesión para inscribirse en este curso">
+                    <LogIn className="w-4 h-4 mr-2" aria-hidden="true" />
                     Iniciar Sesión
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/signup">
-                    <UserPlus className="w-4 h-4 mr-2" />
+                  <Link href="/signup" aria-label="Registrarse para crear una cuenta e inscribirse">
+                    <UserPlus className="w-4 h-4 mr-2" aria-hidden="true" />
                     Registrarse
                   </Link>
                 </Button>

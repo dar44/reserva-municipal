@@ -9,7 +9,7 @@ import { EmptyRecintosState } from "@/components/ui/empty-state";
 import { CourseGridSkeleton } from "@/components/ui/skeletons";
 import { MapPin, Clock, ArrowRight } from "lucide-react";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 30;
 
 type SearchParams = {
   search?: string;
@@ -46,6 +46,7 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
           <Link
             key={r.id}
             href={`/public/recintos/${r.id}`}
+            aria-label={`Ver detalles del recinto: ${r.name}`}
             className="
               surface rounded-xl overflow-hidden 
               shadow-md hover:shadow-2xl 
@@ -96,7 +97,7 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
                 </p>
 
                 <div className="flex items-center gap-2 text-sm text-foreground-tertiary">
-                  <MapPin className="w-4 h-4 flex-shrink-0" />
+                  <MapPin className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                   <span className="text-xs line-clamp-1">{r.ubication}</span>
                 </div>
               </div>
@@ -104,7 +105,7 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
               <div className="space-y-3 pt-2 border-t border-border">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2 text-foreground-tertiary text-sm">
-                    <Clock className="w-4 h-4" />
+                    <Clock className="w-4 h-4" aria-hidden="true" />
                     <span className="text-xs uppercase tracking-wide">Por hora</span>
                   </div>
                   <span className="text-2xl font-bold text-primary">
@@ -112,9 +113,9 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
                   </span>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all">
+                <div className="flex items-center justify-end gap-2 text-sm font-medium text-primary group-hover:gap-3 transition-all" aria-hidden="true">
                   <span>Ver recinto</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
                 </div>
               </div>
             </div>
@@ -150,19 +151,22 @@ export default async function PublicRecintosPage({
       <form
         className="flex gap-3 mb-8"
         action={clearHref}
+        aria-label="Buscar recintos"
       >
+        <label htmlFor="recintos-search" className="sr-only">Buscar recinto por nombre</label>
         <input
+          id="recintos-search"
           type="text"
           name="search"
           placeholder="Buscar por nombre..."
           defaultValue={params.search}
           className="input-base flex-1 max-w-md"
         />
-        <Button type="submit">
+        <Button type="submit" aria-label="Buscar recintos">
           Buscar
         </Button>
         <Button asChild variant="outline">
-          <Link href={clearHref}>Limpiar</Link>
+          <Link href={clearHref} aria-label="Borrar filtros aplicados">Limpiar</Link>
         </Button>
       </form>
 

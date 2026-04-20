@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist, Geist_Mono } from "next/font/google"
+import { Geist } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from '@/components/theme-provider'
 
@@ -7,11 +7,7 @@ import { ThemeProvider } from '@/components/theme-provider'
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -26,11 +22,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" suppressHydrationWarning>
-      <head>
-        <link rel="preconnect" href="https://nwhvezrclrmoyrcnijaw.supabase.co" />
-        <link rel="dns-prefetch" href="https://nwhvezrclrmoyrcnijaw.supabase.co" />
-      </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <head />
+      <body className={`${geistSans.variable} antialiased`}>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var d=document.documentElement;var t=localStorage.getItem('theme');if(t==='light'){d.classList.remove('dark')}else{d.classList.add('dark')}}catch(e){d.classList.add('dark')}})()`
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
@@ -43,4 +41,4 @@ export default function RootLayout({
       </body>
     </html>
   )
-}
+}

@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, act } from '@testing-library/react'
 
 import PublicCursosPage from '@/app/public/cursos/page'
 
@@ -21,14 +21,13 @@ function createCursosQuery(data: any[]) {
   return builder
 }
 
-jest.mock('@/lib/supabaseServer', () => ({
-  createSupabaseServerAdmin: jest.fn(() => ({
+jest.mock('@/lib/supabaseAdmin', () => ({
+  supabaseAdmin: {
     from: jest.fn((table: string) => {
       if (table !== 'cursos') throw new Error('Unexpected table ' + table)
       return createCursosQuery([])
     })
-  })),
-  createSupabaseServerReadOnly: jest.fn()
+  }
 }))
 
 jest.mock('@/lib/storage', () => ({
@@ -39,9 +38,11 @@ describe('PublicCursosPage', () => {
   it('mantiene la ruta publica al limpiar filtros desde el empty state', async () => {
     const ui = await PublicCursosPage({ searchParams: Promise.resolve({ search: 'Yoga' }) })
 
-    render(ui)
+    await act(async () => {
+      render(ui)
+    })
 
-    expect(screen.getByText(/no se encontraron cursos/i)).toBeInTheDocument()
+    expect(await screen.findByText(/no se encontraron cursos/i)).toBeInTheDocument()
     expect(screen.getByRole('link', { name: /limpiar filtros/i })).toHaveAttribute('href', '/public/cursos')
   })
 })
