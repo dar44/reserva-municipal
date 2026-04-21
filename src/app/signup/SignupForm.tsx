@@ -126,7 +126,6 @@ export function SignupForm() {
         type="submit"
         disabled={isLoading}
         aria-busy={isLoading}
-        aria-label={isLoading ? 'Creando cuenta, por favor espere' : 'Crear cuenta'}
         className="
           w-full h-12
           bg-gradient-to-r from-primary to-primary-hover

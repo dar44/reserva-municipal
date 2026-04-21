@@ -1,7 +1,13 @@
 import Link from 'next/link'
+import type { Metadata } from 'next'
 import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { LoginForm } from './LoginForm'
 import { ThemeToggle } from '@/components/ThemeToggle'
+
+export const metadata: Metadata = {
+  title: 'Iniciar Sesión · ServiMunicipal',
+  description: 'Accede a tu cuenta en ServiMunicipal para gestionar tus reservas de espacios y cursos municipales.',
+}
 
 export default function LoginPage() {
   return (
@@ -11,7 +17,7 @@ export default function LoginPage() {
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
-            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
+            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
               ServiMunicipal
             </Link>
 
