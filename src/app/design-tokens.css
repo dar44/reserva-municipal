@@ -166,7 +166,8 @@
     /* Estados */
     --success: rgb(22 163 74);
     /* green-600 */
-    --success-foreground: rgb(255 255 255);
+    --success-foreground: rgb(5 46 22);
+    /* green-950 - sufficient contrast ~6:1 on green-600 */
     --success-subtle: rgb(220 252 231);
     /* green-100 */
     --success-subtle-foreground: rgb(22 101 52);
@@ -282,7 +283,8 @@
 
     /* Estados */
     --success: rgb(var(--success-500));
-    --success-foreground: rgb(255 255 255);
+    --success-foreground: rgb(var(--success-950));
+    /* green-950 on green-500 = ~8.5:1 */
     --success-subtle: rgb(var(--success-950));
     --success-subtle-foreground: rgb(var(--success-300));
 

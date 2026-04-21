@@ -135,19 +135,19 @@ async function CursoDetailContent({ id }: { id: string }) {
 
           <div className="pt-4 border-t border-border">
             <div className="surface rounded-lg p-6 border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-              <h3 className="text-lg font-semibold mb-2">¿Quieres inscribirte en este curso?</h3>
+              <h2 className="text-lg font-semibold mb-2">¿Quieres inscribirte en este curso?</h2>
               <p className="text-sm text-foreground-secondary mb-4">
                 Inicia sesión o regístrate para poder inscribirte y asegurar tu plaza.
               </p>
               <div className="flex flex-wrap gap-3">
                 <Button asChild>
-                  <Link href={`/login?next=/cursos/${curso.id}`} aria-label="Iniciar sesión para inscribirse en este curso">
+                  <Link href={`/login?next=/cursos/${curso.id}`}>
                     <LogIn className="w-4 h-4 mr-2" aria-hidden="true" />
                     Iniciar Sesión
                   </Link>
                 </Button>
                 <Button asChild variant="outline">
-                  <Link href="/signup" aria-label="Registrarse para crear una cuenta e inscribirse">
+                  <Link href="/signup">
                     <UserPlus className="w-4 h-4 mr-2" aria-hidden="true" />
                     Registrarse
                   </Link>

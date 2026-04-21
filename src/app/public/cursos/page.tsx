@@ -62,7 +62,6 @@ async function CursosList({ params }: { params: SearchParams }) {
         <Link
           key={c.id}
           href={`/public/cursos/${c.id}`}
-          aria-label={`Ver detalles del curso: ${c.name}`}
           className="
             surface rounded-xl overflow-hidden 
             shadow-md hover:shadow-2xl 
@@ -107,7 +106,7 @@ async function CursosList({ params }: { params: SearchParams }) {
 
             <div className="space-y-3 pt-2 border-t border-border">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2 text-foreground-tertiary text-sm">
+                <div className="flex items-center gap-2 text-foreground-secondary text-sm">
                   <DollarSign className="w-4 h-4" aria-hidden="true" />
                   <span className="text-xs uppercase tracking-wide">Precio</span>
                 </div>
@@ -178,7 +177,6 @@ export default async function PublicCursosPage({
           name="from"
           defaultValue={params.from}
           className="input-base"
-          aria-label="Fecha desde"
         />
         <label htmlFor="cursos-to" className="sr-only">Fecha de fin hasta</label>
         <input
@@ -187,13 +185,12 @@ export default async function PublicCursosPage({
           name="to"
           defaultValue={params.to}
           className="input-base"
-          aria-label="Fecha hasta"
         />
-        <Button type="submit" aria-label="Aplicar filtros de búsqueda">
+        <Button type="submit">
           Filtrar
         </Button>
         <Button asChild variant="outline">
-          <Link href={clearHref} aria-label="Borrar filtros aplicados">Limpiar</Link>
+          <Link href={clearHref}>Limpiar</Link>
         </Button>
       </form>
 

@@ -103,19 +103,19 @@ async function RecintoDetailContent({ id }: { id: string }) {
           {isDisponible && (
             <div className="pt-4 border-t border-border">
               <div className="surface rounded-lg p-6 border border-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-                <h3 className="text-lg font-semibold mb-2">¿Quieres reservar este recinto?</h3>
+                <h2 className="text-lg font-semibold mb-2">¿Quieres reservar este recinto?</h2>
                 <p className="text-sm text-foreground-secondary mb-4">
                   Inicia sesión o regístrate para poder realizar una reserva de este espacio.
                 </p>
                 <div className="flex flex-wrap gap-3">
                   <Button asChild>
-                    <Link href={`/login?next=/recintos/${recinto.id}`} aria-label="Iniciar sesión para reservar este recinto">
+                    <Link href={`/login?next=/recintos/${recinto.id}`}>
                       <LogIn className="w-4 h-4 mr-2" aria-hidden="true" />
                       Iniciar Sesión
                     </Link>
                   </Button>
                   <Button asChild variant="outline">
-                    <Link href="/signup" aria-label="Registrarse para crear una cuenta y reservar">
+                    <Link href="/signup">
                       <UserPlus className="w-4 h-4 mr-2" aria-hidden="true" />
                       Registrarse
                     </Link>

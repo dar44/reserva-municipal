@@ -46,7 +46,6 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
           <Link
             key={r.id}
             href={`/public/recintos/${r.id}`}
-            aria-label={`Ver detalles del recinto: ${r.name}`}
             className="
               surface rounded-xl overflow-hidden 
               shadow-md hover:shadow-2xl 
@@ -96,7 +95,7 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
                   {r.description}
                 </p>
 
-                <div className="flex items-center gap-2 text-sm text-foreground-tertiary">
+                <div className="flex items-center gap-2 text-sm text-foreground-secondary">
                   <MapPin className="w-4 h-4 flex-shrink-0" aria-hidden="true" />
                   <span className="text-xs line-clamp-1">{r.ubication}</span>
                 </div>
@@ -104,7 +103,7 @@ async function RecintosList({ params, clearHref }: { params: SearchParams, clear
 
               <div className="space-y-3 pt-2 border-t border-border">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-foreground-tertiary text-sm">
+                  <div className="flex items-center gap-2 text-foreground-secondary text-sm">
                     <Clock className="w-4 h-4" aria-hidden="true" />
                     <span className="text-xs uppercase tracking-wide">Por hora</span>
                   </div>
@@ -162,11 +161,11 @@ export default async function PublicRecintosPage({
           defaultValue={params.search}
           className="input-base flex-1 max-w-md"
         />
-        <Button type="submit" aria-label="Buscar recintos">
+        <Button type="submit">
           Buscar
         </Button>
         <Button asChild variant="outline">
-          <Link href={clearHref} aria-label="Borrar filtros aplicados">Limpiar</Link>
+          <Link href={clearHref}>Limpiar</Link>
         </Button>
       </form>
 

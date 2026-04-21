@@ -8,7 +8,6 @@ const ScrollToFeatures = dynamic(
     loading: () => (
       <button
         className="px-10 py-5 bg-surface hover:bg-surface-secondary border-2 border-border hover:border-primary/30 rounded-xl font-semibold text-lg transition-all min-w-[200px]"
-        aria-label="Ver características del sistema"
       >
         Conocer más
       </button>
@@ -28,7 +27,7 @@ export default function Home() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border" aria-label="Navegación principal">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
               <span className="text-2xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>
               </span>
@@ -213,7 +212,7 @@ export default function Home() {
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-surface/50" role="contentinfo" aria-label="Pie de página">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
+            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
               <span className="text-xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>
               </span>

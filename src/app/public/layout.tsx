@@ -13,10 +13,10 @@ export default function PublicLayout({ children }: { children: ReactNode }) {
       <nav className="border-b border-border bg-surface shadow-sm" aria-label="Navegación principal">
         <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
+            {/* No aria-label: visible text "ServiMunicipal" IS the accessible name */}
             <Link
               href="/"
               className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg"
-              aria-label="Inicio"
             >
               <span className="text-xl sm:text-2xl font-black tracking-tight text-foreground">
                 Servi<span className="text-primary font-medium">Municipal</span>

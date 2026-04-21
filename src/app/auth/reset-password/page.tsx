@@ -156,7 +156,6 @@ export default function ResetPasswordPage() {
                 hover:bg-primary/5 hover:border-primary
                 transition-all duration-200
               "
-              aria-label="Volver a la página de inicio de sesión"
             >
               <ArrowLeft className="w-4 h-4" aria-hidden="true" />
               <span>Volver al inicio de sesión</span>
