@@ -1,24 +1,26 @@
 import Link from 'next/link'
 import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { LoginForm } from './LoginForm'
+import { ThemeToggle } from '@/components/ThemeToggle'
 
 export default function LoginPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
-      <nav className="w-full border-b border-border bg-background/60 backdrop-blur-sm" aria-label="Navegación principal">
-        <div className="container mx-auto px-4 sm:px-6 flex items-center justify-between h-16">
-          <Link href="/" className="focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
-            <span className="text-xl font-black tracking-tight text-foreground">
-              Servi<span className="text-primary font-medium">Municipal</span>
-            </span>
-          </Link>
-          <div className="flex h-full items-center gap-1 text-sm">
-            <Link href="/public/recintos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Recintos</Link>
-            <Link href="/public/cursos" className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300">Cursos</Link>
-            <Link href="/signup" className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm">
-              Registrarse
+      <nav className="w-full border-b border-border bg-surface shadow-sm" aria-label="Navegación principal">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="flex items-center justify-between h-16">
+            {/* Logo */}
+            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg" aria-label="Inicio">
+              ServiMunicipal
             </Link>
+
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex h-full items-center gap-3">
+              <Link href="/public/recintos" className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm">Recintos</Link>
+              <Link href="/public/cursos" className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm">Cursos</Link>
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </nav>

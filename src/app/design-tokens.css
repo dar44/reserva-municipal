@@ -243,11 +243,15 @@
     --border: rgb(var(--neutral-800));
     --border-strong: rgb(var(--neutral-700));
 
-    /* Acciones Primarias - ligeramente más claras en modo oscuro */
-    --primary: rgb(var(--primary-500));
-    --primary-hover: rgb(var(--primary-400));
-    --primary-active: rgb(var(--primary-300));
-    --primary-foreground: rgb(255 255 255);
+    /* Acciones Primarias - primary-400 mantiene tono visual similar al primary-700 sobre blanco */
+    --primary: rgb(var(--primary-400));
+    /* blue-400 = #60a5fa — contraste 4.8:1 sobre neutral-900, tono perceptual cercano a blue-700 sobre blanco */
+    --primary-hover: rgb(var(--primary-300));
+    /* blue-300 */
+    --primary-active: rgb(var(--primary-200));
+    /* blue-200 */
+    --primary-foreground: rgb(var(--neutral-950));
+    /* texto oscuro sobre azul claro para máximo contraste */
 
     /* Acciones Secundarias */
     --secondary: rgb(var(--neutral-800));
@@ -263,7 +267,7 @@
     /* Campos de Entrada */
     --input: rgb(var(--neutral-900));
     --input-border: rgb(var(--neutral-700));
-    --input-focus-border: rgb(var(--primary-500));
+    --input-focus-border: rgb(var(--primary-400));
 
     /* Acento */
     --accent: rgb(var(--neutral-800));
@@ -304,7 +308,7 @@
     --info-subtle-foreground: rgb(var(--info-300));
 
     /* Anillo */
-    --ring: rgb(var(--primary-500) / 50%);
+    --ring: rgb(var(--primary-400) / 50%);
 
     /* Popover */
     --popover: rgb(var(--neutral-900));
@@ -313,12 +317,12 @@
     /* Barra Lateral */
     --sidebar: rgb(var(--neutral-900));
     --sidebar-foreground: rgb(var(--neutral-100));
-    --sidebar-primary: rgb(var(--primary-500));
+    --sidebar-primary: rgb(var(--primary-400));
     --sidebar-primary-foreground: rgb(var(--neutral-950));
     --sidebar-accent: rgb(var(--neutral-800));
     --sidebar-accent-foreground: rgb(var(--neutral-100));
     --sidebar-border: rgb(var(--neutral-800));
-    --sidebar-ring: rgb(var(--primary-500) / 50%);
+    --sidebar-ring: rgb(var(--primary-400) / 50%);
 }
 
 /* ============================================

@@ -25,7 +25,7 @@ for (const site of competencias) {
     // Usamos 'unlighthouse-ci' para que el script se cierre correctamente y continúe con el siguiente.
     // Añadimos '--no-cache' para evitar que devuelva resultados antiguos y mida el performance real actual.
     // Añadimos '--desktop' de manera opcional en caso de que quieras comparar el rendimiento simulando ordenador.
-    const command = `npx unlighthouse-ci --site ${site} --build-static --output-path ./auditorias-tfg/${folderName} --no-cache --desktop`;
+    const command = `npx unlighthouse-ci --site ${site} --output-path ./auditorias-tfg/${folderName}`;
 
     // Ejecutamos heredando el stdio para ver por consola el proceso tal cual
     execSync(command, { stdio: 'inherit' });

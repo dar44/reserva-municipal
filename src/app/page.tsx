@@ -1,5 +1,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 
 const ScrollToFeatures = dynamic(
@@ -24,36 +25,42 @@ export default function Home() {
       >
         Saltar al contenido principal
       </a>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b border-border" aria-label="Navegación principal">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm shadow-sm" aria-label="Navegación principal">
+        <div className="container mx-auto px-4 sm:px-6">
           <div className="flex items-center justify-between h-16">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
-              <span className="text-2xl font-black tracking-tight text-foreground">
-                Servi<span className="text-primary font-medium">Municipal</span>
-              </span>
+            {/* Logo */}
+            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
+              ServiMunicipal
             </Link>
-            <div className="flex h-full items-center gap-1">
+
+            {/* Desktop Navigation - Hidden on mobile */}
+            <div className="hidden md:flex h-full items-center gap-3">
               <Link
                 href="/public/recintos"
-                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
+                className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
               >
                 Recintos
               </Link>
               <Link
                 href="/public/cursos"
-                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300 hidden sm:inline-flex"
+                className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
               >
                 Cursos
               </Link>
+              <ThemeToggle />
+            </div>
+
+            {/* Right side: auth buttons */}
+            <div className="flex h-full items-center gap-1">
               <Link
                 href="/login"
-                className="h-full flex items-center px-4 rounded-none text-sm font-medium text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm transition-all duration-300"
+                className="h-full flex items-center justify-center px-4 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm hidden sm:flex"
               >
                 Iniciar Sesión
               </Link>
               <Link
                 href="/signup"
-                className="h-full flex items-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                className="h-full flex items-center justify-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               >
                 Registrarse
               </Link>
@@ -212,10 +219,8 @@ export default function Home() {
       <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border bg-surface/50" role="contentinfo" aria-label="Pie de página">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <Link href="/" className="flex items-center focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
-              <span className="text-xl font-black tracking-tight text-foreground">
-                Servi<span className="text-primary font-medium">Municipal</span>
-              </span>
+            <Link href="/" className="text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
+              ServiMunicipal
             </Link>
             <p className="text-sm text-foreground-secondary">
               © 2025 ServiMunicipal. Sistema de gestión de reservas municipales.
