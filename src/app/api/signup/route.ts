@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
-import { sendRegistroConfirmadoEmail } from '@/lib/emailNotifications'
+import { sendRegistroConfirmadoEmailDirect } from '@/lib/emailNotifications'
 
 export async function POST(req: Request) {
   try {
@@ -22,9 +22,13 @@ export async function POST(req: Request) {
     })
     if (updErr) return NextResponse.json({ error: updErr.message }, { status: 400 })
 
-    // Enviar email de bienvenida
+    // Enviar email de bienvenida con los datos ya disponibles (evita race condition con el trigger)
     try {
-      await sendRegistroConfirmadoEmail(auth.user.id)
+      await sendRegistroConfirmadoEmailDirect({
+        email,
+        name,
+        surname,
+      })
     } catch (emailError) {
       console.error('Error sending registration email:', emailError)
       // No fallar el registro si el email falla

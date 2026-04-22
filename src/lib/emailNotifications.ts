@@ -346,7 +346,47 @@ export async function notifyPagoConfirmado({ previousEstado, nextEstado, reserva
 // ===== Nueva funciones de email con React Email =====
 
 /**
- * Envía un email de confirmación de registro cuando un usuario se registra
+ * Envía un email de confirmación de registro cuando un usuario se registra.
+ * Versión directa: recibe los datos del usuario ya disponibles (sin consultar la BD).
+ * Usar esta versión desde /api/signup para evitar la race condition con el trigger
+ * de inserción en public.users (que puede no haberse ejecutado aún en producción).
+ */
+export async function sendRegistroConfirmadoEmailDirect(user: {
+  email: string;
+  name?: string;
+  surname?: string;
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    logMissingConfig();
+    return;
+  }
+
+  const recipientName = getRecipientName({
+    email: user.email,
+    name: user.name ?? null,
+    surname: user.surname ?? null,
+  });
+
+  const html = await render(RegistroConfirmado({
+    recipientName,
+    email: user.email,
+  }));
+
+  const subject = '¡Bienvenido a ServiMunicipal!';
+  const text = `Hola ${recipientName},\n\nTu cuenta ha sido creada exitosamente. Ya puedes acceder a todos nuestros servicios municipales.\n\n¡Bienvenido!`;
+
+  await sendEmailMessage({
+    to: user.email,
+    subject,
+    html,
+    text,
+  });
+}
+
+/**
+ * Envía un email de confirmación de registro cuando un usuario se registra.
+ * Versión legacy: consulta la BD por uid. Puede fallar en producción por race
+ * condition con el trigger — usar sendRegistroConfirmadoEmailDirect en su lugar.
  */
 export async function sendRegistroConfirmadoEmail(userUid: string): Promise<void> {
   if (!isEmailConfigured()) {
@@ -389,7 +429,49 @@ export async function sendRegistroConfirmadoEmail(userUid: string): Promise<void
 }
 
 /**
- * Envía un email cuando un trabajador aprueba una solicitud de recinto de un organizador
+ * Envía un email cuando un trabajador aprueba una solicitud de recinto de un organizador.
+ * Versión directa: recibe los datos ya disponibles sin consultar la BD.
+ */
+export async function sendSolicitudAprobadaEmailDirect(opts: {
+  organizerEmail: string;
+  organizerName: string | null;
+  organizerSurname: string | null;
+  recintoName: string;
+  startAt: string;
+  endAt: string;
+  observations: string | null;
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    logMissingConfig();
+    return;
+  }
+
+  const recipientName = getRecipientName({
+    email: opts.organizerEmail,
+    name: opts.organizerName,
+    surname: opts.organizerSurname,
+  });
+  const startDateTime = formatDateTime(opts.startAt) ?? opts.startAt;
+  const endDateTime = formatDateTime(opts.endAt) ?? opts.endAt;
+  const recintoName = opts.recintoName || 'Recinto solicitado';
+
+  const html = await render(SolicitudAprobada({
+    recipientName,
+    recintoName,
+    startDateTime,
+    endDateTime,
+    workerObservations: opts.observations || undefined,
+  }));
+
+  const subject = `Solicitud aprobada - ${recintoName}`;
+  const text = `Hola ${recipientName},\n\nTu solicitud de recinto ha sido aprobada.\n\nRecinto: ${recintoName}\nInicio: ${startDateTime}\nTérmino: ${endDateTime}\n\n¡Mucho éxito con tu actividad!`;
+
+  await sendEmailMessage({ to: opts.organizerEmail, subject, html, text });
+}
+
+/**
+ * Envía un email cuando un trabajador aprueba una solicitud de recinto de un organizador.
+ * Versión legacy: consulta la BD. Usar sendSolicitudAprobadaEmailDirect en su lugar.
  */
 export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<void> {
   if (!isEmailConfigured()) {
@@ -457,7 +539,49 @@ export async function sendSolicitudAprobadaEmail(reservaId: number): Promise<voi
 }
 
 /**
- * Envía un email cuando un trabajador rechaza una solicitud de recinto de un organizador
+ * Envía un email cuando un trabajador rechaza una solicitud de recinto de un organizador.
+ * Versión directa: recibe los datos ya disponibles sin consultar la BD.
+ */
+export async function sendSolicitudRechazadaEmailDirect(opts: {
+  organizerEmail: string;
+  organizerName: string | null;
+  organizerSurname: string | null;
+  recintoName: string;
+  startAt: string;
+  endAt: string;
+  observations: string | null;
+}): Promise<void> {
+  if (!isEmailConfigured()) {
+    logMissingConfig();
+    return;
+  }
+
+  const recipientName = getRecipientName({
+    email: opts.organizerEmail,
+    name: opts.organizerName,
+    surname: opts.organizerSurname,
+  });
+  const startDateTime = formatDateTime(opts.startAt) ?? opts.startAt;
+  const endDateTime = formatDateTime(opts.endAt) ?? opts.endAt;
+  const recintoName = opts.recintoName || 'Recinto solicitado';
+
+  const html = await render(SolicitudRechazada({
+    recipientName,
+    recintoName,
+    startDateTime,
+    endDateTime,
+    rejectReason: opts.observations || undefined,
+  }));
+
+  const subject = `Actualización de tu solicitud - ${recintoName}`;
+  const text = `Hola ${recipientName},\n\nTu solicitud de recinto ha sido rechazada.\n\nRecinto: ${recintoName}\nInicio: ${startDateTime}\nTérmino: ${endDateTime}\n\nTe invitamos a revisar los requisitos y presentar una nueva solicitud.`;
+
+  await sendEmailMessage({ to: opts.organizerEmail, subject, html, text });
+}
+
+/**
+ * Envía un email cuando un trabajador rechaza una solicitud de recinto de un organizador.
+ * Versión legacy: consulta la BD. Usar sendSolicitudRechazadaEmailDirect en su lugar.
  */
 export async function sendSolicitudRechazadaEmail(reservaId: number): Promise<void> {
   if (!isEmailConfigured()) {

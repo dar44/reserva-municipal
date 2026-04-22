@@ -175,10 +175,12 @@ describe('API inscripciones', () => {
     })
     const pagosUpdate = jest.fn().mockReturnValue({ eq: jest.fn() })
 
+    const usersInsert = jest.fn().mockResolvedValue({ error: null })
+
     supabaseAdmin.auth.admin.createUser.mockResolvedValue({ data: { user: { id: 'uid-new-ins' } }, error: null })
 
     supabaseAdmin.from.mockImplementation((table: string) => {
-      if (table === 'users') return { select: usersSelect }
+      if (table === 'users') return { select: usersSelect, insert: usersInsert }
       if (table === 'cursos') return { select: cursosSelect }
       if (table === 'inscripciones') return { insert: inscripcionesInsert }
       if (table === 'pagos') return { insert: pagosInsert, update: pagosUpdate }

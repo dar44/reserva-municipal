@@ -36,10 +36,15 @@ function parseTime(value: string | undefined, label: string) {
   return { hours, minutes }
 }
 
-function combineDateAndTime(date: Date, time: { hours: number; minutes: number }) {
-  const result = new Date(date)
-  result.setHours(time.hours, time.minutes, 0, 0)
-  return result
+/**
+ * Builds a UTC ISO timestamp string from a date string (YYYY-MM-DD) and a parsed time,
+ * treating the time as wall-clock time (not adjusted for any timezone).
+ * This avoids the server's local timezone affecting the stored value.
+ */
+function buildISOTimestamp(dateStr: string, time: { hours: number; minutes: number }): string {
+  const hh = String(time.hours).padStart(2, '0')
+  const mm = String(time.minutes).padStart(2, '0')
+  return `${dateStr}T${hh}:${mm}:00`
 }
 
 function sanitizeReservationPayload(body: Partial<CourseReservationRequestInput>): SanitizedReservationPayload {
@@ -51,8 +56,8 @@ function sanitizeReservationPayload(body: Partial<CourseReservationRequestInput>
   if (!startDateRaw) throw new AuthorizationError('start_date es obligatorio', 400)
   if (!endDateRaw) throw new AuthorizationError('end_date es obligatorio', 400)
 
-  const startDate = new Date(`${startDateRaw}T00:00:00`)
-  const endDate = new Date(`${endDateRaw}T00:00:00`)
+  const startDate = new Date(`${startDateRaw}T00:00:00Z`)
+  const endDate = new Date(`${endDateRaw}T00:00:00Z`)
 
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
     throw new AuthorizationError('Fechas inválidas', 400)
@@ -92,17 +97,15 @@ function sanitizeReservationPayload(body: Partial<CourseReservationRequestInput>
   }
 
   const blocks: ReservationBlock[] = []
-  for (let current = new Date(startDate); current <= endDate; current.setDate(current.getDate() + 1)) {
-    const day = current.getDay()
+  for (let current = new Date(startDate); current <= endDate; current.setUTCDate(current.getUTCDate() + 1)) {
+    const day = current.getUTCDay()
     if (!uniqueDays.has(day)) continue
 
-    const currentDate = new Date(current)
-    const startAt = combineDateAndTime(currentDate, startTime)
-    const endAt = combineDateAndTime(currentDate, endTime)
+    const currentDateStr = current.toISOString().slice(0, 10)
 
     blocks.push({
-      start_at: startAt.toISOString(),
-      end_at: endAt.toISOString(),
+      start_at: buildISOTimestamp(currentDateStr, startTime),
+      end_at: buildISOTimestamp(currentDateStr, endTime),
     })
   }
 

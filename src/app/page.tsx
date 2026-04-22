@@ -1,6 +1,6 @@
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { ThemeToggle } from "@/components/ThemeToggle";
+import { PublicNavbar } from "@/components/PublicNavbar";
 import { Calendar, MapPin, Users, ArrowRight, Sparkles } from "lucide-react";
 
 const ScrollToFeatures = dynamic(
@@ -25,49 +25,7 @@ export default function Home() {
       >
         Saltar al contenido principal
       </a>
-      <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/95 backdrop-blur-sm shadow-sm" aria-label="Navegación principal">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
-              ServiMunicipal
-            </Link>
-
-            {/* Desktop Navigation - Hidden on mobile */}
-            <div className="hidden md:flex h-full items-center gap-3">
-              <Link
-                href="/public/recintos"
-                className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
-              >
-                Recintos
-              </Link>
-              <Link
-                href="/public/cursos"
-                className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm"
-              >
-                Cursos
-              </Link>
-              <ThemeToggle />
-            </div>
-
-            {/* Right side: auth buttons */}
-            <div className="flex h-full items-center gap-1">
-              <Link
-                href="/login"
-                className="h-full flex items-center justify-center px-4 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm hidden sm:flex"
-              >
-                Iniciar Sesión
-              </Link>
-              <Link
-                href="/signup"
-                className="h-full flex items-center justify-center px-4 rounded-none text-sm font-semibold text-primary-foreground bg-primary hover:bg-primary-hover transition-all duration-300 hover:shadow-sm focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-              >
-                Registrarse
-              </Link>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar variant="landing" fixed />
 
       {/* Hero Section */}
       <main id="main-content">

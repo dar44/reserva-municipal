@@ -54,7 +54,9 @@ export default function PendingRequestsTable({ requests }: Props) {
     const formatTime = (value: string) => {
         const date = new Date(value)
         if (Number.isNaN(date.getTime())) return value
-        return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })
+        const hh = String(date.getUTCHours()).padStart(2, '0')
+        const mm = String(date.getUTCMinutes()).padStart(2, '0')
+        return `${hh}:${mm}`
     }
 
     const truncate = (text: string | null, maxLength: number = 50) => {

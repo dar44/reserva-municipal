@@ -7,6 +7,7 @@ import {
 } from '@/lib/lemonSqueezy'
 import { toMinorUnits } from '@/lib/currency'
 import { getConfiguredCurrency } from '@/lib/config'
+import { sendCuentaCreadaPorTrabajadorEmail } from '@/lib/emailNotifications'
 
 export const dynamic = 'force-dynamic'
 
@@ -16,16 +17,16 @@ export async function POST(req: Request) {
     const { origin } = new URL(req.url)
     const currency = getConfiguredCurrency()
 
-    const query = supabaseAdmin
+    let userQuery = supabaseAdmin
       .from('users')
       .select('uid')
       .eq('email', email)
 
     if (dni) {
-      query.eq('dni', dni)
+      userQuery = userQuery.eq('dni', dni)
     }
 
-    const { data: existing } = await query.maybeSingle()
+    const { data: existing } = await userQuery.maybeSingle()
 
     let uid = existing?.uid
 
@@ -40,8 +41,30 @@ export async function POST(req: Request) {
           app_metadata: { role: 'citizen' }
         })
         if (authErr || !auth.user) {
+          console.error('[inscripciones] Error creating auth user:', authErr)
           return NextResponse.json({ error: authErr?.message || 'auth_error' }, { status: 400 })
         }
+
+        // Insertar manualmente en public.users para evitar race condition con el trigger
+        // Usamos '' como fallback para los campos NOT NULL sin valor
+        const { error: insertUserErr } = await supabaseAdmin.from('users').insert({
+          uid: auth.user.id,
+          email,
+          name: name || email.split('@')[0],
+          surname: surname || '',
+          dni: dni || null,
+          phone: phone || '',
+          role: 'citizen',
+        })
+        if (insertUserErr) {
+          // Si ya existe (trigger fue más rápido), no es error crítico
+          if (!insertUserErr.message.includes('duplicate') && !insertUserErr.code?.includes('23505')) {
+            console.error('[inscripciones] Error inserting into public.users:', insertUserErr)
+            await supabaseAdmin.auth.admin.deleteUser(auth.user.id)
+            return NextResponse.json({ error: insertUserErr.message }, { status: 400 })
+          }
+        }
+
         const redirectUrl = process.env.NEXT_PUBLIC_AUTH_REDIRECT_URL
         if (!redirectUrl) {
           return NextResponse.json({
@@ -51,7 +74,6 @@ export async function POST(req: Request) {
 
         // Enviar email de bienvenida personalizado para cuentas creadas por trabajadores
         try {
-          const { sendCuentaCreadaPorTrabajadorEmail } = await import('@/lib/emailNotifications')
           const customEmailSent = await sendCuentaCreadaPorTrabajadorEmail(auth.user.id, 'inscripcion')
           if (!customEmailSent) {
             await supabaseAdmin.auth.resetPasswordForEmail(email, { redirectTo: redirectUrl })
@@ -87,7 +109,8 @@ export async function POST(req: Request) {
       user_uid: uid
     }).select('id').single()
     if (insErr || !inscripcion) {
-      return NextResponse.json({ error: insErr.message }, { status: 400 })
+      console.error('[inscripciones] Error inserting inscripcion:', insErr)
+      return NextResponse.json({ error: insErr?.message ?? 'insert_error' }, { status: 400 })
     }
 
     const { data: pago, error: pagoErr } = await supabaseAdmin.from('pagos').insert({

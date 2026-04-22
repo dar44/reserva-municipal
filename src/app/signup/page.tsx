@@ -2,7 +2,7 @@ import Link from 'next/link'
 import type { Metadata } from 'next'
 import { LazyToastContainer } from '@/components/LazyToastContainer'
 import { SignupForm } from './SignupForm'
-import { ThemeToggle } from '@/components/ThemeToggle'
+import { PublicNavbar } from '@/components/PublicNavbar'
 
 export const metadata: Metadata = {
   title: 'Crear cuenta · ServiMunicipal',
@@ -13,23 +13,7 @@ export default function SignupPage() {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-primary/5 via-background to-accent/5">
       {/* Navbar de escape */}
-      <nav className="w-full border-b border-border bg-surface shadow-sm" aria-label="Navegación principal">
-        <div className="container mx-auto px-4 sm:px-6">
-          <div className="flex items-center justify-between h-16">
-            {/* Logo */}
-            <Link href="/" className="text-lg sm:text-xl font-semibold tracking-tight text-foreground hover:text-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary rounded-lg">
-              ServiMunicipal
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex h-full items-center gap-3">
-              <Link href="/public/recintos" className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm">Recintos</Link>
-              <Link href="/public/cursos" className="h-full flex items-center justify-center px-4 my-2 rounded-none text-sm font-medium transition-all duration-300 text-foreground/70 hover:bg-accent/80 hover:text-accent-foreground hover:shadow-sm">Cursos</Link>
-              <ThemeToggle />
-            </div>
-          </div>
-        </div>
-      </nav>
+      <PublicNavbar variant="signup" />
 
       <main className="flex-1 flex items-center justify-center p-4" id="main-content">
         <div className="w-full max-w-2xl">

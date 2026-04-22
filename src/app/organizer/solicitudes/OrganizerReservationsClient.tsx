@@ -89,7 +89,12 @@ export default function OrganizerReservationsClient({ courses, recintos, reserva
   const formatDateTime = (value: string) => {
     const date = new Date(value)
     if (Number.isNaN(date.getTime())) return value
-    return date.toLocaleString('es-ES', { dateStyle: 'short', timeStyle: 'short' })
+    const day = String(date.getUTCDate()).padStart(2, '0')
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0')
+    const year = date.getUTCFullYear()
+    const hh = String(date.getUTCHours()).padStart(2, '0')
+    const mm = String(date.getUTCMinutes()).padStart(2, '0')
+    return `${day}/${month}/${year} ${hh}:${mm}`
   }
 
   const parseTime = (value: string) => {

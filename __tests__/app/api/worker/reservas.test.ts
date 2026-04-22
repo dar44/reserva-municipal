@@ -17,8 +17,8 @@ jest.mock('@/lib/supabaseAdmin', () => ({
 }))
 
 jest.mock('@/lib/emailNotifications', () => ({
-  sendSolicitudAprobadaEmail: jest.fn().mockResolvedValue(undefined),
-  sendSolicitudRechazadaEmail: jest.fn().mockResolvedValue(undefined),
+  sendSolicitudAprobadaEmailDirect: jest.fn().mockResolvedValue(undefined),
+  sendSolicitudRechazadaEmailDirect: jest.fn().mockResolvedValue(undefined),
 }))
 
 jest.mock('next/server', () => {
@@ -34,8 +34,8 @@ jest.mock('next/server', () => {
 
 const requireAuthAPIMock = jest.requireMock('@/lib/auth/guard').requireAuthAPI as jest.Mock
 const hasRecintoConflictsMock = jest.requireMock('@/lib/reservas/conflicts').hasRecintoConflicts as jest.Mock
-const sendSolicitudAprobadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudAprobadaEmail as jest.Mock
-const sendSolicitudRechazadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudRechazadaEmail as jest.Mock
+const sendSolicitudAprobadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudAprobadaEmailDirect as jest.Mock
+const sendSolicitudRechazadaEmailMock = jest.requireMock('@/lib/emailNotifications').sendSolicitudRechazadaEmailDirect as jest.Mock
 const jsonSpy = NextResponse.json as jest.Mock
 
 import { PATCH } from '@/app/api/worker/reservas/[id]/route'
@@ -48,6 +48,10 @@ function createSupabaseStub () {
       recinto_id: 8,
       start_at: '2025-02-01T10:00:00.000Z',
       end_at: '2025-02-01T11:00:00.000Z',
+      observations: null,
+      organizer_uid: 'org-1',
+      users: { email: 'org@example.com', name: 'Org', surname: 'Test' },
+      recintos: { name: 'Sala A' },
     },
     error: null,
   })
@@ -164,7 +168,10 @@ describe('PATCH /api/worker/reservas/[id]', () => {
     })
     expect(supabaseStub.updateEqMock).toHaveBeenCalledWith('id', 42)
     expect(supabaseStub.updateSelectMock).toHaveBeenCalledWith('*')
-    expect(sendSolicitudAprobadaEmailMock).toHaveBeenCalledWith(42)
+    expect(sendSolicitudAprobadaEmailMock).toHaveBeenCalledWith(expect.objectContaining({
+      startAt: '2025-02-01T10:00:00.000Z',
+      endAt: '2025-02-01T11:00:00.000Z',
+    }))
     expect(sendSolicitudRechazadaEmailMock).not.toHaveBeenCalled()
     expect(jsonSpy).toHaveBeenCalledWith({
       reserva: {

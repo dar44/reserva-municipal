@@ -138,13 +138,26 @@ export default function AdminNavBar() {
 
               {/* User info in mobile menu */}
               {profileName && (
-                <div className="px-4 py-3 mt-2 border-t border-border">
+                <div className="px-4 py-3 mt-2 border-t border-border space-y-1">
+                  <span className="block text-xs font-medium text-foreground-secondary mb-2">{profileName}</span>
+                  <Link
+                    href="/perfil"
+                    className="block px-2 py-2 text-sm font-medium hover:bg-accent rounded-none transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Ver perfil
+                  </Link>
                   <button
                     type="button"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="text-sm text-foreground-secondary hover:text-foreground w-full text-left"
+                    onClick={async () => {
+                      setMobileMenuOpen(false)
+                      const res = await fetch('/api/logout', { method: 'POST' })
+                      const body = await res.json().catch(() => ({}))
+                      window.location.href = body?.redirectTo || '/login'
+                    }}
+                    className="block w-full text-left px-2 py-2 text-sm font-medium text-destructive hover:bg-error-subtle rounded-none transition-colors"
                   >
-                    {profileName}
+                    Cerrar sesión
                   </button>
                 </div>
               )}

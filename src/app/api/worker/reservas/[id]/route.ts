@@ -4,6 +4,7 @@ import type { CourseReservation, ReservationDecisionInput } from '@/lib/models/c
 import { supabaseAdmin } from '@/lib/supabaseAdmin'
 import { hasRecintoConflicts } from '@/lib/reservas/conflicts'
 import { requireAuthAPI } from '@/lib/auth/guard'
+import { sendSolicitudAprobadaEmailDirect, sendSolicitudRechazadaEmailDirect } from '@/lib/emailNotifications'
 
 export const dynamic = 'force-dynamic'
 
@@ -49,7 +50,7 @@ export async function PATCH(
 
     const { data: current, error: currentError } = await supabase
       .from('curso_reservas')
-      .select('id, status, recinto_id, start_at, end_at')
+      .select('id, status, recinto_id, start_at, end_at, organizer_uid, observations, recintos(name), users!curso_reservas_organizer_uid_fkey(email, name, surname)')
       .eq('id', id)
       .maybeSingle()
 
@@ -100,13 +101,43 @@ export async function PATCH(
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    // Enviar email de notificación al organizador
+    // Enviar email de notificación al organizador usando datos ya disponibles
     try {
-      const { sendSolicitudAprobadaEmail, sendSolicitudRechazadaEmail } = await import('@/lib/emailNotifications')
-      if (decision.status === 'aprobada') {
-        await sendSolicitudAprobadaEmail(id)
-      } else if (decision.status === 'rechazada') {
-        await sendSolicitudRechazadaEmail(id)
+      if (decision.status === 'aprobada' || decision.status === 'rechazada') {
+        // Extraer datos del organizador y recinto del SELECT inicial
+        const organizerRaw: any = (current as any)?.users
+        const organizerEmail: string | null = organizerRaw && !Array.isArray(organizerRaw)
+          ? organizerRaw.email ?? null
+          : Array.isArray(organizerRaw) ? organizerRaw[0]?.email ?? null : null
+        const organizerName: string | null = organizerRaw && !Array.isArray(organizerRaw)
+          ? organizerRaw.name ?? null
+          : Array.isArray(organizerRaw) ? organizerRaw[0]?.name ?? null : null
+        const organizerSurname: string | null = organizerRaw && !Array.isArray(organizerRaw)
+          ? organizerRaw.surname ?? null
+          : Array.isArray(organizerRaw) ? organizerRaw[0]?.surname ?? null : null
+        const recintoRaw: any = (current as any)?.recintos
+        const recintoName: string = (recintoRaw && !Array.isArray(recintoRaw) && recintoRaw.name)
+          ? recintoRaw.name
+          : (Array.isArray(recintoRaw) ? recintoRaw[0]?.name : null) ?? 'Recinto solicitado'
+
+        if (organizerEmail) {
+          const emailOpts = {
+            organizerEmail,
+            organizerName,
+            organizerSurname,
+            recintoName,
+            startAt: current.start_at,
+            endAt: current.end_at,
+            observations: (current as any).observations ?? null,
+          }
+          if (decision.status === 'aprobada') {
+            await sendSolicitudAprobadaEmailDirect(emailOpts)
+          } else {
+            await sendSolicitudRechazadaEmailDirect(emailOpts)
+          }
+        } else {
+          console.warn('[EMAIL] No se encontró email del organizador en la respuesta; el email no se enviará')
+        }
       }
     } catch (emailError) {
       console.error('Error sending organizer notification email:', emailError)
