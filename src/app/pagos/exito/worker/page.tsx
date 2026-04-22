@@ -1,51 +1,78 @@
-import Link from 'next/link'
-import SyncPago from '../SyncPago'
+import Link from "next/link";
 
-export const dynamic = 'force-dynamic'
+export const dynamic = "force-dynamic";
 
 type SearchParams = {
-  pago?: string
-  tipo?: string
-  curso?: string
-}
+  pago?: string;
+  tipo?: string;
+  curso?: string;
+};
 
-export default async function PagoExitoWorkerPage ({
+export default async function PagoExitoWorkerPage({
   searchParams
 }: {
-  searchParams: Promise<SearchParams>
+  searchParams: Promise<SearchParams>;
 }) {
-  const params = await searchParams
-  const pagoId = params.pago
-  const tipoRaw = params.tipo === 'inscripcion' ? 'inscripción' : 'reserva'
-  const cursoId = params.curso
+  const params = await searchParams;
+  const pagoId = params.pago;
+  const tipoLabel = params.tipo === "inscripcion" ? "inscripción" : "reserva";
+  const cursoId = params.curso;
 
-  let href = '/worker/reservas'
-  let label = 'Volver a mis reservas'
+  let href = "/worker/reservas";
+  let label = "Volver a mis reservas";
 
-  if (params.tipo === 'inscripcion') {
-    href = cursoId ? `/worker/cursos/${cursoId}` : '/worker/cursos'
-    label = 'Volver al curso'
+  if (params.tipo === "inscripcion") {
+    href = cursoId ? `/worker/cursos/${cursoId}` : "/worker/cursos";
+    label = "Volver al curso";
   }
 
   return (
-    <div className="max-w-xl mx-auto text-center space-y-4">
-      <h1 className="text-3xl font-bold text-success">Pago registrado</h1>
-      <p>
-        El pago se ha completado correctamente. Estamos sincronizando la {tipoRaw} para que
-        aparezca como pagada en el panel de trabajo.
-      </p>
-      {pagoId && (
-        <>
-          <p className="text-sm text-foreground-secondary">Identificador interno del pago: {pagoId}</p>
-          <SyncPago pagoId={pagoId} />
-        </>
-      )}
-      <Link
-        href={href}
-        className="inline-block bg-primary hover:bg-primary-hover text-primary-foreground px-4 py-2 rounded"
-      >
-        {label}
-      </Link>
+    <div className="flex min-h-[60vh] items-center justify-center px-4">
+      <div className="card-base w-full max-w-lg text-center space-y-6 animate-fade-in-up">
+        {/* Animated success icon */}
+        <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-success-subtle">
+          <svg
+            className="h-10 w-10 text-success animate-scale-in delay-200"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+            aria-hidden="true"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+
+        <div className="space-y-2">
+          <h1 className="text-success">¡Pago registrado!</h1>
+          <p className="text-foreground-secondary">
+            Tu {tipoLabel} ha sido registrada correctamente.
+            Recibirás una confirmación por correo electrónico en los próximos minutos.
+          </p>
+        </div>
+
+        {pagoId && (
+          <p className="text-xs text-foreground-tertiary">
+            Referencia de pago: <span className="font-mono">{pagoId}</span>
+          </p>
+        )}
+
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+          <Link
+            href={href}
+            className="inline-flex items-center justify-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-sm transition-colors hover:bg-primary-hover focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          >
+            {label}
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+            </svg>
+          </Link>
+        </div>
+      </div>
     </div>
-  )
+  );
 }

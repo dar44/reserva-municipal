@@ -68,7 +68,7 @@ export async function POST(req: Request) {
     const amountMinorUnits = toMinorUnits(reservaPrice, currency)
 
     if (req.headers.get('content-type')?.includes('application/json')) {
-      const { email, date, time, recinto_id, newUser, name, surname, dni, phone } = await req.json()
+      const { email, date, time, recinto_id, newUser, name, surname, dni, phone, fromWorker } = await req.json()
 
       const recintoId = Number(recinto_id)
       if (Number.isNaN(recintoId)) {
@@ -174,7 +174,7 @@ export async function POST(req: Request) {
         reserva_id: reserva.id
       }
       let checkout
-      const successBase = '/pagos/exito'
+      const successBase = fromWorker ? '/pagos/exito/worker' : '/pagos/exito'
       const cancelBase = '/pagos/cancelado'
       try {
         checkout = await createCheckout({
