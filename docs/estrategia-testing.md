@@ -1,6 +1,6 @@
 # Estrategia de Testing y Aseguramiento de Calidad
 
-Este documento detalla la estrategia de pruebas implementada en el Sistema de Reserva Municipal para garantizar la robustez, fiabilidad y mantenibilidad del software. Se han desarrollado un total de **38 suites de tests** que cubren desde componentes unitarios hasta flujos de integración complejos.
+Este documento detalla la estrategia de pruebas implementada en el Sistema de Reserva Municipal para garantizar la robustez, fiabilidad y mantenibilidad del software. Se han desarrollado un total de **44 suites de tests** que cubren desde componentes unitarios hasta flujos de integración complejos.
 
 ## 1. Enfoque y Metodología
 

@@ -42,4 +42,29 @@ yarn-error.log*
 next-env.d.ts
 
 /auditorias-tfg
+/auditorias-tfg-dar44
 /diagramas
+
+# Unlighthouse (reportes generados)
+/.unlighthouse/
+
+# SWC cache
+/.swc/
+
+# Scripts auxiliares de auditoría (no son parte del código fuente)
+auditar_dar44.js
+auditorias.js
+
+# Outputs temporales
+lighthouse-root.json
+test_output.txt
+
+# Reportes Lighthouse generados por scripts
+/lighthouse-reports/
+
+# Placeholder SVGs de create-next-app (no usados)
+public/file.svg
+public/globe.svg
+public/next.svg
+public/vercel.svg
+public/window.svg

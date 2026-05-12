@@ -4,6 +4,7 @@ Plataforma integral para la gestión de recintos deportivos municipales, inscrip
 
 ![Estado del Proyecto](https://img.shields.io/badge/Estado-Finalizado-success)
 ![Versión](https://img.shields.io/badge/Version-1.0.0-blue)
+![Tests](https://img.shields.io/badge/Tests-44_suites-brightgreen)
 ![Licencia](https://img.shields.io/badge/Licencia-MIT-green)
 
 ## Tecnologías Principales
@@ -33,7 +34,7 @@ Plataforma integral para la gestión de recintos deportivos municipales, inscrip
 
 1. **Clonar el repositorio**
    ```bash
-   git clone https://github.com/tu-usuario/reserva-municipal.git
+   git clone https://github.com/dar44/reserva-municipal.git
    cd reserva-municipal
    ```
 
@@ -90,7 +91,7 @@ npm start
 
 ## Testing
 
-El proyecto cuenta con una suite exhaustiva de **38 suites de tests** cubriendo API, componentes, integración y lógica de negocio.
+El proyecto cuenta con una suite exhaustiva de **44 suites de tests** cubriendo API, componentes, integración y lógica de negocio.
 
 - **Ejecutar todos los tests**:
   ```bash
@@ -114,22 +115,31 @@ Para más detalles sobre la metodología de pruebas, consulta [Docs: Estrategia 
 ## Estructura del Proyecto
 
 ```
-/src
-  /app              # Rutas y páginas (App Router)
-    /api            # API Routes (Backend)
-    /admin          # Panel de Administrador
-    /citizen        # Panel de Ciudadano
-    /worker         # Panel de Trabajador
-    /organizer      # Panel de Organizador
-  /components       # Componentes React reutilizables
-    /ui             # UI Kit base (Botones, Inputs, Cards)
-    /emails         # Plantillas React Email
-  /lib              # Lógica de negocio y utilidades
-    /reservas       # Lógica de conflictos y reservas
-    /supabase       # Cliente Supabase
-  /types            # Definiciones de tipos TypeScript
-/docs               # Documentación técnica
-/supabase           # Migraciones y configuración DB
+/
+├── __tests__/           # Suites de tests (44 suites)
+│   ├── app/             #   Tests de API y páginas
+│   ├── components/      #   Tests de componentes
+│   ├── lib/             #   Tests de lógica de negocio
+│   └── utils/           #   Tests de utilidades
+├── docs/                # Documentación técnica del TFG
+├── scripts/             # Scripts de auditoría Lighthouse
+├── supabase/            # Migraciones SQL y seed de datos
+│   ├── migrations/      #   DDL, RLS y funciones
+│   └── seed.sql         #   Datos de demostración
+└── src/
+    ├── app/             # Rutas y páginas (App Router)
+    │   ├── api/         #   API Routes (Backend)
+    │   ├── admin/       #   Panel de Administrador
+    │   ├── citizen/     #   Panel de Ciudadano
+    │   ├── worker/      #   Panel de Trabajador
+    │   ├── organizer/   #   Panel de Organizador
+    │   └── pagos/       #   Flujo de pago (éxito/cancelado)
+    ├── components/      # Componentes React reutilizables
+    │   ├── ui/          #   UI Kit base (Botones, Inputs, Cards)
+    │   └── emails/      #   Plantillas React Email
+    └── lib/             # Lógica de negocio y utilidades
+        ├── reservas/    #   Detección de conflictos
+        └── supabase/    #   Cliente Supabase (server/client)
 ```
 
 ---

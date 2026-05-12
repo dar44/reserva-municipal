@@ -61,7 +61,7 @@ export function PublicNavbar({ variant = 'landing', fixed = false }: PublicNavba
           </div>
 
           {/* Right side */}
-          <div className="flex items-center gap-1">
+          <div className="flex h-full items-center gap-1">
             {/* Desktop auth buttons */}
             {variant === 'landing' && (
               <>

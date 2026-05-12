@@ -2,7 +2,7 @@
 export default {
   scanner: {
     samples: 3,
-    maxRoutes: 15,
+    maxRoutes: 10,
     device: 'desktop',
     customCmdFlags: [
       '--no-sandbox',
