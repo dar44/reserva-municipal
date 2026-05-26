@@ -1,6 +1,6 @@
 # Estrategia de Testing y Aseguramiento de Calidad
 
-Este documento detalla la estrategia de pruebas implementada en el Sistema de Reserva Municipal para garantizar la robustez, fiabilidad y mantenibilidad del software. Se han desarrollado un total de **44 suites de tests** que cubren desde componentes unitarios hasta flujos de integración complejos.
+Este documento detalla la estrategia de pruebas implementada en el Sistema de Reserva Municipal para garantizar la robustez, fiabilidad y mantenibilidad del software. Se han desarrollado un total de **44 suites de tests** con **168 casos de prueba** que cubren desde componentes unitarios hasta flujos de integración complejos.
 
 ## 1. Enfoque y Metodología
 
@@ -17,6 +17,7 @@ Validan funciones puras y lógica compleja aislada de la interfaz de usuario. So
 *   **Conflictos de Reserva** (`lib/reservas/conflictos.test.ts`): Verifica rigurosamente que no se puedan crear reservas solapadas. Prueba casos de solapamiento total, parcial, adyacente y validación de horarios límite.
 *   **Formato de Precios y Fechas**: Asegura que la moneda (CLP) y las fechas se formateen correctamente según la localización del usuario.
 *   **Validadores de Zod**: Comprueba que los esquemas de validación de formularios rechacen datos inválidos y acepten datos correctos.
+*   **Cliente Resend** (`lib/resend.test.ts`): Valida la inicialización condicional del cliente de email, asegurando que no se cree sin API key y que se reutilice la instancia singleton.
 
 ### 2.2. Tests de Componentes (Unitarios/Integración UI)
 Verifican que los componentes de React se rendericen correctamente y respondan adecuadamente a la interacción del usuario.
@@ -45,6 +46,7 @@ Validan que las páginas completas (Paneles, Catálogos) carguen los datos corre
 
 *   **Paneles de Rol**: Verifican que `/admin`, `/worker`, `/organizer` y `/citizen` muestren la información específica de cada usuario.
 *   **Catálogos Públicos**: Aseguran que los recintos y cursos activos se listen correctamente y que la búsqueda/filtrado funcione.
+*   **Páginas Públicas** (`public/recintos.integration.test.tsx`, `public/cursos.integration.test.tsx`): Validan que las rutas públicas mantengan su estado correcto al limpiar filtros desde el empty state.
 
 ## 3. Justificación Académica de las Suites Críticas
 
